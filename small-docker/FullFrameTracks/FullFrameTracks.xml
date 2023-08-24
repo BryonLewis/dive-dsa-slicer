@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<executable>
+  <category>DIVE</category>
+  <title>Full Frame Tracks</title>
+  <description>Takes a Video and Generates Full Frame Tracks for the Video</description>
+  <version>0.1.0</version>
+  <documentation-url>https://digitalslidearchive.github.io/HistomicsTK/</documentation-url>
+  <license>Apache 2.0</license>
+  <contributor>Deepak Roy Chittajallu (Kitware), Neal Siekierski (Kitware)</contributor>
+  <acknowledgements>This work is part of the HistomicsTK project.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description>Input/output parameters</description>
+    <image>
+      <name>inputVideoFile</name>
+      <label>Input Video</label>
+      <description>Input video</description>
+      <channel>input</channel>
+      <index>0</index>
+    </image>
+    <file fileExtensions=".json" reference="inputVideoFile">
+      <name>outputTrackJSON</name>
+      <label>Output DIVE Track Json File</label>
+      <description>Output Track JSON File (*.json)</description>
+      <channel>output</channel>
+      <index>1</index>
+    </file>
+  </parameters>
+</executable>
