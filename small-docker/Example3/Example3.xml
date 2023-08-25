@@ -16,13 +16,13 @@
       <label>Input file</label>
       <channel>input</channel>
     </file>
-    <image>
+    <file>
       <name>image1</name>
       <longflag>image1</longflag>
       <description>An input image</description>
       <label>Input image</label>
       <channel>input</channel>
-    </image>
+    </file>
     <item>
       <name>item1</name>
       <longflag>item1</longflag>
