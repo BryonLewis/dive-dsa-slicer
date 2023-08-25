@@ -4,9 +4,9 @@
   <title>Full Frame Tracks</title>
   <description>Takes a Video and Generates Full Frame Tracks for the Video</description>
   <version>0.1.0</version>
-  <documentation-url>https://digitalslidearchive.github.io/HistomicsTK/</documentation-url>
+  <documentation-url></documentation-url>
   <license>Apache 2.0</license>
-  <contributor>Deepak Roy Chittajallu (Kitware), Neal Siekierski (Kitware)</contributor>
+  <contributor>Bryon Lewis</contributor>
   <acknowledgements>This work is part of the HistomicsTK project.</acknowledgements>
   <parameters>
     <label>IO</label>
