@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  dive-dsa-slicer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/bryonlewis/dive-dsa-slicer/dive-dsa-slicer:${TAG:-latest}
