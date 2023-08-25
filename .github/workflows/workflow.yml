@@ -26,6 +26,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: small-docker/girder.Dockerfile
+          file: small-docker/Dockerfile
           tags: ghcr.io/bryonlewis/dive-dsa-slicer/dive-dsa-slicer:latest
           push: true
