@@ -1,15 +1,22 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+<script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
-import GirderSlicerExplorer from './components/GirderSlicerExplorer.vue';
+import { ref, Ref, PropType, computed, onMounted } from 'vue';
+import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
+import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
+
+
+const selected: Ref<string | null> = ref(null);
+const select = (id: string) => {
+  selected.value = id;
+}
 </script>
 
 <template>
   <div>
   <img alt="Vue logo" src="./assets/logo.png" />
   <HelloWorld msg="Hello Vue 3 + Vite" />
-  <girder-slicer-explorer />
+  <girder-slicer-task-button @selected="select($event)"/>
+  <girder-slicer-task-card :task-id="selected"/>
   </div>
 </template>
 

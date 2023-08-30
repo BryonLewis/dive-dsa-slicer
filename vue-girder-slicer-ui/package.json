@@ -8,10 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.2.96",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.5.0",
+    "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
     "qs": "^6.11.2",
+    "underscore": "^1.13.6",
     "vue": "^3.2.25"
   },
   "devDependencies": {
