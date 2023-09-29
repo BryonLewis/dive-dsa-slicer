@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, Ref, PropType, computed, onMounted } from 'vue';
-import { mdiAlertOutline } from '@mdi/js' ;
-import SvgIcon from '@jamescoyle/vue-icon';
 import { Tooltip } from 'bootstrap'
 import {extractImageInfo } from '../utils';
 
