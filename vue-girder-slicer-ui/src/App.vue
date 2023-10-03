@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
-import { ref, Ref, PropType, computed, onMounted } from 'vue';
+import { Ref, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
 
@@ -13,10 +13,13 @@ const select = (id: string) => {
 
 <template>
   <div>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
-  <girder-slicer-task-button @selected="select($event)"/>
-  <girder-slicer-task-card :task-id="selected"/>
+    <img
+      alt="Vue logo"
+      src="./assets/logo.png"
+    >
+    <HelloWorld msg="Hello Vue 3 + Vite" />
+    <girder-slicer-task-button @selected="select($event)" />
+    <girder-slicer-task-card :task-id="selected" />
   </div>
 </template>
 

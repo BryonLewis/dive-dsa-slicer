@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, Ref, PropType, computed, onMounted, watch } from 'vue';
-import { Tooltip } from 'bootstrap'
-import { constraints, parse } from '../parser/index'
+import { Ref, computed, ref, watch } from 'vue';
+import { parse } from '../parser/index'
 import GirderControlsPanel from './GirderSlicerPanel.vue';
 import RestClient from '../api/girderRest';
-import { useGirderSlicerApi, SlicerImage } from '../api/girderSlicerApi';
+import { useGirderSlicerApi } from '../api/girderSlicerApi';
 import type { XMLSpecification } from '../parser/parserTypes';
 
 interface Props {
@@ -37,14 +36,24 @@ watch(() => props.taskId, () => {
 </script>
 
 <template>
-<div v-if="result" class="card">
-  <div class="card-body">
-    <h5 class="card-title">{{ result.title }}</h5>
-    <p class="card-text">{{  result.description }}</p>
-    <GirderControlsPanel v-for="(panel, index) in result.panels" :key="`panel_${index}`" :panel="panel" />
+  <div
+    v-if="result"
+    class="card"
+  >
+    <div class="card-body">
+      <h5 class="card-title">
+        {{ result.title }}
+      </h5>
+      <p class="card-text">
+        {{ result.description }}
+      </p>
+      <GirderControlsPanel
+        v-for="(panel, index) in result.panels"
+        :key="`panel_${index}`"
+        :panel="panel"
+      />
+    </div>
   </div>
-</div>
-
 </template>
 
 <style scoped>

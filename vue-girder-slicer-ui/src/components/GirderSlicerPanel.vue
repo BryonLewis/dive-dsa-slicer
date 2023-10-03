@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType } from 'vue'
+import { PropType, ref } from 'vue'
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { XMLPanel } from '../parser/parserTypes';
@@ -15,23 +15,35 @@ const collapsed = ref(!props.panel.advanced)
 </script>
 
 <template>
-    <div class="card">
-        <div v-if="panel.groups.length === 1" class="card-title">
-            <div class="row justify-content-left g-0">
-              <div class="col-auto">
-                  <svg-icon type="mdi" :path="collapsed ? mdiChevronUp : mdiChevronDown" size="30" class="pb-2 icon" @click="collapsed = !collapsed"/>
-              </div>
-              <div class="col-auto">
-              <h5> {{ panel.groups[0].label }}</h5>
-              </div>
-            </div>
-            <Transition name="collapse">
-              <div v-if="!collapsed">
-                <girder-slicer-parameter  :parameters="panel.groups[0].parameters"/>
-              </div>
-            </Transition>
+  <div class="card">
+    <div
+      v-if="panel.groups.length === 1"
+      class="card-title"
+    >
+      <div class="row justify-content-left g-0">
+        <div class="col-auto">
+          <svg-icon
+            type="mdi"
+            :path="collapsed ? mdiChevronUp : mdiChevronDown"
+            size="30"
+            class="pb-2 icon"
+            @click="collapsed = !collapsed"
+          />
         </div>
+        <div class="col-auto">
+          <h5> {{ panel.groups[0].label }}</h5>
+        </div>
+      </div>
+      <Transition name="collapse">
+        <div
+          v-if="!collapsed"
+          class="row justify-content-left g-0"
+        >
+          <girder-slicer-parameter :parameters="panel.groups[0].parameters" />
+        </div>
+      </Transition>
     </div>
+  </div>
 </template>
 
 <style scoped>

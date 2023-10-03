@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, PropType } from 'vue'
+import { PropType, onMounted, ref, } from 'vue'
 import type { XMLParameters } from '../parser/parserTypes';
+import BaseParameter from './Parameters/BaseParameter.vue';
+import BooleanParameter from './Parameters/BooleanParameter.vue';
+
 const props = defineProps({
   parameters: {
     type: Array as PropType<XMLParameters[]>,
@@ -8,21 +11,37 @@ const props = defineProps({
   },
 })
 
+const baseParmaeters = ['string', 'number', 'vector', 'string-vector', 'number-vector']
+const paramCopy = ref(props.parameters);
+onMounted(() => {
+  paramCopy.value = props.parameters;
+})
+
+const updateParameter = (data: XMLParameters, index: number) => {
+  paramCopy.value.splice(index, 1, data);
+}
 </script>
 
 <template>
-    <div v-for="(parameter, index) in props.parameters" :key="`${parameter.title}_${index}`">
-      <div class="row justify-content-left">
-        <div class="col-auto">
-          <h6><b>{{ parameter.title }}</b></h6>
-        </div>
+  <div
+    v-for="(parameter, index) in paramCopy"
+    :key="`${parameter.title}_${index}`"
+  >
+    <div class="row justify-content-left">
+      <div class="col-auto">
+        <base-parameter 
+          v-if="baseParmaeters.includes(parameter.type)"
+          :data="parameter"
+          @change="updateParameter($event, index)"
+        />
+        <boolean-parameter
+          v-else-if="parameter.slicerType === 'boolean'"
+          :data="parameter"
+          @change="updateParameter($event, index)"
+        />
       </div>
-        <div class="row justify-content-left">
-          <div class="col-auto">
-            <p>{{ parameter.description }}</p>
-          </div>
-        </div>
     </div>
+  </div>
 </template>
 
 <style scoped>

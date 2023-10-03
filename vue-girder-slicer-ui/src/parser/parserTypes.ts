@@ -37,7 +37,7 @@ export interface XMLParameters {
   description: string;
   channel?: 'input' | 'output';
   id: string;
-  values?: XMLBaseValue[];
+  value?: XMLBaseValue;
   constraints?: {min?: XMLBaseValue; max?: XMLBaseValue; step?: XMLBaseValue};
   defaultValue?: XMLBaseValue;
   extra?: {

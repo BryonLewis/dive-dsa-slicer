@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, Ref, PropType, computed, onMounted } from 'vue';
+import { Ref, computed, onMounted, ref } from 'vue';
 import { Tooltip } from 'bootstrap'
 import {extractImageInfo } from '../utils';
 
 
 import RestClient from '../api/girderRest';
-import { useGirderSlicerApi, SlicerImage } from '../api/girderSlicerApi';
+import { useGirderSlicerApi } from '../api/girderSlicerApi';
 
 interface Props {
   apiUrl?: string;
@@ -56,29 +56,58 @@ getData();
 
 <template>
   <div class="btn-group dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Tasks
-  </button>
-      <ul class="dropdown-menu">
-        <li v-for="(item, key) in results" :key="key" class="dropdown-item">
-          {{ item.length === 1 ? `${key}:${item[0].tag}`: key }} &raquo;
-          <ul v-if="item.length === 1" class="submenu dropdown-menu">
-              <li v-for="task in item[0].tasks" :key="task._id" class="dropdown-item" @click="$emit('selected', task._id)">
+    <button
+      type="button"
+      class="btn btn-secondary dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      Tasks
+    </button>
+    <ul class="dropdown-menu">
+      <li
+        v-for="(item, key) in results"
+        :key="key"
+        class="dropdown-item"
+      >
+        {{ item.length === 1 ? `${key}:${item[0].tag}`: key }} &raquo;
+        <ul
+          v-if="item.length === 1"
+          class="submenu dropdown-menu"
+        >
+          <li
+            v-for="task in item[0].tasks"
+            :key="task._id"
+            class="dropdown-item"
+            @click="$emit('selected', task._id)"
+          >
+            {{ task.name }}
+          </li>
+        </ul>
+        <ul
+          v-else
+          class="submenu dropdown-menu"
+        >
+          <li
+            v-for="tag in item"
+            :key="tag.tag"
+            class="dropdown-item"
+          >
+            {{ tag.tag }} &raquo;
+            <ul class="submenu dropdown-menu">
+              <li
+                v-for="task in tag.tasks"
+                :key="task._id"
+                class="dropdown-item"
+                @click="$emit('selected', task._id)"
+              >
                 {{ task.name }}
               </li>
-          </ul>
-          <ul v-else class="submenu dropdown-menu">
-              <li v-for="tag in item" :key="tag.tag" class="dropdown-item">
-                {{ tag.tag }} &raquo;
-                <ul class="submenu dropdown-menu">
-                  <li v-for="task in tag.tasks" :key="task._id" class="dropdown-item" @click="$emit('selected', task._id)">
-                    {{ task.name }}
-                  </li>
-                </ul>
-              </li>
-          </ul>
-        </li>
-      </ul>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>
 
