@@ -3,7 +3,7 @@ import { PropType, onMounted, ref, } from 'vue'
 import type { XMLParameters } from '../parser/parserTypes';
 import BaseParameter from './Parameters/BaseParameter.vue';
 import BooleanParameter from './Parameters/BooleanParameter.vue';
-
+import EnumerationParameters from './Parameters/EnumerationParameters.vue';
 const props = defineProps({
   parameters: {
     type: Array as PropType<XMLParameters[]>,
@@ -36,6 +36,11 @@ const updateParameter = (data: XMLParameters, index: number) => {
         />
         <boolean-parameter
           v-else-if="parameter.slicerType === 'boolean'"
+          :data="parameter"
+          @change="updateParameter($event, index)"
+        />
+        <enumeration-parameters
+          v-else-if="parameter.slicerType === 'number-enumeration' || parameter.slicerType === 'string-enumeration'"
           :data="parameter"
           @change="updateParameter($event, index)"
         />

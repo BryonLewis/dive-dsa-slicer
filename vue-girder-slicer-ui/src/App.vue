@@ -3,6 +3,7 @@ import HelloWorld from './components/HelloWorld.vue'
 import { Ref, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
+import DataBrowser from './components/FileBrowser/DataBrowser.vue';
 
 
 const selected: Ref<string | null> = ref(null);
@@ -13,13 +14,9 @@ const select = (id: string) => {
 
 <template>
   <div>
-    <img
-      alt="Vue logo"
-      src="./assets/logo.png"
-    >
-    <HelloWorld msg="Hello Vue 3 + Vite" />
     <girder-slicer-task-button @selected="select($event)" />
     <girder-slicer-task-card :task-id="selected" />
+    <data-browser />
   </div>
 </template>
 

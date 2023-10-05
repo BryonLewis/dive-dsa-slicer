@@ -1,0 +1,67 @@
+<script setup lang="ts">
+import { computed, PropType, ref } from 'vue'
+import { GirderModel, GirderModelType} from '../../girderTypes';
+
+const props = defineProps({
+  value: String,
+  home: String,
+  users: Array as PropType<GirderModel[]>,
+  collections: Array as PropType<GirderModel[]>,
+})
+
+const emit = defineEmits<{
+    (e: "change", {val, type, name}: { val: string, type: GirderModelType, name:string}): void;
+}>();
+
+const filteredUsers = computed(() => props.users?.filter((item) => item._id !== props.home));
+const update = (e: Event) => {
+    let type: GirderModelType = 'user';
+    const val = (e.target as HTMLSelectElement).value;
+    let name = '';
+    if (props.collections && props.users) {
+        const findType = props.collections.concat(props.users)
+        const found = findType.find((item) => item._id === val);
+        if (found) {
+            type = found._modelType;
+            if (type === 'user') {
+                name = `${found.firstName} ${found.lastName}`
+            } else {
+                name = found.name;
+            }
+        }
+    }
+    emit('change', {val, type, name});
+}
+</script>
+
+<template>
+  <select
+    :value="value"
+    @change="update($event)"
+  >
+    <option :value="home">
+      Home
+    </option>
+    <optgroup label="Collections">
+      <option
+        v-for="item in collections"
+        :key="item._id"
+        :value="item._id"
+      >
+        {{ item.name }}
+      </option>
+    </optgroup>
+    <optgroup label="Users">
+      <option
+        v-for="item in filteredUsers"
+        :key="item._id"
+        :value="item._id"
+      >
+        {{ item.login }}
+      </option>
+    </optgroup>
+  </select>
+</template>
+
+<style scoped>
+</style>

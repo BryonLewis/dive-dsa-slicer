@@ -31,7 +31,9 @@ const collapsed = ref(!props.panel.advanced)
           />
         </div>
         <div class="col-auto">
-          <h5> {{ panel.groups[0].label }}</h5>
+          <h5 @click="collapsed = !collapsed">
+            {{ panel.groups[0].label }}
+          </h5>
         </div>
       </div>
       <Transition name="collapse">
