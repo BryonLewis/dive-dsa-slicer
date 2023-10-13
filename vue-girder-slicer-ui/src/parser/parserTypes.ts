@@ -41,17 +41,16 @@ export interface XMLParameters {
   values?: XMLBaseValue[];
   constraints?: {min?: XMLBaseValue; max?: XMLBaseValue; step?: XMLBaseValue};
   defaultValue?: XMLBaseValue;
-  extra?: {
-    required?: boolean;
-    extensions?: string | undefined;
-    reference?: string | undefined;
-    defaultNameMatch?: string | undefined;
-    defaultPathMatch?: string | undefined;
-    defaultRelativePath?: string | undefined;
-    multiple?: boolean;
-    datalist?: boolean;
-    shapes?: string | undefined;
-  }
+  // Extra
+  required?: boolean;
+  extensions?: string | undefined;
+  reference?: string | undefined;
+  defaultNameMatch?: string | undefined;
+  defaultPathMatch?: string | undefined;
+  defaultRelativePath?: string | undefined;
+  multiple?: boolean;
+  datalist?: boolean;
+  shapes?: string | undefined;
 }
 
 export interface XMLGroups {

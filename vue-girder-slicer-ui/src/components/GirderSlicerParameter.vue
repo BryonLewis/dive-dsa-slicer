@@ -4,6 +4,7 @@ import type { XMLParameters } from '../parser/parserTypes';
 import BaseParameter from './Parameters/BaseParameter.vue';
 import BooleanParameter from './Parameters/BooleanParameter.vue';
 import EnumerationParameters from './Parameters/EnumerationParameters.vue';
+import FileParmaeter from './Parameters/FileParameter.vue';
 const props = defineProps({
   parameters: {
     type: Array as PropType<XMLParameters[]>,
@@ -41,6 +42,11 @@ const updateParameter = (data: XMLParameters, index: number) => {
         />
         <enumeration-parameters
           v-else-if="parameter.slicerType === 'number-enumeration' || parameter.slicerType === 'string-enumeration'"
+          :data="parameter"
+          @change="updateParameter($event, index)"
+        />
+        <file-parmaeter
+          v-else-if="['file', 'item', 'directory', 'image', 'multi'].includes(parameter.slicerType)"
           :data="parameter"
           @change="updateParameter($event, index)"
         />

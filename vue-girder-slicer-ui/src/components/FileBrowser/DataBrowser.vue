@@ -2,12 +2,13 @@
 import { Ref, ref } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
-import { mdiAccount, mdiFile, mdiFolder, mdiGlobeModel } from '@mdi/js';
+import { mdiAccount, mdiArrowUpRightBold, mdiEarth, mdiFile, mdiFolder, mdiLock, mdiSitemap } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 
 import RootSelection from './RootSelection.vue';
 interface Props {
   apiUrl?: string;
+  type?: 'multi' | 'item';
 }
 const props = withDefaults(defineProps<Props>(), {
   apiUrl: 'api/v1',
@@ -17,7 +18,7 @@ const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCreden
 
 const iconMap = ref({
     'user': mdiAccount,
-    'collection' : mdiGlobeModel,
+    'collection' : mdiSitemap,
     'folder': mdiFolder,
     'item': mdiFile,
 })
@@ -90,15 +91,21 @@ const updateMainView = async (parentId: string, parentType: string, name = '') =
 }
 
 const setRoot = async ({ val, type, name}: {val: string,  type: GirderModelType, name: string}) => {
-    console.log(val);
-    console.log(type);
-    console.log(name);
     home.value = val;
     breadCrumb.value = { type, path: []};
     updateMainView(val, type, name);
 }
 
-// Now we need to get the 
+const upLevel = () => {
+  if (breadCrumb.value.path.length > 1) { // we can't go up if add root
+    const newPath = breadCrumb.value.path[breadCrumb.value.path.length - 2]
+    let newPathType = 'folder';
+    if( breadCrumb.value.path.length === 2) {
+      newPathType = breadCrumb.value.type;
+    }
+    updateMainView(newPath.id, newPathType, newPath.name)
+  }
+}
 
 const getData = async () => {
     const userResponse = (await girderRest.get('user/me')).data;
@@ -157,49 +164,52 @@ getData();
       :users="users"
       @change="setRoot($event)"
     />
-    <div class="row justify-content-left g-0 breadcrumb">
+    <div class="row breadcrumb mb-0">
+      <div class="col text-left">
+        <span
+          v-for="(item, index) in breadCrumb.path"
+          :key="`breadCrumb_${item.id}`"
+        >
+          <span
+            v-if="index === 0"
+          >
+            <svg-icon
+              type="mdi"
+              :path="iconMap[breadCrumb.type]"
+              color="lightblue"
+              size="30"
+              class="pb-2 icon clickable"
+              @click="updateMainView(item.id, breadCrumb.type, item.name)"
+            />
+            <span
+              class="clickable"
+              @click="updateMainView(item.id, breadCrumb.type, item.name)"
+            > 
+              {{ item.name }}
+            </span>
+
+          </span>
+          <span
+            v-else-if="index !== breadCrumb.path.length - 1"
+            class="clickable"
+            @click="updateMainView(item.id, 'folder', item.name)"
+          > 
+            {{ item.name }}
+          </span>
+          <span v-else> 
+            {{ item.name }}
+          </span>
+          <span class="px-2">
+            /
+          </span>
+        </span>
+      </div>
       <div class="col-auto">
-        <svg-icon
-          type="mdi"
-          :path="iconMap[breadCrumb.type]"
-          color="lightblue"
-          size="30"
-          class="pb-2 icon"
-          style=""
-        />
-      </div>
-      <div
-        v-for="(item, index) in breadCrumb.path"
-        :key="`breadCrumb_${item.id}`"
-        class="col-auto px-2"
-      >
-        <span
-          v-if="index === 0"
-          class="clickable"
-          @click="updateMainView(item.id, breadCrumb.type, item.name)"
-        > 
-          {{ item.name }}
-        </span>
-        <span
-          v-else-if="index !== breadCrumb.path.length - 1"
-          class="clickable"
-          @click="updateMainView(item.id, 'folder', item.name)"
-        > 
-          {{ item.name }}
-        </span>
-        <span v-else> 
-          {{ item.name }}
-        </span>
-        <span class="px-2">
-          /
-        </span>
-      </div>
-      <div class="col-1">
         <span>
           <svg-icon
             type="mdi"
             :path="iconMap['folder']"
-            color="lightgray"
+            color="gray"
             size="30"
             class="pb-2 icon"
           />
@@ -211,7 +221,7 @@ getData();
           <svg-icon
             type="mdi"
             :path="iconMap['item']"
-            color="lightgray"
+            color="gray"
             size="30"
             class="pb-2 icon"
           />
@@ -220,15 +230,25 @@ getData();
             class="number-badge"
           >{{ rootItems ? rootItems.length : 0 }}</span>
         </span>
+        <span class="px-2">
+          <svg-icon
+            type="mdi"
+            :path="mdiArrowUpRightBold"
+            color="blue"
+            size="30"
+            class="pb-2 icon level-up-button clickable"
+            @click="upLevel()"
+          />
+        </span>
       </div>
     </div>
   </div>
   <div
     v-for="item in rootFolders"
     :key="item._id"
-    class="row justify-content-left g-0"
+    class="row justify-content-left g-0 item-row"
   >
-    <div class="col-auto">
+    <div class="col">
       <svg-icon
         type="mdi"
         :path="iconMap[item._modelType]"
@@ -236,20 +256,30 @@ getData();
         size="30"
         class="pb-2 icon"
       />
+      <span
+        class="col-auto clickable"
+        @click="updateMainView(item._id, item._modelType, item.name)"
+      >
+        {{ item.name }}
+      </span>
     </div>
-    <div
-      class="col-auto clickable"
-      @click="updateMainView(item._id, item._modelType, item.name)"
-    >
-      {{ item.name }}
+    <div class="col-auto">
+      <svg-icon
+        type="mdi"
+        :path="item.public ? mdiEarth : mdiLock"
+        color="gray"
+        size="30"
+        class="pb-2 icon"
+      />
+      <span class="item-info"> {{ item.public ? 'Public' : 'Private' }}</span>
     </div>
   </div>
   <div
     v-for="item in rootItems"
     :key="item._id"
-    class="row justify-content-left g-0 align-middle"
+    class="row justify-content-left align-middle item-row"
   >
-    <div class="col-auto">
+    <div class="col">
       <svg-icon
         type="mdi"
         :path="iconMap[item._modelType]"
@@ -257,12 +287,12 @@ getData();
         size="30"
         class="pb-2 icon"
       />
+      <span>
+        {{ item.name }}
+      </span>
     </div>
     <div class="col-auto">
-      {{ item.name }}
-    </div>
-    <div class="col-1">
-      {{ sizeFormatter(item.size) }}
+      <span class="item-info">{{ sizeFormatter(item.size) }}</span>
     </div>
   </div>
 </template>
@@ -281,10 +311,26 @@ getData();
 .number-badge {
     position: relative;
     bottom: 0px;
-    right: 10px;
-    height: 10px;
+    right: 5px;
+    height: 5px;
     background-color: #FFFFFFAA;
     color: 'black';
     font-size: 10px;
+}
+.item-row {
+  border-top: 1px solid lightgray;
+  border-left: 2px solid lightgray;
+  border-right: 2px solid lightgray;
+}
+.item-row:hover {
+  background-color: #fbfbf7;
+}
+.item-info {
+  color: gray;
+}
+.level-up-button {
+  border: 1px solid lightgray;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 </style>
