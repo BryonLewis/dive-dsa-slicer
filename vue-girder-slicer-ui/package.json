@@ -18,7 +18,8 @@
     "lodash": "^4.17.21",
     "qs": "^6.11.2",
     "underscore": "^1.13.6",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue-collapsed": "^1.2.9"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.4",

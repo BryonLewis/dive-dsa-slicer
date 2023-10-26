@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue'
+import { PropType, computed, ref } from 'vue'
 import { GirderModel, GirderModelType} from '../../girderTypes';
 
 const props = defineProps({
@@ -37,6 +37,7 @@ const update = (e: Event) => {
 <template>
   <select
     :value="value"
+    class="root-select"
     @change="update($event)"
   >
     <option :value="home">
@@ -64,4 +65,7 @@ const update = (e: Event) => {
 </template>
 
 <style scoped>
+.root-select {
+  height: 34px;
+}
 </style>
