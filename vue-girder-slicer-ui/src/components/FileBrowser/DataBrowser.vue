@@ -6,22 +6,26 @@ import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDouble
 mdiClose, mdiEarth, mdiFile, mdiFolder, mdiLock, mdiSitemap } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { Collapse } from 'vue-collapsed'
+import { convertInputNumber, convertInputString, countFormatter, sizeFormatter } from './utils'
 
 import RootSelection from './RootSelection.vue';
 interface Props {
   apiUrl?: string;
   multi?: boolean;
-  type?: 'item' | 'directory'
+  type?: 'file' | 'directory' | 'image' | 'new-file'
+  multiple?: boolean;
   limit?: number,
-  validation?: (id: string) => ({ valid: boolean, msg?: string});
+  output?: string,
+  validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
 }
 const props = withDefaults(defineProps<Props>(), {
   apiUrl: 'api/v1',
   multi: false,
-  type: 'item',
-  limit: 10,
+  type: 'file',
+  limit: 100,
+  multiple: false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validation: (_id: string) => ({ valid:true }),
+  validation: (_id: GirderModel) => ({ valid:true }),
 });
 
 const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
@@ -49,37 +53,14 @@ const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}
 const currentParentId = ref('');
 const currnetParentType = ref('user');
 
-const sizeFormatter =(size, { base = 1024, unit = 'B' } = {})  =>{
-    if (size < base) {
-    return `${size} ${unit}`;
-    }
+const selected: Ref<null | {name: string, girderId: string}> = ref(null);
 
-    let i;
-    let val = size;
-    for (i = 0; val >= base && i < 4; i += 1) {
-    val /= base;
-    }
 
-    return `${val.toFixed(2)}  ${['', 'K', 'M', 'G', 'T'][i]}${unit}`;
-};
-
-const countFormatter = (count: number | null) => {
-  if (count && count > 1000) {
-    return `${(count / 1000).toFixed(2)}k`;
-  }
-  return count ? count : 0;
-}
-const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
-  currentParentId.value = parentId;
-  currnetParentType.value = parentType;
-  if (resetShow) {
-    itemShow.value = false;
-    folderShow.value = false;
-  }
-    const responseFolders = await girderRest.get(`folder`, {
+const updateFolders = async (parentId: string, parentType: string) => {
+  const responseFolders = await girderRest.get(`folder`, {
             params: {
                 limit: props.limit,
-                offset: folderOffset.value,
+                offset: folderOffset.value * props.limit,
                 sort: 'name',
                 sortdir: 1,
                 parentType,
@@ -88,12 +69,16 @@ const updateMainView = async (parentId: string, parentType: string, name = '', r
             },
         }
     );
-    folderCount.value = responseFolders.headers['girder-total-count'];
-    if (parentType  === 'folder') {
-        const responseItems = await girderRest.get(`item`, {
+    folderCount.value = parseInt(responseFolders.headers['girder-total-count']);
+    rootFolders.value = responseFolders.data;
+    return responseFolders.data;
+};
+
+const updateItems = async (parentId: string) => {
+  const responseItems = await girderRest.get(`item`, {
                 params: {
                     limit: props.limit,
-                    offset: itemOffset.value,
+                    offset: itemOffset.value * props.limit,
                     sort: 'name',
                     sortdir: 1,
                     folderId: parentId,
@@ -101,12 +86,25 @@ const updateMainView = async (parentId: string, parentType: string, name = '', r
                 },
             }
         );
-        itemCount.value = responseItems.headers['girder-total-count'];
+        itemCount.value = parseInt(responseItems.headers['girder-total-count']);
         rootItems.value = responseItems.data;
+    return responseItems.data;
+}
+
+
+const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
+  currentParentId.value = parentId;
+  currnetParentType.value = parentType;
+  if (resetShow) {
+    itemShow.value = false;
+    folderShow.value = false;
+  }
+    await updateFolders(parentId, parentType);
+    if (parentType  === 'folder') {
+      await updateItems(parentId)
     } else {
         rootItems.value = [];
     }
-    rootFolders.value = responseFolders.data;
     const foundBreadCrumbIndex = breadCrumb.value.path.findIndex((item) => item.id === parentId);
     if (foundBreadCrumbIndex !== -1) {
         breadCrumb.value = {
@@ -119,8 +117,6 @@ const updateMainView = async (parentId: string, parentType: string, name = '', r
             path: [ ...breadCrumb.value.path , { name,  id: parentId }],
         };
     }
-
-
 }
 
 const setRoot = async ({ val, type, name}: {val: string,  type: GirderModelType, name: string}) => {
@@ -187,10 +183,16 @@ const getData = async () => {
 }
 getData();
 
-watch(folderOffset, () => updateMainView(currentParentId.value, currnetParentType.value));
+const emit = defineEmits<{
+    (e: "close"): void;
+
+}>();
+
+
+watch(folderOffset, () => updateFolders(currentParentId.value, currnetParentType.value));
+watch(itemOffset, () => updateItems(currentParentId.value));
 
 const updateOffset = (type: 'folder' | 'item', value: number) => {
-  console.log(value);
   if (value < 0 || Number.isNaN(value)) {
     folderOffset.value = 0;
     return;
@@ -212,10 +214,22 @@ const updateOffset = (type: 'folder' | 'item', value: number) => {
   }
 }
 
-const convertInputNumber = (e: Event) => {
-  const val = (e.target as HTMLInputElement).value;
-  return parseInt(val);
+const selecting = (item: GirderModel, type: 'folder' | 'file') => {
+  if (type === props.type) {
+    selected.value = {
+      name: item.name,
+      girderId: item._id,
+    };
+  }
 }
+
+const setSelectedName = (data: string) => {
+  selected.value = {
+    name: data,
+    girderId: currentParentId.value,
+  }
+}
+
 </script>
 
 <template>
@@ -241,6 +255,7 @@ const convertInputNumber = (e: Event) => {
             class="pb-2 icon close clickable"
             data-dismiss="modal"
             aria-label="Close"
+            @click="emit('close')"
           >
             <span aria-hidden="true">&times;</span>
           </svg-icon>
@@ -339,7 +354,7 @@ const convertInputNumber = (e: Event) => {
           </div>
           <div class="data-list">
             <div
-              v-if="folderCount > limit || itemCount > limit"
+              v-if="(folderCount > limit || itemCount > limit) && folderCount"
               class="folder-header"
             >
               <div class="row">
@@ -418,13 +433,13 @@ const convertInputNumber = (e: Event) => {
               </div>
             </div>
             <Collapse
-              v-show="rootFolders && rootFolders.length"
-              :when="!folderShow"
+              :when="!folderShow || !(rootFolders && rootFolders.length)"
             >
               <div
                 v-for="item in rootFolders"
                 :key="item._id"
                 class="row justify-content-left g-0 item-row"
+                @click="selecting(item, 'folder')"
               >
                 <div class="col">
                   <svg-icon
@@ -454,7 +469,7 @@ const convertInputNumber = (e: Event) => {
               </div>
             </Collapse>
             <div
-              v-if="itemCount > limit || folderCount > limit"
+              v-if="(itemCount > limit || folderCount > limit) && itemCount"
               class="item-header"
             >
               <div class="row">
@@ -513,7 +528,7 @@ const convertInputNumber = (e: Event) => {
                         :path="mdiChevronRight"
                         size="30"
                         class="icon clickable"
-                        :class="{'disabled-icon': folderOffset >= Math.ceil(itemCount/limit)-1}"
+                        :class="{'disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
                         @click="updateOffset('item', itemOffset + 1)"
                       />
                     </div>
@@ -534,13 +549,13 @@ const convertInputNumber = (e: Event) => {
             </div>
 
             <Collapse
-              v-show="rootItems && rootItems.length"
-              :when="!itemShow"
+              :when="!itemShow || !(rootItems && rootItems.length)"
             >
               <div
                 v-for="item in rootItems"
                 :key="item._id"
                 class="row justify-content-left g-0  item-row"
+                @click="selecting(item, 'file')"
               >
                 <div class="col">
                   <svg-icon
@@ -571,10 +586,34 @@ const convertInputNumber = (e: Event) => {
             </Collapse>
           </div>
         </div>
+        <div
+          v-if="['directory', 'file'].includes(type)"
+          class="mx-5 selection mb-2"
+        >
+          <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
+          <input
+            v-if="type === 'directory'"
+            :value="selected ? selected.name : 'Select a folder'"
+            class="form-control"
+            type="text"
+            placeholder="Select a folder…"
+            readonly
+          >
+          <input
+            v-if="type === 'file'"
+            :value="selected && selected.name"
+            class="form-control"
+            type="text"
+            :placeholder="output === undefined ? 'Select an item' : output"
+            :disabled="output === undefined"
+            @input="setSelectedName(convertInputString($event))"
+          >        
+        </div>
         <div class="modal-footer">
           <button
             type="button"
             class="btn btn-secondary"
+            @click="emit('close')"
           >
             Cancel
           </button>
@@ -625,6 +664,7 @@ const convertInputNumber = (e: Event) => {
 }
 .item-row:hover {
   background-color: #fbfbf7;
+  cursor: pointer;
 }
 .row-info {
   color: gray;
@@ -640,6 +680,7 @@ const convertInputNumber = (e: Event) => {
   max-height: 70vh;
   max-width: 800px;
   overflow-y: auto;
+  overflow-x: hidden;
   border-bottom: 1px solid lightgray;
 
 }
