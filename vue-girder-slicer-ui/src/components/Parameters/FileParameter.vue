@@ -6,6 +6,7 @@ import widget from '../../parser/widget';
 import cloneDeep from 'lodash';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
+import DataBrowser from '../FileBrowser/DataBrowser.vue';
 
 const props = defineProps({
     data: {
@@ -46,8 +47,18 @@ const validate = (e: InputEvent) => {
     let value = (e.target as HTMLInputElement).value as XMLBaseValue;
     update.value = value;
     currentValue.value = value;
-    console.log(update);
     emit('change', update);
+}
+
+const showBrowser = ref(false);
+
+const acceptBrowser = ({name, girderId}: {name: string, girderId: string}) => {
+  console.log(name);
+  showBrowser.value = false;
+  const update = { ...props.data };
+  update.value = { name, girderId} as XMLBaseValue;
+  currentValue.value = name;
+  emit('change', update);
 }
 
 </script>
@@ -63,12 +74,12 @@ const validate = (e: InputEvent) => {
         disabled
         :value="currentValue"
         :placeholder="placeHolder"
-        @change="validate($event)"
       >
       <span class="input-group-append">
         <button
           type="button"
           class="btn select-btn"
+          @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
@@ -82,6 +93,7 @@ const validate = (e: InputEvent) => {
           v-if="!batchload"
           type="button"
           class="btn select-btn-multi"
+          @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
@@ -104,6 +116,12 @@ const validate = (e: InputEvent) => {
       v-if="data.description"
       class="form-text text-muted"
     >{{ data.description }}</small>
+    <data-browser
+      v-if="showBrowser"
+      :output="data.channel === 'output' || data.type === 'new-file'"
+      @close="showBrowser=false"
+      @submit="acceptBrowser($event)"
+    />
   </div>
 </template>
 

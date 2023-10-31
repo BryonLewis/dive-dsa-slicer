@@ -26,7 +26,8 @@ export type ParamSlicerType = 'integer' | 'float' | 'double' | 'boolean' | 'stri
     | 'file'
     | 'item'
     | 'directory'
-    | 'multi';
+    | 'multi'
+    | 'new-file';
 
 export type XMLBaseValue = (number | string | number[] | string[] | boolean);
 

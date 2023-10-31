@@ -4,6 +4,7 @@ import { Ref, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
 import DataBrowser from './components/FileBrowser/DataBrowser.vue';
+import { GirderModel } from './girderTypes';
 
 
 const selected: Ref<string | null> = ref(null);
@@ -12,6 +13,14 @@ const select = (id: string) => {
   selected.value = id;
 }
 const showBrowser = ref(false);
+
+const validate = (e: GirderModel) => {
+  if (e.name.includes('jpg')) {
+    return  { valid: true}
+  } else {
+    return {valid: false, msg: 'Item needs to be of type jpg'}
+  }
+};
 </script>
 
 <template>
@@ -29,7 +38,7 @@ const showBrowser = ref(false);
 
     <data-browser
       v-if="showBrowser"
-      output="defaultName"
+      :validation="validate"
       @close="showBrowser=false"
     />
   </div>

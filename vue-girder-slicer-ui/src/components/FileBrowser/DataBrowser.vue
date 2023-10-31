@@ -15,7 +15,7 @@ interface Props {
   type?: 'file' | 'directory' | 'image' | 'new-file'
   multiple?: boolean;
   limit?: number,
-  output?: string,
+  output?: boolean,
   validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -24,9 +24,38 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'file',
   limit: 100,
   multiple: false,
+  output: undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validation: (_id: GirderModel) => ({ valid:true }),
 });
+
+const emit = defineEmits<{
+    (e: "close"): void;
+    (e: "submit", {girderId, name}: {girderId: string, name: string}): void;
+}>();
+
+const errorMsg = ref('');
+
+const submit = async () => {
+  if (selectedModel.value === null) {
+    selectedModel.value = await girderRest.get(`folder/${currentParentId.value}`);
+  }
+  if (selected.value !== null && selectedModel.value !== null) 
+  {
+    errorMsg.value = '';
+    const result = props.validation(selectedModel.value);
+    if (result.valid) {
+      emit('submit', 
+        {
+          girderId: selected.value.girderId,
+          name: selected.value.name,
+        }
+      );
+    } else if (result.msg) {
+      errorMsg.value = result.msg;
+    }
+  }
+}
 
 const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
 
@@ -54,6 +83,7 @@ const currentParentId = ref('');
 const currnetParentType = ref('user');
 
 const selected: Ref<null | {name: string, girderId: string}> = ref(null);
+const selectedModel: Ref<null | GirderModel> = ref(null);
 
 
 const updateFolders = async (parentId: string, parentType: string) => {
@@ -183,10 +213,6 @@ const getData = async () => {
 }
 getData();
 
-const emit = defineEmits<{
-    (e: "close"): void;
-
-}>();
 
 
 watch(folderOffset, () => updateFolders(currentParentId.value, currnetParentType.value));
@@ -220,6 +246,7 @@ const selecting = (item: GirderModel, type: 'folder' | 'file') => {
       name: item.name,
       girderId: item._id,
     };
+    selectedModel.value = item;
   }
 }
 
@@ -229,6 +256,7 @@ const setSelectedName = (data: string) => {
     girderId: currentParentId.value,
   }
 }
+
 
 </script>
 
@@ -282,7 +310,7 @@ const setSelectedName = (data: string) => {
                 >
                   <span
                     v-if="index === 0"
-                    @click="updateMainView(item.id, breadCrumb.type, item.name, true)"
+                    @click="updateMainView(item.id, breadCrumb.type, item.name, true);"
                   >
                     <svg-icon
                       type="mdi"
@@ -604,10 +632,16 @@ const setSelectedName = (data: string) => {
             :value="selected && selected.name"
             class="form-control"
             type="text"
-            :placeholder="output === undefined ? 'Select an item' : output"
-            :disabled="output === undefined"
+            :placeholder="!output ? 'Select an item' : 'Output name:'"
+            :disabled="!output"
             @input="setSelectedName(convertInputString($event))"
           >        
+        </div>
+        <div
+          v-if="errorMsg"
+          class="mx-5 error-msg"
+        >
+          {{ errorMsg }}
         </div>
         <div class="modal-footer">
           <button
@@ -621,6 +655,8 @@ const setSelectedName = (data: string) => {
             type="button"
             class="btn btn-primary"
             data-dismiss="modal"
+            :disabled="selected === null || !!errorMsg"
+            @click="submit"
           >
             Confirm
           </button>
@@ -697,6 +733,11 @@ const setSelectedName = (data: string) => {
   border-right: 2px solid lightgray;
   border-top: 1px solid lightgray;
 
+}
+
+.error-msg {
+  font-weight: bold;
+  color:red;
 }
 
 </style>
