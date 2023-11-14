@@ -10,7 +10,7 @@ import DataBrowser from '../FileBrowser/DataBrowser.vue';
 
 const props = defineProps({
     data: {
-        type: Object as PropType<XMLParameters>,
+        type: Object as PropType<XMLParameters & {error?: string}>,
         required: true,
     },
 })
@@ -18,6 +18,7 @@ const currentValue: Ref<string |  null> = ref(null);
 const placeHolder = ref('Choose a file...');
 const batchload = ref(false);
 
+const error = computed(() => props.data.error)
 onMounted(() => {
   if (props.data.slicerType === 'file') {
     placeHolder.value = !props.data.multiple ?  'Choose a file...' : 'Choose multiple files...'
@@ -65,7 +66,10 @@ const acceptBrowser = ({name, girderId}: {name: string, girderId: string}) => {
 
 <template>
   <div>
-    <label for="parameterInput">{{ data.title }}</label>
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <div class="input-group">
       <input
         id="parameterInput"

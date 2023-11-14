@@ -52,6 +52,7 @@ export interface XMLParameters {
   multiple?: boolean;
   datalist?: boolean;
   shapes?: string | undefined;
+  error?: string | undefined; // Used to display errors
 }
 
 export interface XMLGroups {

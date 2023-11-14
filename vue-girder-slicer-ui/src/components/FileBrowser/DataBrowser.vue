@@ -80,7 +80,7 @@ const itemOffset: Ref<number> = ref(0);
 const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}> = ref({type: 'user', path:[]})
 
 const currentParentId = ref('');
-const currnetParentType = ref('user');
+const currentParentType = ref('user');
 
 const selected: Ref<null | {name: string, girderId: string, parentId?: string}> = ref(null);
 const selectedModel: Ref<null | GirderModel> = ref(null);
@@ -133,7 +133,7 @@ const updateMainView = async (parentId: string, parentType: string, name = '', r
   }
 
   currentParentId.value = parentId;
-  currnetParentType.value = parentType;
+  currentParentType.value = parentType;
   if (resetShow) {
     itemShow.value = false;
     folderShow.value = false;
@@ -224,7 +224,7 @@ getData();
 
 
 
-watch(folderOffset, () => updateFolders(currentParentId.value, currnetParentType.value));
+watch(folderOffset, () => updateFolders(currentParentId.value, currentParentType.value));
 watch(itemOffset, () => updateItems(currentParentId.value));
 
 const updateOffset = (type: 'folder' | 'item', value: number) => {
@@ -673,7 +673,7 @@ const recalculatedSelected = () => {
           v-if="['directory', 'file'].includes(type)"
           class="mx-5 selection mb-2"
         >
-          <div v-if="!multi && !output">
+          <div v-if="!multi">
             <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
             <input
               v-if="type === 'directory'"
@@ -689,7 +689,7 @@ const recalculatedSelected = () => {
               class="form-control"
               type="text"
               :placeholder="!output ? 'Select an item' : 'Output name:'"
-              :disabled="!output"
+              :disabled="!output || currentParentType !== 'folder'"
               @input="setSelectedName(convertInputString($event))"
             >        
           </div>

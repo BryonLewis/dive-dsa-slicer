@@ -12,6 +12,9 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits<{
+    (e: "change", data: XMLParameters[]): void;
+}>();
 const baseParmaeters = ['string', 'number', 'vector', 'string-vector', 'number-vector']
 const paramCopy = ref(props.parameters);
 onMounted(() => {
@@ -20,6 +23,7 @@ onMounted(() => {
 
 const updateParameter = (data: XMLParameters, index: number) => {
   paramCopy.value.splice(index, 1, data);
+  emit('change', paramCopy.value);
 }
 </script>
 

@@ -4,7 +4,7 @@ import { parse } from '../parser/index'
 import GirderControlsPanel from './GirderSlicerPanel.vue';
 import RestClient from '../api/girderRest';
 import { useGirderSlicerApi } from '../api/girderSlicerApi';
-import type { XMLSpecification } from '../parser/parserTypes';
+import type { XMLPanel, XMLParameters, XMLSpecification } from '../parser/parserTypes';
 
 interface Props {
   apiUrl?: string;
@@ -33,6 +33,19 @@ watch(() => props.taskId, () => {
   getData();
 })
 
+const updateParmaeters = (e: XMLParameters[], index: number) => {
+  if (result.value) {
+    result.value.panels[index].groups[0].parameters = e;
+  }
+}
+
+const runTask = () => {
+  // First we need to validate the task has all parameters required.
+  if (result.value) {
+    slicerApi.validateParams(result.value)
+  }
+}
+
 </script>
 
 <template>
@@ -41,9 +54,22 @@ watch(() => props.taskId, () => {
     class="card"
   >
     <div class="card-body">
-      <h5 class="card-title">
-        {{ result.title }}
-      </h5>
+      <div class="card-title row justify-content-left g-0">
+        <div class="col-10">
+          <h5>
+            {{ result.title }}
+          </h5>
+        </div>
+        <div class="col-auto ">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="runTask()"
+          >
+            Run
+          </button>
+        </div>
+      </div>
       <p class="card-text">
         {{ result.description }}
       </p>
@@ -51,6 +77,7 @@ watch(() => props.taskId, () => {
         v-for="(panel, index) in result.panels"
         :key="`panel_${index}`"
         :panel="panel"
+        @change="updateParmaeters($event, index)"
       />
     </div>
   </div>

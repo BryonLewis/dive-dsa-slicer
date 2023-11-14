@@ -11,6 +11,7 @@ const props = defineProps({
     },
 })
 
+const error = computed(() => props.data.error)
 const currentValue: Ref<XMLBaseValue> = ref(0);
 onMounted(() => {
     currentValue.value = props.data.value || props.data.defaultValue;
@@ -34,7 +35,10 @@ const validate = (e: XMLBaseValue) => {
 
 <template>
   <div class="form-check">
-    <label class="form-check-label">{{ data.title }}</label>
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <input
       class="form-check-input"
       type="checkbox"

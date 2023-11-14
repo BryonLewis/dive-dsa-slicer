@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
 const props = defineProps({
     title: {
@@ -20,12 +20,17 @@ const props = defineProps({
         default: '',
     }
 })
+const error = computed(() => props.data.error)
+
 
 </script>
 
 <template>
   <div class="form-group">
-    <label for="parameterInput">{{ title }}</label>
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <input
       id="parameterInput"
       class="form-control"

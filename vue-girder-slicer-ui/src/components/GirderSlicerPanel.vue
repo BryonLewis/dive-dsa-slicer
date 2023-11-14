@@ -2,7 +2,7 @@
 import { PropType, ref } from 'vue'
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
-import type { XMLPanel } from '../parser/parserTypes';
+import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
 import GirderSlicerParameter from './GirderSlicerParameter.vue';
 const props = defineProps({
   panel: {
@@ -10,8 +10,15 @@ const props = defineProps({
     required: true,
   },
 })
+const emit = defineEmits<{
+    (e: "change", data: XMLParameters[]): void;
+}>();
 
 const collapsed = ref(!props.panel.advanced)
+
+const updateParams = (e: XMLParameters[]) =>{
+  emit('change', e);
+}
 </script>
 
 <template>
@@ -41,7 +48,10 @@ const collapsed = ref(!props.panel.advanced)
           v-if="!collapsed"
           class="row justify-content-left g-0"
         >
-          <girder-slicer-parameter :parameters="panel.groups[0].parameters" />
+          <girder-slicer-parameter
+            :parameters="panel.groups[0].parameters"
+            @change="updateParams($event)"
+          />
         </div>
       </Transition>
     </div>

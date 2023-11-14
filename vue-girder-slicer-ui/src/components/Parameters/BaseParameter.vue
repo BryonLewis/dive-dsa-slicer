@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, Ref, onMounted, ref } from 'vue'
+import { PropType, Ref, onMounted, ref, computed } from 'vue'
 import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
@@ -9,6 +9,7 @@ const props = defineProps({
     },
 })
 
+const error = computed(() => props.data.error)
 const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
 const numbers = ref(['integer', 'float', 'double']);
 const currentValue: Ref<XMLBaseValue> = ref(0);
@@ -46,7 +47,10 @@ const validate = (e: InputEvent) => {
 
 <template>
   <div>
-    <label for="parameterInput">{{ data.title }}</label>
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <input
       v-if="numbers.includes(data.slicerType) || data.slicerType === 'string'"
       id="parameterInput"

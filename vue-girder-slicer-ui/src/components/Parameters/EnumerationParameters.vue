@@ -9,6 +9,7 @@ const props = defineProps({
     },
 })
 
+const error = computed(() => props.data.error)
 const currentValue: Ref<XMLBaseValue> = ref(0);
 onMounted(() => {
     if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
@@ -41,7 +42,10 @@ const validate = (e: Event) => {
 
 <template>
   <div>
-    <label for="parameterInput">{{ data.title }}</label>
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <select
       :value="data.value"
       @change="validate($event)"

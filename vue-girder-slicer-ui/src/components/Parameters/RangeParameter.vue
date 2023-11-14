@@ -26,6 +26,7 @@ const props = defineProps({
     }
 })
 
+const error = computed(() => props.data.error)
 </script>
 
 <template>
