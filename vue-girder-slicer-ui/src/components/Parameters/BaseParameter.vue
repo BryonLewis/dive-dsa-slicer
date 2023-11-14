@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
+import { PropType, Ref, onMounted, ref } from 'vue'
+import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
-import widget from '../../parser/widget';
-import cloneDeep from 'lodash';
 const props = defineProps({
     data: {
         type: Object as PropType<XMLParameters>,
@@ -11,7 +9,6 @@ const props = defineProps({
     },
 })
 
-const convertedType = computed(() => (props.data.type));
 const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
 const numbers = ref(['integer', 'float', 'double']);
 const currentValue: Ref<XMLBaseValue> = ref(0);

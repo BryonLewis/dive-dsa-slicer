@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, computed, ref } from 'vue'
+import { PropType, computed } from 'vue'
 import { GirderModel, GirderModelType} from '../../girderTypes';
 
 const props = defineProps({

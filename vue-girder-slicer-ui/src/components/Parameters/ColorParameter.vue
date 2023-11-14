@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue'
+import { PropType } from 'vue'
 import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
 const props = defineProps({
     title: {

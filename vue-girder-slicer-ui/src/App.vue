@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 import { Ref, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
@@ -39,6 +38,8 @@ const validate = (e: GirderModel) => {
     <data-browser
       v-if="showBrowser"
       :validation="validate"
+      type="file"
+      multi
       @close="showBrowser=false"
     />
   </div>

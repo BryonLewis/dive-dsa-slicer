@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Ref, onMounted, ref, watch } from 'vue'
+import { Ref, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
 import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDoubleRight, mdiChevronDown, mdiChevronLeft, mdiChevronRight, mdiChevronUp,
 mdiClose, mdiEarth, mdiFile, mdiFolder, mdiLock, mdiSitemap } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { Collapse } from 'vue-collapsed'
-import { convertInputNumber, convertInputString, countFormatter, sizeFormatter } from './utils'
+import { convertInputNumber, convertInputString, countFormatter, isValidRegex, sizeFormatter } from './utils'
 
 import RootSelection from './RootSelection.vue';
 interface Props {
@@ -82,7 +82,7 @@ const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}
 const currentParentId = ref('');
 const currnetParentType = ref('user');
 
-const selected: Ref<null | {name: string, girderId: string}> = ref(null);
+const selected: Ref<null | {name: string, girderId: string, parentId?: string}> = ref(null);
 const selectedModel: Ref<null | GirderModel> = ref(null);
 
 
@@ -123,6 +123,15 @@ const updateItems = async (parentId: string) => {
 
 
 const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
+  if (props.type === 'directory' && parentType === 'folder') {
+    selected.value = {
+      name,
+      girderId: parentId,
+    };
+  } else if (parentType !== 'folder') {
+    selected.value = null;
+  }
+
   currentParentId.value = parentId;
   currnetParentType.value = parentType;
   if (resetShow) {
@@ -245,17 +254,61 @@ const selecting = (item: GirderModel, type: 'folder' | 'file') => {
     selected.value = {
       name: item.name,
       girderId: item._id,
+      parentId: type === 'file' ? item.parentId || undefined : undefined, 
     };
     selectedModel.value = item;
   }
 }
 
+const selectedItems: Ref<Record<string, boolean>> = ref({});
+
 const setSelectedName = (data: string) => {
   selected.value = {
     name: data,
     girderId: currentParentId.value,
+  };
+  recalculatedSelected();
+}
+
+const setRegularExpression = (data: string) => {
+  if (isValidRegex(data)) {
+    selected.value = {
+      name: data,
+      girderId: currentParentId.value,
+    };
+    recalculatedSelected();
+    errorMsg.value = '';
+  } else {
+    errorMsg.value = 'Specify a valid Regular Expression';
   }
 }
+
+const recalculatedSelected = () => {
+  selectedItems.value = {};
+  let reg: RegExp;
+  if (selected.value?.name) {
+    reg = new RegExp(selected.value.name);
+  }
+    if (props.type !== 'directory' && rootItems.value) {
+      rootItems.value.forEach((item) => {
+        if (!props.multi && item.name === selected.value?.name) {
+          selectedItems.value[item.name] = true;
+        } else if (reg && reg.test(item.name)) {
+          selectedItems.value[item.name] = true;
+        }
+      })
+    }
+    if (props.type === 'directory' && rootFolders.value) {
+      rootFolders.value.forEach((item) => {
+        if (!props.multi && item.name === selected.value?.name) {
+          selectedItems.value[item.name] = true;
+        } else if (reg && reg.test(item.name)) {
+          selectedItems.value[item.name] = true;
+        }
+      })
+    }
+}
+
 
 
 </script>
@@ -466,6 +519,7 @@ const setSelectedName = (data: string) => {
               <div
                 v-for="item in rootFolders"
                 :key="item._id"
+                :class="{'selected-items' :selectedItems[item.name]}"
                 class="row justify-content-left g-0 item-row"
                 @click="selecting(item, 'folder')"
               >
@@ -583,6 +637,7 @@ const setSelectedName = (data: string) => {
                 v-for="item in rootItems"
                 :key="item._id"
                 class="row justify-content-left g-0  item-row"
+                :class="{'selected-items' :selectedItems[item.name]}"
                 @click="selecting(item, 'file')"
               >
                 <div class="col">
@@ -618,24 +673,36 @@ const setSelectedName = (data: string) => {
           v-if="['directory', 'file'].includes(type)"
           class="mx-5 selection mb-2"
         >
-          <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
-          <input
-            v-if="type === 'directory'"
-            :value="selected ? selected.name : 'Select a folder'"
-            class="form-control"
-            type="text"
-            placeholder="Select a folder…"
-            readonly
-          >
-          <input
-            v-if="type === 'file'"
-            :value="selected && selected.name"
-            class="form-control"
-            type="text"
-            :placeholder="!output ? 'Select an item' : 'Output name:'"
-            :disabled="!output"
-            @input="setSelectedName(convertInputString($event))"
-          >        
+          <div v-if="!multi && !output">
+            <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
+            <input
+              v-if="type === 'directory'"
+              :value="selected ? selected.name : 'Select a folder'"
+              class="form-control"
+              type="text"
+              placeholder="Select a folder…"
+              readonly
+            >
+            <input
+              v-if="type === 'file'"
+              :value="selected && selected.name"
+              class="form-control"
+              type="text"
+              :placeholder="!output ? 'Select an item' : 'Output name:'"
+              :disabled="!output"
+              @input="setSelectedName(convertInputString($event))"
+            >        
+          </div>
+          <div v-else>
+            <span> {{ type === 'directory' ? 'Folder' : 'Item' }} Filter (Regular Expression)</span>
+            <input
+              :value="selected && selected.name"
+              class="form-control"
+              type="text"
+              placeholder="Regular Expression"
+              @input="setRegularExpression(convertInputString($event))"
+            >        
+          </div>
         </div>
         <div
           v-if="errorMsg"
@@ -655,7 +722,7 @@ const setSelectedName = (data: string) => {
             type="button"
             class="btn btn-primary"
             data-dismiss="modal"
-            :disabled="selected === null || !!errorMsg"
+            :disabled="selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)"
             @click="submit"
           >
             Confirm
@@ -739,5 +806,10 @@ const setSelectedName = (data: string) => {
   font-weight: bold;
   color:red;
 }
+
+.selected-items {
+  background-color: #fbfbf7;
+}
+
 
 </style>

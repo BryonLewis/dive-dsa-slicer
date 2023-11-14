@@ -24,12 +24,24 @@ const convertInputNumber = (e: Event) => {
     return parseInt(val);
   }
 
-  const convertInputString= (e: Event) => {
-    const val = (e.target as HTMLInputElement).value;
-    return val as string;
+const convertInputString= (e: Event) => {
+  const val = (e.target as HTMLInputElement).value;
+  return val as string;
+}
+
+function isValidRegex(pattern) {
+  try {
+    new RegExp(pattern);
+    return true;
+  } catch (error) {
+    // The RegExp constructor throws a SyntaxError if the pattern is invalid.
+    return false;
   }
+}
+
 export {
     sizeFormatter,
+    isValidRegex,
     countFormatter,
     convertInputNumber,
     convertInputString,
