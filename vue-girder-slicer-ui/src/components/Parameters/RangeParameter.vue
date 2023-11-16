@@ -1,46 +1,60 @@
 <script setup lang="ts">
-import { PropType } from 'vue'
-import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
+import { PropType, Ref, computed, onMounted, ref } from 'vue'
+import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
-    title: {
-        type: String,
+    data: {
+        type: Object as PropType<XMLParameters & {error?: string}>,
+        required: true,
     },
-    type: {
-        type: Object as PropType<ParamSlicerType>,
-    },
-    id: {
-        type: String,
-    },
-    defaultValue: {
-        type: Object as PropType<XMLBaseValue>
-    },
-    description: {
-        type: String,
-        required: false,
-        default: '',
-    },
-    constraints: {
-        type: Object as PropType<XMLParameters['constraints']>,
-        required: false,
+})
+
+const emit = defineEmits<{
+    (e: "change", data: XMLParameters): void;
+}>();
+
+
+const currentValue: Ref<XMLBaseValue> = ref(0);
+onMounted(() => {
+    if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
+        currentValue.value = props.data.defaultValue.join(',') || props.data.value;
+    } else {
+        currentValue.value = props.data.defaultValue || props.data.value;
     }
 })
+
+const validate = (e: Event) => {
+    // Validation Logic for different types
+    const update = { ...props.data };
+    let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
+
+    if (props.data.slicerType === 'number-enumeration') {
+        value = parseFloat(value);
+    }
+    update.value = value;
+    currentValue.value = value;
+    emit('change', update);
+}
+
 
 const error = computed(() => props.data.error)
 </script>
 
 <template>
   <div class="form-group">
-    <label for="parameterInput">{{ title }}</label>
-
+    <label for="parameterInput">{{ data.title }} <span
+      v-if="error"
+      class="text-danger"
+    > {{ error }}</span></label>
     <input 
-      v-if="constraints && typeof constraints.min === 'number' && typeof constraints.max === 'number'"
+      v-if="data.constraints && typeof data.constraints.min === 'number' && typeof data.constraints.max === 'number'"
       id="parameterInput"
       class="form-control"
       type="range"
-      :min="constraints.min || 0"
-      :max="constraints.max || 1"
-      :value="defaultValue || constraints.min || 0"
+      :min="data.constraints.min || 0"
+      :max="data.constraints.max || 1"
+      :value="currentValue"
+      @change="validate($event)"
     >
     <input 
       v-else
@@ -49,13 +63,14 @@ const error = computed(() => props.data.error)
       type="range"
       min="0"
       max="1"
-      :value="defaultValue || 0"
+      :value="currentValue"
+      @change="validate($event)"
     >
 
     <small
-      v-if="description"
+      v-if="data.description"
       class="form-text text-muted"
-    >{{ description }}</small>
+    >{{ data.description }}</small>
   </div>
 </template>
 

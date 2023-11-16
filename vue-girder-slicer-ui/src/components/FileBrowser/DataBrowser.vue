@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
     (e: "close"): void;
-    (e: "submit", {girderId, name}: {girderId: string, name: string}): void;
+    (e: "submit", {girderId, name}: {girderId: string, name: string, parentId: string}): void;
 }>();
 
 const errorMsg = ref('');
@@ -49,6 +49,7 @@ const submit = async () => {
         {
           girderId: selected.value.girderId,
           name: selected.value.name,
+          parentId: currentParentId.value,
         }
       );
     } else if (result.msg) {
@@ -266,6 +267,7 @@ const setSelectedName = (data: string) => {
   selected.value = {
     name: data,
     girderId: currentParentId.value,
+    parentId: currentParentId.value
   };
   recalculatedSelected();
 }
@@ -274,7 +276,8 @@ const setRegularExpression = (data: string) => {
   if (isValidRegex(data)) {
     selected.value = {
       name: data,
-      girderId: currentParentId.value,
+      girderId: data,
+      parentId: currentParentId.value,
     };
     recalculatedSelected();
     errorMsg.value = '';

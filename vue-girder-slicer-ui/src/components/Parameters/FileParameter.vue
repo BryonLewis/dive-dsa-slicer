@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
-import widget from '../../parser/widget';
-import cloneDeep from 'lodash';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import DataBrowser from '../FileBrowser/DataBrowser.vue';
@@ -42,22 +40,13 @@ const emit = defineEmits<{
 }>();
 
 
-const validate = (e: InputEvent) => {
-    // Validation Logic for different types
-    const update = { ...props.data };
-    let value = (e.target as HTMLInputElement).value as XMLBaseValue;
-    update.value = value;
-    currentValue.value = value;
-    emit('change', update);
-}
-
 const showBrowser = ref(false);
 
-const acceptBrowser = ({name, girderId}: {name: string, girderId: string}) => {
+const acceptBrowser = ({name, girderId, parentId}: {name: string, girderId: string, parentId: string}) => {
   console.log(name);
   showBrowser.value = false;
   const update = { ...props.data };
-  update.value = { name, girderId} as XMLBaseValue;
+  update.fileValue = { name, girderId, parentId };
   currentValue.value = name;
   emit('change', update);
 }

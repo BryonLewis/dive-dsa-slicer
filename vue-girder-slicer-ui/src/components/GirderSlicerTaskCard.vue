@@ -4,7 +4,7 @@ import { parse } from '../parser/index'
 import GirderControlsPanel from './GirderSlicerPanel.vue';
 import RestClient from '../api/girderRest';
 import { useGirderSlicerApi } from '../api/girderSlicerApi';
-import type { XMLPanel, XMLParameters, XMLSpecification } from '../parser/parserTypes';
+import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
 
 interface Props {
   apiUrl?: string;
@@ -41,8 +41,8 @@ const updateParmaeters = (e: XMLParameters[], index: number) => {
 
 const runTask = () => {
   // First we need to validate the task has all parameters required.
-  if (result.value) {
-    slicerApi.validateParams(result.value)
+  if (result.value && props.taskId) {
+    slicerApi.runTask(result.value, props.taskId)
   }
 }
 

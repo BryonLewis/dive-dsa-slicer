@@ -43,6 +43,7 @@ export interface XMLParameters {
   constraints?: {min?: XMLBaseValue; max?: XMLBaseValue; step?: XMLBaseValue};
   defaultValue?: XMLBaseValue;
   // Extra
+  fileValue?: {girderId: string, name: string, parentId: string}; // Added to handle files
   required?: boolean;
   extensions?: string | undefined;
   reference?: string | undefined;

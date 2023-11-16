@@ -9,12 +9,13 @@ import { useGirderSlicerApi } from '../api/girderSlicerApi';
 
 interface Props {
   apiUrl?: string;
-  filter?: string
+  filter?: string;
 }
 
 type TaskHierarchy =  Record<string, {tag: string, tasks:{ imageBase:string, imageTag: string; _id: string; name:string; description: string}[]}[]>;
 const props = withDefaults(defineProps<Props>(), {
   apiUrl: 'api/v1',
+  filter: ''
 });
 
 onMounted(() => {
@@ -50,7 +51,14 @@ const getData = async () => {
   })
   results.value = taskHierarchy;
 }
-getData();
+const emit = defineEmits<{
+    (e: "selected", id: string): void;
+}>();
+
+const select = (id: string) => {
+  emit('selected', id);
+}
+onMounted(() => getData());
 
 </script>
 
@@ -79,7 +87,7 @@ getData();
             v-for="task in item[0].tasks"
             :key="task._id"
             class="dropdown-item"
-            @click="$emit('selected', task._id)"
+            @click="select(task._id)"
           >
             {{ task.name }}
           </li>
@@ -99,7 +107,7 @@ getData();
                 v-for="task in tag.tasks"
                 :key="task._id"
                 class="dropdown-item"
-                @click="$emit('selected', task._id)"
+                @click="select(task._id)"
               >
                 {{ task.name }}
               </li>

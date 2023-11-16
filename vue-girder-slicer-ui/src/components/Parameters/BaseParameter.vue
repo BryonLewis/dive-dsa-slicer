@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, Ref, onMounted, ref, computed } from 'vue'
+import { PropType, Ref, computed, onMounted, ref } from 'vue'
 import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
@@ -26,7 +26,7 @@ const emit = defineEmits<{
 }>();
 
 
-const validate = (e: InputEvent) => {
+const validate = (e: Event) => {
     // Validation Logic for different types
     const update = { ...props.data };
     let value = (e.target as HTMLInputElement).value as XMLBaseValue;

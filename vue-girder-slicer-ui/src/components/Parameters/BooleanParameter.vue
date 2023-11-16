@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
-import widget from '../../parser/widget';
-import cloneDeep from 'lodash';
 const props = defineProps({
     data: {
         type: Object as PropType<XMLParameters>,

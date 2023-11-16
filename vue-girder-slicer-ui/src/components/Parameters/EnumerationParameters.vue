@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { ParamSlicerType, XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
     data: {
@@ -34,7 +34,6 @@ const validate = (e: Event) => {
     }
     update.value = value;
     currentValue.value = value;
-    console.log(update);
     emit('change', update);
 }
 

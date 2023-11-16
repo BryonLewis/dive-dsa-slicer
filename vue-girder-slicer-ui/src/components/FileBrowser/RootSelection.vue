@@ -3,10 +3,22 @@ import { PropType, computed } from 'vue'
 import { GirderModel, GirderModelType} from '../../girderTypes';
 
 const props = defineProps({
-  value: String,
-  home: String,
-  users: Array as PropType<GirderModel[]>,
-  collections: Array as PropType<GirderModel[]>,
+  value: {
+    type: String,
+    required: true,
+  },
+  home: {
+    type: String,
+    required: true,
+  },
+  users: {
+    type: Array as PropType<GirderModel[]>,
+    required: true,
+  },
+  collections: {
+    type: Array as PropType<GirderModel[]>,
+    required: true,
+  }
 })
 
 const emit = defineEmits<{
