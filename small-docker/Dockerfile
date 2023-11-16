@@ -40,4 +40,4 @@ RUN pip install girder-slicer-cli-web
 COPY . $PWD
 COPY --from=ffmpeg-builder /tmp/ffextracted/ffmpeg /tmp/ffextracted/ffprobe /usr/local/bin/
 
-ENTRYPOINT ["python", "./cli_list.py"]
+ENTRYPOINT ["python", "cli_list.py"]
