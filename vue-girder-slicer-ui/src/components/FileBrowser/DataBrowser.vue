@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref, watch } from 'vue'
+import { onMounted, Ref, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
 import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDoubleRight, mdiChevronDown, mdiChevronLeft, mdiChevronRight, mdiChevronUp,
@@ -9,6 +9,7 @@ import { Collapse } from 'vue-collapsed'
 import { convertInputNumber, convertInputString, countFormatter, isValidRegex, sizeFormatter } from './utils'
 
 import RootSelection from './RootSelection.vue';
+import { XMLParameters } from '../../parser/parserTypes';
 interface Props {
   apiUrl?: string;
   multi?: boolean;
@@ -17,6 +18,9 @@ interface Props {
   limit?: number,
   output?: boolean,
   validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
+  name?: string;
+  parentId?: string;
+  girderId?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   apiUrl: 'api/v1',
@@ -25,13 +29,15 @@ const props = withDefaults(defineProps<Props>(), {
   limit: 100,
   multiple: false,
   output: undefined,
+  parentId: undefined,
+  girderId: undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validation: (_id: GirderModel) => ({ valid:true }),
 });
 
 const emit = defineEmits<{
     (e: "close"): void;
-    (e: "submit", {girderId, name}: {girderId: string, name: string, parentId: string}): void;
+    (e: "submit", data : XMLParameters['fileValue']): void;
 }>();
 
 const errorMsg = ref('');
@@ -50,6 +56,8 @@ const submit = async () => {
           girderId: selected.value.girderId,
           name: selected.value.name,
           parentId: currentParentId.value,
+          regExp: props.multi || props.multiple,
+          fileId: selected.value.fileId,
         }
       );
     } else if (result.msg) {
@@ -83,8 +91,40 @@ const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}
 const currentParentId = ref('');
 const currentParentType = ref('user');
 
-const selected: Ref<null | {name: string, girderId: string, parentId?: string}> = ref(null);
+const selected: Ref<null | {name: string, girderId: string, parentId?: string, fileId?: string}> = ref(null);
 const selectedModel: Ref<null | GirderModel> = ref(null);
+
+onMounted(async () => {
+  await getData();
+  if (props.parentId && props.girderId && props.name) {
+    currentParentId.value = props.parentId;
+    currentParentType.value = 'user';
+    const hierarchy = (await (girderRest.get(`folder/${props.parentId}/rootpath`))).data;
+    breadCrumb.value.type = hierarchy[0]['type'];
+    breadCrumb.value.path = [];
+    hierarchy.forEach((folder) => {
+      console.log(folder);
+      let name = folder['object']['name'];
+      if (!name && breadCrumb.value.type === 'user') {
+        name = `${folder['object']['firstName']} ${folder['object']['lastName']}`
+      } 
+      breadCrumb.value.path.push({ name, id: folder['object']['_id'] });
+      console.log(name);
+      console.log(breadCrumb.value.type);
+    });
+    const baseFolder = (await (girderRest.get(`folder/${props.parentId}`))).data;
+    console.log(baseFolder);
+    breadCrumb.value.path.push({name: baseFolder['name'], id: baseFolder['_id']});
+    updateMainView(props.parentId, 'folder', '', true);
+    selected.value = {
+      name: props.name,
+      girderId: props.girderId,
+      parentId: props.parentId,
+    }
+    recalculatedSelected();
+  }
+})
+
 
 
 const updateFolders = async (parentId: string, parentType: string) => {
@@ -221,7 +261,6 @@ const getData = async () => {
         }]
     }
 }
-getData();
 
 
 
@@ -250,7 +289,7 @@ const updateOffset = (type: 'folder' | 'item', value: number) => {
   }
 }
 
-const selecting = (item: GirderModel, type: 'folder' | 'file') => {
+const selecting = async (item: GirderModel, type: 'folder' | 'file') => {
   if (type === props.type) {
     selected.value = {
       name: item.name,
@@ -259,11 +298,17 @@ const selecting = (item: GirderModel, type: 'folder' | 'file') => {
     };
     selectedModel.value = item;
   }
+  if (type === 'file' && selected.value) {
+    const files = (await (girderRest.get(`item/${item._id}/files`))).data
+    if (files.length) {
+      selected.value.fileId = files[0]['_id'];
+    }
+  }
 }
 
 const selectedItems: Ref<Record<string, boolean>> = ref({});
 
-const setSelectedName = (data: string) => {
+const setSelectedName = async (data: string) => {
   selected.value = {
     name: data,
     girderId: currentParentId.value,

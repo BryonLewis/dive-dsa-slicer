@@ -14,6 +14,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
     (e: "change", data: XMLParameters[]): void;
+    (e:'input-selected', name: string): void;
 }>();
 const baseParmaeters = ['string', 'number', 'vector', 'string-vector', 'number-vector']
 const paramCopy = ref(props.parameters);
@@ -53,6 +54,7 @@ const updateParameter = (data: XMLParameters, index: number) => {
           v-else-if="['file', 'item', 'directory', 'image', 'multi'].includes(parameter.slicerType)"
           :data="parameter"
           @change="updateParameter($event, index)"
+          @input-selected="emit('input-selected', $event)"
         />
       </div>
     </div>

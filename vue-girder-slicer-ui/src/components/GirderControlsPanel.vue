@@ -11,7 +11,8 @@ const props = defineProps({
   },
 })
 const emit = defineEmits<{
-    (e: "change", data: XMLParameters[]): void;
+  (e: "change", data: XMLParameters[]): void;
+  (e: "input-selected", data: string): void;
 }>();
 
 const collapsed = ref(!props.panel.advanced)
@@ -51,6 +52,7 @@ const updateParams = (e: XMLParameters[]) =>{
           <girder-slicer-parameter
             :parameters="panel.groups[0].parameters"
             @change="updateParams($event)"
+            @input-selected="$emit('input-selected', $event)"
           />
         </div>
       </Transition>

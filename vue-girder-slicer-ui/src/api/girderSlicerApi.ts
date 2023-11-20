@@ -7,10 +7,11 @@ export interface SlicerImage {
     image: string;
     name: string;
     type: string;
-
 }
 
+
 const fileTypes = ['file', 'directory', 'image', 'item', 'multi', 'new-file'];
+const fileImageItem = ['file', 'image', 'item', 'new-file'];
 const useGirderSlicerApi = (girderRest: RestClient) => {
     const getSlicerList = async (filter?: string) => {
         return girderRest.get<SlicerImage[]>('slicer_cli_web/cli');
@@ -50,9 +51,15 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
                         if (parameter.type === 'new-file' || parameter.type === 'multi' || parameter.multiple) {
                             params[parameter.id] = parameter.fileValue.name;
                         } else {
-                            params[parameter.id] = parameter.fileValue.girderId;
+                            // Need an actual folder Id
+                            console.log(parameter.fileValue);
+                            if (parameter.fileValue.fileId) {
+                                params[parameter.id] = parameter.fileValue.fileId;
+                            }
                         }
-                        params[`${parameter.id}_folder`] = parameter.fileValue.parentId;
+                        if ((parameter.type === 'new-file' || parameter.type === 'multi' || parameter.multiple) || (parameter.channel === 'output' && fileImageItem.includes(parameter.type))) {
+                            params[`${parameter.id}_folder`] = parameter.fileValue.parentId;
+                        }
                     } else if (parameter.value !== undefined) {
                         params[parameter.id] = parameter.value;
                     }
@@ -61,11 +68,50 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
         });
         return params;
     }
+
+    const processInput = async (xml:XMLSpecification, name: string) => {
+        // Checks for output names that aren't set and sets them automatically to 
+        // {Input Name} - {Task Name} - {OutputName} - {Date.Time}.{extension}
+
+        //First lets get a default folder to place the system.
+        let defaultFolder = '';
+        const me = (await girderRest.get('user/me')).data;
+        if (me && me['_id']) { 
+            const results =  await girderRest.get(`/folder`, {params: {
+                parentId: me['_id'],
+                parentType: 'user',
+            }});
+            results.data.forEach((folder) => {
+                if (folder.public === false) {
+                    defaultFolder = folder['_id']
+                }
+            })
+        }
+        
+        const title = xml.title;
+        const baseName = name.replace(/\.[^/.]+$/, "")
+        xml.panels.forEach((panel) => {
+            panel.groups.forEach((group) => {
+                group.parameters.forEach((param) => {
+                    if (param.channel === 'output' && !param.value && !param.fileValue && fileImageItem.includes(param.type)) {
+                        // Set the new name output based 
+                        param.fileValue = {
+                            name: `${baseName}-${title}-${param.title}-${new Date().toISOString()}.${param.extensions}`,
+                            girderId: defaultFolder,
+                            parentId: defaultFolder,
+                            
+                        }
+                        
+                    }
+                })
+            })
+        })
+
+    }
     const runTask = async (xml:XMLSpecification, taskid: string) => {
         if (validateParams(xml)) {
             const params = convertToParams(xml);
             const url = `slicer_cli_web/cli/${taskid}/run`
-            console.log(params);
             return girderRest.post(url, null , { params });
         }
         return false;
@@ -78,6 +124,7 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
         validateParams,
         convertToParams,
         runTask,
+        processInput,
     }
 }
 

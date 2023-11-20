@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, Ref, computed, onMounted, ref } from 'vue'
+import { PropType, Ref, computed, onMounted, ref, watch } from 'vue'
 import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
@@ -37,17 +37,37 @@ onMounted(() => {
 
 const emit = defineEmits<{
     (e: "change", data: XMLParameters): void;
+    (e: "input-selected", name: string): void;
 }>();
 
 
 const showBrowser = ref(false);
 
-const acceptBrowser = ({name, girderId, parentId}: {name: string, girderId: string, parentId: string}) => {
-  console.log(name);
+const inputChanged = (name: string) => {
+  emit('input-selected', name);
+}
+
+const girderId: Ref<string | undefined> = ref(undefined);
+const parentId: Ref<string | undefined> = ref(undefined);
+const selectedName: Ref<string | undefined> = ref(undefined);
+watch(() => props.data.fileValue, () => {
+  if (props.data.fileValue?.name) {
+    currentValue.value = props.data.fileValue.name;
+    girderId.value = props.data.fileValue.girderId;
+    parentId.value = props.data.fileValue.parentId;
+    selectedName.value = props.data.fileValue.name;
+  }
+});
+
+
+const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp: boolean, fileId?: string}) => {
   showBrowser.value = false;
   const update = { ...props.data };
-  update.fileValue = { name, girderId, parentId };
+  update.fileValue = { name, girderId, parentId, regExp, fileId };
   currentValue.value = name;
+  if (props.data.channel === 'input') {
+    inputChanged(name);
+  }
   emit('change', update);
 }
 
@@ -112,6 +132,9 @@ const acceptBrowser = ({name, girderId, parentId}: {name: string, girderId: stri
     <data-browser
       v-if="showBrowser"
       :output="data.channel === 'output' || data.type === 'new-file'"
+      :girder-id="girderId"
+      :parent-id="parentId"
+      :name="selectedName"
       @close="showBrowser=false"
       @submit="acceptBrowser($event)"
     />

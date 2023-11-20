@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Ref, computed, ref, watch } from 'vue';
 import { parse } from '../parser/index'
-import GirderControlsPanel from './GirderSlicerPanel.vue';
+import GirderControlsPanel from './GirderControlsPanel.vue';
 import RestClient from '../api/girderRest';
 import { useGirderSlicerApi } from '../api/girderSlicerApi';
 import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
@@ -33,7 +33,7 @@ watch(() => props.taskId, () => {
   getData();
 })
 
-const updateParmaeters = (e: XMLParameters[], index: number) => {
+const updateParameters = (e: XMLParameters[], index: number) => {
   if (result.value) {
     result.value.panels[index].groups[0].parameters = e;
   }
@@ -44,6 +44,13 @@ const runTask = () => {
   if (result.value && props.taskId) {
     slicerApi.runTask(result.value, props.taskId)
   }
+}
+
+const processInput = async (name: string) => {
+  if (result.value) {
+    await slicerApi.processInput(result.value, name);
+  }
+
 }
 
 </script>
@@ -77,7 +84,8 @@ const runTask = () => {
         v-for="(panel, index) in result.panels"
         :key="`panel_${index}`"
         :panel="panel"
-        @change="updateParmaeters($event, index)"
+        @change="updateParameters($event, index)"
+        @input-selected="processInput($event)"
       />
     </div>
   </div>
