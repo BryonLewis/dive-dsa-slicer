@@ -374,9 +374,9 @@ const recalculatedSelected = () => {
     >
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h4 class="modal-title header">
             File Browser
-          </h5>
+          </h4>
           <svg-icon
             type="mdi"
             :path="mdiClose"
@@ -404,7 +404,7 @@ const recalculatedSelected = () => {
               />
             </div>
             <div class="row breadcrumb mb-0">
-              <div class="col text-left">
+              <div class="col text-left pt-1">
                 <span
                   v-for="(item, index) in breadCrumb.path"
                   :key="`breadCrumb_${item.id}`"
@@ -461,7 +461,7 @@ const recalculatedSelected = () => {
                     :path="iconMap['item']"
                     color="gray"
                     size="30"
-                    class="pb-2 icon"
+                    class="pb-1 icon"
                   />
                   <span
             
@@ -473,7 +473,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="mdiArrowUpRightBold"
                     color="blue"
-                    size="30"
+                    size="25"
                     class="pb-2 icon level-up-button clickable"
                     @click="upLevel()"
                   />
@@ -492,10 +492,12 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="folderShow ? mdiChevronDown : mdiChevronUp"
                     size="30"
-                    class="icon clickable"
+                    class="icon clickable header"
                     @click="folderShow = !folderShow"
                   />
-                  Folders
+                  <span class="header">
+                    Folders
+                  </span>
                 </div>
                 <div class="col-8">
                   <div
@@ -523,7 +525,7 @@ const recalculatedSelected = () => {
                       />
                     </div>
                     <div class="col-auto">
-                      <span> Page
+                      <span class="header"> Page
                         <input
                           type="number"
                           :value="folderOffset + 1"
@@ -611,7 +613,9 @@ const recalculatedSelected = () => {
                     class="icon clickable"
                     @click="itemShow = !itemShow"
                   />
-                  Items
+                  <span class="header">
+                    Items
+                  </span>
                 </div>
                 <div class="col-8">
                   <div
@@ -639,7 +643,7 @@ const recalculatedSelected = () => {
                       />
                     </div>
                     <div class="col-auto">
-                      <span> Page
+                      <span class="header"> Page
                         <input
                           type="number"
                           :value="itemOffset + 1"
@@ -783,18 +787,20 @@ const recalculatedSelected = () => {
 
 <style scoped>
 .breadcrumb {
-  background-color: #eaebea;
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-link-color)
+
 }
 
 .clickable {
-    color: #337ab7;
+    color: var(--bs-link-color);
 }
 .clickable:hover {
     cursor: pointer;
 }
 
 .disabled-icon{
-  color: lightgray;
+  color: var(--bs-border-color);
 }
 .disabled-icon:hover {
   cursor: default;
@@ -804,25 +810,26 @@ const recalculatedSelected = () => {
     bottom: 0px;
     right: 5px;
     height: 5px;
-    background-color: #FFFFFFAA;
-    color: 'black';
+    background-color: var(--bs-highlight-bg);
+    color: var(--bs-body-color);
     font-size: 10px;
 }
 .item-row {
-  border-top: 1px solid lightgray;
-  border-left: 2px solid lightgray;
-  border-right: 2px solid lightgray;
+  border-top: 1px solid var(--bs-border-color);
+  border-left: 2px solid var(--bs-border-color);
+  border-right: 2px solid var(--bs-border-color);
+  color: var(--bs-body-color)
 }
 .item-row:hover {
-  background-color: #fbfbf7;
+  background-color: var(--bs-highlight-bg);
   cursor: pointer;
 }
 .row-info {
-  color: gray;
+  color: var(--bs-body-color);
   padding-right: 10px;
 }
 .level-up-button {
-  border: 1px solid lightgray;
+  border: 1px solid var(--bs-border-color);
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -832,21 +839,21 @@ const recalculatedSelected = () => {
   max-width: 800px;
   overflow-y: auto;
   overflow-x: hidden;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid var(--bs-border-color);
 
 }
 .folder-header {
   user-select: none;
-  border-left: 2px solid lightgray;
-  border-right: 2px solid lightgray;
-  border-top: 1px solid lightgray;
+  border-left: 2px solid var(--bs-border-color);
+  border-right: 2px solid var(--bs-border-color);
+  border-top: 1px solid var(--bs-border-color);
 }
 
 .item-header {
   user-select: none;
-  border-left: 2px solid lightgray;
-  border-right: 2px solid lightgray;
-  border-top: 1px solid lightgray;
+  border-left: 2px solid var(--bs-border-color);
+  border-right: 2px solid var(--bs-border-color);
+  border-top: 1px solid var(--bs-border-color);
 
 }
 
@@ -856,8 +863,15 @@ const recalculatedSelected = () => {
 }
 
 .selected-items {
-  background-color: #fbfbf7;
+  background-color: var(--bs-highlight-bg);
 }
 
+.header{
+  color: var(--bs-body-color);
+}
+
+.selection {
+  color: var(--bs-body-color);
+}
 
 </style>

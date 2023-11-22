@@ -142,6 +142,10 @@ const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string
 </template>
 
 <style scoped>
+
+.icon {
+  color: var(--bs-heading-color);
+}
 .select-btn {
   border: 1px solid gray;
   border-radius: 0px;

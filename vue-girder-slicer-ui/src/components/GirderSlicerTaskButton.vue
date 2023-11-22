@@ -6,6 +6,8 @@ import {extractImageInfo } from '../utils';
 
 import RestClient from '../api/girderRest';
 import { useGirderSlicerApi } from '../api/girderSlicerApi';
+import { mdiAlert } from '@mdi/js';
+import SvgIcon from '@jamescoyle/vue-icon';
 
 interface Props {
   apiUrl?: string;
@@ -63,11 +65,15 @@ onMounted(() => getData());
 </script>
 
 <template>
-  <div class="btn-group dropdown">
+  <div
+    v-if="loggedIn"
+    class="btn-group dropdown"
+  >
     <button
       type="button"
-      class="btn btn-secondary dropdown-toggle"
+      class="btn btn-primary dropdown-toggle"
       data-bs-toggle="dropdown"
+      data-bs-theme="dark"
       aria-expanded="false"
     >
       Tasks
@@ -116,6 +122,23 @@ onMounted(() => getData());
         </ul>
       </li>
     </ul>
+  </div>
+  <div v-else>
+    <button
+      type="button"
+      class="btn btn-outline-warning"
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Not Logged In"
+    >
+      Error 
+      <svg-icon
+        type="mdi"
+        :path="mdiAlert"
+        size="30"
+        class="pb-1"
+      />
+    </button>
   </div>
 </template>
 
