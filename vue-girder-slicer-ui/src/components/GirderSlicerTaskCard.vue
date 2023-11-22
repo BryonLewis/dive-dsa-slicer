@@ -89,30 +89,19 @@ const processInput = async (name: string) => {
       />
     </div>
   </div>
+  <div v-else-if="!loggedIn">
+    <div class="card">
+      <div
+        class="alert alert-warning"
+        role="warning"
+      >
+        <h4>User Not Logged In.  Cannot display Task information.</h4>>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-@media all and (min-width: 992px) {
-	.dropdown-menu li{ position: relative; 	}
-	.submenu{ 
-		display: none;
-		position: absolute;
-		left:100%; top:-7px;
-	}
-	.submenu-left{ 
-		right:100%; left:auto;
-	}
-	.dropdown-menu > li:hover{ background-color: #f1f1f1 }
-	.dropdown-menu > li:hover > .submenu{ display: block; }
-}	
-@media all and (min-width: 992px) {
-
-	.dropdown-menu > li:hover{ background-color: #f1f1f1 }
-	.dropdown-menu > li:hover > .submenu{ display: block; }
-}	
-/* ============ desktop view .end// ============ */
-
-/* ============ small devices ============ */
 
 a {
   color: #42b983;
