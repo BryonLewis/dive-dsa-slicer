@@ -103,14 +103,11 @@ onMounted(async () => {
     breadCrumb.value.type = hierarchy[0]['type'];
     breadCrumb.value.path = [];
     hierarchy.forEach((folder) => {
-      console.log(folder);
       let name = folder['object']['name'];
       if (!name && breadCrumb.value.type === 'user') {
         name = `${folder['object']['firstName']} ${folder['object']['lastName']}`
       } 
       breadCrumb.value.path.push({ name, id: folder['object']['_id'] });
-      console.log(name);
-      console.log(breadCrumb.value.type);
     });
     const baseFolder = (await (girderRest.get(`folder/${props.parentId}`))).data;
     console.log(baseFolder);
@@ -336,6 +333,8 @@ const recalculatedSelected = () => {
   let reg: RegExp;
   if (selected.value?.name) {
     reg = new RegExp(selected.value.name);
+  } else {
+    return;
   }
     if (props.type !== 'directory' && rootItems.value) {
       rootItems.value.forEach((item) => {
@@ -569,9 +568,9 @@ const recalculatedSelected = () => {
               <div
                 v-for="item in rootFolders"
                 :key="item._id"
-                :class="{'selected-items' :selectedItems[item.name]}"
+                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
                 class="row justify-content-left g-0 item-row"
-                @click="selecting(item, 'folder')"
+                @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
               >
                 <div class="col">
                   <svg-icon
@@ -583,7 +582,6 @@ const recalculatedSelected = () => {
                   />
                   <span
                     class="col-auto clickable"
-                    @click="updateMainView(item._id, item._modelType, item.name)"
                   >
                     {{ item.name }}
                   </span>
@@ -689,7 +687,7 @@ const recalculatedSelected = () => {
                 v-for="item in rootItems"
                 :key="item._id"
                 class="row justify-content-left g-0  item-row"
-                :class="{'selected-items' :selectedItems[item.name]}"
+                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
                 @click="selecting(item, 'file')"
               >
                 <div class="col">

@@ -39,7 +39,6 @@ const validate = (e: GirderModel) => {
       v-if="showBrowser"
       :validation="validate"
       type="file"
-      multi
       @close="showBrowser=false"
     />
   </div>

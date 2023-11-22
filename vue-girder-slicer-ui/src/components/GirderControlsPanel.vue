@@ -26,16 +26,18 @@ const updateParams = (e: XMLParameters[]) =>{
   <div class="card">
     <div
       v-if="panel.groups.length === 1"
-      class="card-title"
+      class="card-title mb-0"
     >
-      <div class="row justify-content-left g-0">
+      <div
+        class="row justify-content-left g-0"
+        @click="collapsed = !collapsed"
+      >
         <div class="col-auto">
           <svg-icon
             type="mdi"
             :path="collapsed ? mdiChevronUp : mdiChevronDown"
             size="30"
             class="pb-2 icon"
-            @click="collapsed = !collapsed"
           />
         </div>
         <div class="col-auto">
@@ -44,7 +46,9 @@ const updateParams = (e: XMLParameters[]) =>{
           </h5>
         </div>
       </div>
-      <Transition name="collapse">
+      <Collapse
+        :when="collapsed"
+      >
         <div
           v-if="!collapsed"
           class="row justify-content-left g-0"
@@ -55,7 +59,7 @@ const updateParams = (e: XMLParameters[]) =>{
             @input-selected="$emit('input-selected', $event)"
           />
         </div>
-      </Transition>
+      </Collapse>
     </div>
   </div>
 </template>
