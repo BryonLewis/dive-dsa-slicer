@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref, watch } from 'vue'
-import type { XMLBaseValue } from '../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';

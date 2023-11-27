@@ -4,11 +4,17 @@ import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
 import GirderSlicerParameter from './GirderSlicerParameter.vue';
+import { Collapse } from 'vue-collapsed'
+
 const props = defineProps({
   panel: {
     type: Object as PropType<XMLPanel>,
     required: true,
   },
+  collapseOverride: {
+    type: Boolean,
+    required: false,
+  }
 })
 const emit = defineEmits<{
   (e: "change", data: XMLParameters[]): void;
@@ -47,11 +53,11 @@ const updateParams = (e: XMLParameters[]) =>{
         </div>
       </div>
       <Collapse
-        :when="collapsed"
+        :when="!collapsed || collapseOverride"
       >
         <div
           v-if="!collapsed"
-          class="row justify-content-left g-0"
+          class="row"
         >
           <girder-slicer-parameter
             :parameters="panel.groups[0].parameters"

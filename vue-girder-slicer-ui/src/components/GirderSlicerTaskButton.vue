@@ -12,12 +12,14 @@ import SvgIcon from '@jamescoyle/vue-icon';
 interface Props {
   apiUrl?: string;
   filter?: string;
+  colorMode?: string
 }
 
 type TaskHierarchy =  Record<string, {tag: string, tasks:{ imageBase:string, imageTag: string; _id: string; name:string; description: string}[]}[]>;
 const props = withDefaults(defineProps<Props>(), {
   apiUrl: 'api/v1',
-  filter: ''
+  filter: '',
+  colorMode: undefined,
 });
 
 onMounted(() => {
@@ -68,6 +70,7 @@ onMounted(() => getData());
   <div
     v-if="loggedIn"
     class="btn-group dropdown"
+    :data-bs-theme="colorMode"
   >
     <button
       type="button"
@@ -153,12 +156,12 @@ onMounted(() => getData());
 	.submenu-left{ 
 		right:100%; left:auto;
 	}
-	.dropdown-menu > li:hover{ background-color: #f1f1f1 }
+	.dropdown-menu > li:hover{ background-color:  var(--bs-highlight-bg) }
 	.dropdown-menu > li:hover > .submenu{ display: block; }
 }	
 @media all and (min-width: 992px) {
 
-	.dropdown-menu > li:hover{ background-color: #f1f1f1 }
+	.dropdown-menu > li:hover{ background-color:  var(--bs-highlight-bg) }
 	.dropdown-menu > li:hover > .submenu{ display: block; }
 }	
 /* ============ desktop view .end// ============ */

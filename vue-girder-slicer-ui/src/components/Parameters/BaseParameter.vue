@@ -31,15 +31,12 @@ const validate = (e: Event) => {
     const update = { ...props.data };
     let value = (e.target as HTMLInputElement).value as XMLBaseValue;
     if (numberVectors.value.includes(props.data.slicerType)) {
-        console.log(value);
         value = value.split(',').map(parseFloat);
     } else if (props.data.slicerType === 'string-vector') {
-        console.log(value);
         value = value.split(',');
     }
     update.value = value;
     currentValue.value = value;
-    console.log(update);
     emit('change', update);
 }
 

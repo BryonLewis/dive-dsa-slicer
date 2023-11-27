@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref, watch } from 'vue'
+import { Ref, onMounted, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
 import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDoubleRight, mdiChevronDown, mdiChevronLeft, mdiChevronRight, mdiChevronUp,
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   limit: 100,
   multiple: false,
   output: undefined,
+  name: undefined,
   parentId: undefined,
   girderId: undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,7 +111,6 @@ onMounted(async () => {
       breadCrumb.value.path.push({ name, id: folder['object']['_id'] });
     });
     const baseFolder = (await (girderRest.get(`folder/${props.parentId}`))).data;
-    console.log(baseFolder);
     breadCrumb.value.path.push({name: baseFolder['name'], id: baseFolder['_id']});
     updateMainView(props.parentId, 'folder', '', true);
     selected.value = {

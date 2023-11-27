@@ -5,6 +5,7 @@ import BaseParameter from './Parameters/BaseParameter.vue';
 import BooleanParameter from './Parameters/BooleanParameter.vue';
 import EnumerationParameters from './Parameters/EnumerationParameters.vue';
 import FileParmaeter from './Parameters/FileParameter.vue';
+import ColorParameter from './Parameters/ColorParameter.vue';
 const props = defineProps({
   parameters: {
     type: Array as PropType<XMLParameters[]>,
@@ -33,7 +34,7 @@ const updateParameter = (data: XMLParameters, index: number) => {
     v-for="(parameter, index) in paramCopy"
     :key="`${parameter.title}_${index}`"
   >
-    <div class="row justify-content-left">
+    <div class="row">
       <div class="col-auto">
         <base-parameter 
           v-if="baseParmaeters.includes(parameter.type)"
@@ -55,6 +56,11 @@ const updateParameter = (data: XMLParameters, index: number) => {
           :data="parameter"
           @change="updateParameter($event, index)"
           @input-selected="emit('input-selected', $event)"
+        />
+        <color-parameter
+          v-else-if="parameter.slicerType === 'color'"
+          :data="parameter"
+          @change="updateParameter($event, index)"
         />
       </div>
     </div>

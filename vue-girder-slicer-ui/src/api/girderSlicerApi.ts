@@ -9,6 +9,14 @@ export interface SlicerImage {
     type: string;
 }
 
+export interface JobResponse {
+    _id: string;
+    _original_name: string;
+    celeryTaskId: string;
+    title: string;
+    type: string;
+}
+
 
 const fileTypes = ['file', 'directory', 'image', 'item', 'multi', 'new-file'];
 const fileImageItem = ['file', 'image', 'item', 'new-file'];
@@ -52,7 +60,6 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
                             params[parameter.id] = parameter.fileValue.name;
                         } else {
                             // Need an actual folder Id
-                            console.log(parameter.fileValue);
                             if (parameter.fileValue.fileId) {
                                 params[parameter.id] = parameter.fileValue.fileId;
                             }
@@ -112,7 +119,7 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
         if (validateParams(xml)) {
             const params = convertToParams(xml);
             const url = `slicer_cli_web/cli/${taskid}/run`
-            return girderRest.post(url, null , { params });
+            return (await girderRest.post<JobResponse>(url, null , { params })).data;
         }
         return false;
 

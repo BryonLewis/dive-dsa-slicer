@@ -10,6 +10,7 @@ export type ParamGUIType = 'number'
   | 'file'
   | 'item'
   | 'directory'
+  | 'color'
   | 'multi';
 
 export type ParamSlicerType = 'integer' | 'float' | 'double' | 'boolean' | 'string'
