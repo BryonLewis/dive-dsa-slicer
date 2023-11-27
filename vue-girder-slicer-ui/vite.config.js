@@ -9,9 +9,9 @@ export default defineConfig(() =>{
       lib: {
         // Could also be a dictionary or array of multiple entry points
         entry: resolve(__dirname, './src/index.ts'),
-        name: 'VueSlicerCLI',
+        name: 'VueGirderSlicerCLIUI',
         // the proper extensions will be added
-        fileName: 'VueSlicerCLI',
+        fileName: 'VueGirderSlicerCLIUI',
       },
       rollupOptions: {
         // make sure to externalize deps that shouldn't be bundled
