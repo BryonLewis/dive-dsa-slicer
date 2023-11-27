@@ -15,8 +15,7 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm test
-
-  publish-gpr:
+  publishgpr:
     needs: build
     runs-on: ubuntu-latest
     permissions:
