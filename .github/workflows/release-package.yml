@@ -22,15 +22,17 @@ jobs:
       packages: write
       contents: read
     steps:
-      - working-directory: ./vue-girder-slicer-ui
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
       - run: npm ci
+        working-directory: ./vue-girder-slicer-ui
       - run: npm run build
+        working-directory: ./vue-girder-slicer-ui
       - run: npm publish
+        working-directory: ./vue-girder-slicer-ui
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
