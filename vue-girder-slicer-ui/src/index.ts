@@ -1,2 +1,7 @@
-export { default as GirderSlicerTaskButton} from "./components/GirderSlicerTaskButton.vue";
-export { default as GirderSlicerTaskCard} from "./components/GirderSlicerTaskCard.vue";
+import  GirderSlicerTaskButton from "./components/GirderSlicerTaskButton.vue";
+import  GirderSlicerTaskCard from "./components/GirderSlicerTaskCard.vue";
+
+export {
+    GirderSlicerTaskButton,
+    GirderSlicerTaskCard,
+};

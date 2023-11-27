@@ -1,4 +1,4 @@
-const sizeFormatter =(size, { base = 1024, unit = 'B' } = {})  =>{
+const sizeFormatter =(size: number, { base = 1024, unit = 'B' } = {})  =>{
     if (size < base) {
     return `${size} ${unit}`;
     }
@@ -29,7 +29,7 @@ const convertInputString= (e: Event) => {
   return val as string;
 }
 
-function isValidRegex(pattern) {
+function isValidRegex(pattern: string) {
   try {
     new RegExp(pattern);
     return true;

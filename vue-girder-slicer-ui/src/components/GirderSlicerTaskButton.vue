@@ -1,3 +1,11 @@
+<script lang="ts">
+interface PropsType {
+  apiUrl?: string;
+  filter?: string;
+  colorMode?: string
+}
+</script>
+
 <script setup lang="ts">
 import { Ref, computed, onMounted, ref } from 'vue';
 import { Tooltip } from 'bootstrap'
@@ -9,14 +17,10 @@ import { useGirderSlicerApi } from '../api/girderSlicerApi';
 import { mdiAlert } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 
-interface Props {
-  apiUrl?: string;
-  filter?: string;
-  colorMode?: string
-}
+
 
 type TaskHierarchy =  Record<string, {tag: string, tasks:{ imageBase:string, imageTag: string; _id: string; name:string; description: string}[]}[]>;
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PropsType>(), {
   apiUrl: 'api/v1',
   filter: '',
   colorMode: undefined,
@@ -138,7 +142,7 @@ onMounted(() => getData());
       <svg-icon
         type="mdi"
         :path="mdiAlert"
-        size="30"
+        :size="30"
         class="pb-1"
       />
     </button>

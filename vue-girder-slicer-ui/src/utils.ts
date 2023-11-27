@@ -1,5 +1,5 @@
 
-function extractImageInfo(imageName) {
+function extractImageInfo(imageName: string) {
     // Define a regular expression to match Docker image names and tags
     const regex = /^(?:.*\/)?([^:/]+)(?::([^/]+))?$/;
     

@@ -1,19 +1,21 @@
+<script lang="ts">
+interface PropsType {
+  apiUrl?: string;
+  taskId: string | null;
+  colorMode?: string;
+}
+</script>
 <script setup lang="ts">
 import { Ref, computed, ref, watch } from 'vue';
-import { parse } from '../parser/index'
+import { parse } from '../parser/index';
 import GirderControlsPanel from './GirderControlsPanel.vue';
 import RestClient from '../api/girderRest';
 import { JobResponse, useGirderSlicerApi } from '../api/girderSlicerApi';
 import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
-interface Props {
-  apiUrl?: string;
-  taskId: string | null;
-  colorMode?: string;
-}
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<PropsType>(), {
   apiUrl: 'api/v1',
   taskId: '64e8aff6072d5e5fbb8719a4',
   colorMode: undefined,

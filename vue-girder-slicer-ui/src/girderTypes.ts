@@ -21,7 +21,7 @@ interface GirderModel extends GirderModelBase {
   parentCollection?: string;
 }
 
-export {
+export type {
     GirderModelType,
     GirderModelBase,
     GirderModel,

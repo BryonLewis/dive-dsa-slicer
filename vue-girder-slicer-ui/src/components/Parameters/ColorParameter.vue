@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
 import { XMLParameters } from '../../parser/parserTypes';
-import type { XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../../parser/parserTypes';
 const props = defineProps({
     data: {
         type: Object as PropType<XMLParameters>,
@@ -12,9 +12,9 @@ const props = defineProps({
 const currentValue: Ref<XMLBaseValue> = ref(0);
 onMounted(() => {
     if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
-        currentValue.value = props.data.defaultValue.join(',') || props.data.value;
+        currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
     } else {
-        currentValue.value = props.data.defaultValue || props.data.value;
+        currentValue.value = props.data.defaultValue || props.data.value || '';
     }
 })
 

@@ -1,3 +1,18 @@
+<script lang="ts">
+interface PropsType {
+  apiUrl?: string;
+  multi?: boolean;
+  type?: 'file' | 'directory' | 'image' | 'new-file'
+  multiple?: boolean;
+  limit?: number,
+  output?: boolean,
+  validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
+  name?: string;
+  parentId?: string;
+  girderId?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { Ref, onMounted, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
@@ -10,19 +25,8 @@ import { convertInputNumber, convertInputString, countFormatter, isValidRegex, s
 
 import RootSelection from './RootSelection.vue';
 import { XMLParameters } from '../../parser/parserTypes';
-interface Props {
-  apiUrl?: string;
-  multi?: boolean;
-  type?: 'file' | 'directory' | 'image' | 'new-file'
-  multiple?: boolean;
-  limit?: number,
-  output?: boolean,
-  validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
-  name?: string;
-  parentId?: string;
-  girderId?: string;
-}
-const props = withDefaults(defineProps<Props>(), {
+
+const props = withDefaults(defineProps<PropsType>(), {
   apiUrl: 'api/v1',
   multi: false,
   type: 'file',
@@ -69,11 +73,12 @@ const submit = async () => {
 
 const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
 
-const iconMap = ref({
+const iconMap: Ref<{user: string, collection:string, folder:string, item: string, file:string}> = ref({
     'user': mdiAccount,
     'collection' : mdiSitemap,
     'folder': mdiFolder,
     'item': mdiFile,
+    'file': mdiFile,
 })
 const home: Ref<string | null>  = ref(null);
 const users: Ref<GirderModel[] | null> =  ref(null);
@@ -103,7 +108,8 @@ onMounted(async () => {
     const hierarchy = (await (girderRest.get(`folder/${props.parentId}/rootpath`))).data;
     breadCrumb.value.type = hierarchy[0]['type'];
     breadCrumb.value.path = [];
-    hierarchy.forEach((folder) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    hierarchy.forEach((folder: any) => {
       let name = folder['object']['name'];
       if (!name && breadCrumb.value.type === 'user') {
         name = `${folder['object']['firstName']} ${folder['object']['lastName']}`
@@ -379,7 +385,7 @@ const recalculatedSelected = () => {
           <svg-icon
             type="mdi"
             :path="mdiClose"
-            size="30"
+            :size="30"
             class="pb-2 icon close clickable"
             data-dismiss="modal"
             aria-label="Close"
@@ -416,7 +422,7 @@ const recalculatedSelected = () => {
                       type="mdi"
                       :path="iconMap[breadCrumb.type]"
                       color="lightblue"
-                      size="30"
+                      :size="30"
                       class="pb-2 icon clickable"
                     />
                     <span
@@ -447,7 +453,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="iconMap['folder']"
                     color="gray"
-                    size="30"
+                    :size="30"
                     class="pb-2 icon"
                   />
                   <span
@@ -459,7 +465,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="iconMap['item']"
                     color="gray"
-                    size="30"
+                    :size="30"
                     class="pb-1 icon"
                   />
                   <span
@@ -490,7 +496,7 @@ const recalculatedSelected = () => {
                   <svg-icon
                     type="mdi"
                     :path="folderShow ? mdiChevronDown : mdiChevronUp"
-                    size="30"
+                    :size="30"
                     class="icon clickable header"
                     @click="folderShow = !folderShow"
                   />
@@ -507,7 +513,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': folderOffset === 0}"
                         @click="updateOffset('folder', 0)"
@@ -517,7 +523,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronLeft"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': folderOffset === 0}"
                         @click="updateOffset('folder', folderOffset - 1)"
@@ -541,7 +547,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronRight"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': folderOffset >= Math.ceil(folderCount/limit)-1}"
                         @click="updateOffset('folder', folderOffset + 1)"
@@ -551,7 +557,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleRight"
-                        size="30"
+                        :size="30"
                         :class="{'disabled-icon': folderOffset === Math.ceil(folderCount/limit)-1}"
                         class="icon clickable"
                         @click="updateOffset('folder', Math.ceil(folderCount/limit)-1)"
@@ -577,7 +583,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="iconMap[item._modelType]"
                     color="lightblue"
-                    size="30"
+                    :size="30"
                     class="pb-2 icon"
                   />
                   <span
@@ -591,7 +597,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="item.public ? mdiEarth : mdiLock"
                     color="gray"
-                    size="30"
+                    :size="30"
                     class="pb-2 icon"
                   />
                   <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
@@ -607,7 +613,7 @@ const recalculatedSelected = () => {
                   <svg-icon
                     type="mdi"
                     :path="itemShow ? mdiChevronDown : mdiChevronUp"
-                    size="30"
+                    :size="30"
                     class="icon clickable"
                     @click="itemShow = !itemShow"
                   />
@@ -624,7 +630,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': itemOffset === 0}"
                         @click="updateOffset('item', 0)"
@@ -634,7 +640,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronLeft"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': itemOffset === 0}"
                         @click="updateOffset('item', itemOffset - 1)"
@@ -658,7 +664,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronRight"
-                        size="30"
+                        :size="30"
                         class="icon clickable"
                         :class="{'disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
                         @click="updateOffset('item', itemOffset + 1)"
@@ -668,7 +674,7 @@ const recalculatedSelected = () => {
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleRight"
-                        size="30"
+                        :size="30"
                         :class="{'disabled-icon': itemOffset === Math.ceil(itemCount/limit)-1}"
                         class="icon clickable"
                         @click="updateOffset('item', Math.ceil(folderCount/limit)-1)"
@@ -695,7 +701,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="iconMap[item._modelType]"
                     color="lightblue"
-                    size="30"
+                    :size="30"
                     class="pb-2 icon"
                   />
                   <span>
@@ -710,7 +716,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="item.public ? mdiEarth : mdiLock"
                     color="gray"
-                    size="30"
+                    :size="30"
                     class="pb-2 icon"
                   />
                   <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>

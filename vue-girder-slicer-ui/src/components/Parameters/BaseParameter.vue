@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
     data: {
@@ -15,9 +15,9 @@ const numbers = ref(['integer', 'float', 'double']);
 const currentValue: Ref<XMLBaseValue> = ref(0);
 onMounted(() => {
     if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
-        currentValue.value = props.data.defaultValue.join(',') || props.data.value;
+        currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
     } else {
-        currentValue.value = props.data.defaultValue || props.data.value;
+        currentValue.value = props.data.defaultValue || props.data.value || '';
     }
 })
 
@@ -31,9 +31,9 @@ const validate = (e: Event) => {
     const update = { ...props.data };
     let value = (e.target as HTMLInputElement).value as XMLBaseValue;
     if (numberVectors.value.includes(props.data.slicerType)) {
-        value = value.split(',').map(parseFloat);
+        value = (value as string).split(',').map(parseFloat);
     } else if (props.data.slicerType === 'string-vector') {
-        value = value.split(',');
+        value = (value as string).split(',');
     }
     update.value = value;
     currentValue.value = value;

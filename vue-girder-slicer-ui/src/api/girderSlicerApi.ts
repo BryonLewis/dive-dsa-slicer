@@ -1,3 +1,4 @@
+import { GirderModel } from "@/girderTypes";
 import { XMLBaseValue, XMLPanel, XMLSpecification } from "../parser/parserTypes";
 import RestClient from "./girderRest"
 
@@ -88,7 +89,7 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
                 parentId: me['_id'],
                 parentType: 'user',
             }});
-            results.data.forEach((folder) => {
+            results.data.forEach((folder: GirderModel) => {
                 if (folder.public === false) {
                     defaultFolder = folder['_id']
                 }

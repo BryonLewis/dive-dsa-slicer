@@ -42,7 +42,7 @@ const updateParams = (e: XMLParameters[]) =>{
           <svg-icon
             type="mdi"
             :path="collapsed ? mdiChevronUp : mdiChevronDown"
-            size="30"
+            :size="30"
             class="pb-2 icon"
           />
         </div>

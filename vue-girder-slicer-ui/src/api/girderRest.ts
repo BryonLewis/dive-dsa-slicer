@@ -1,7 +1,6 @@
 import axios_, { Axios, AxiosInstance } from 'axios';
 import cookies from 'js-cookie';
 import { stringify } from 'qs';
-import { VueElement } from 'vue';
 
 interface GirderRestClientParams {
     apiRoot: string;
@@ -22,7 +21,7 @@ const GirderToken = 'Girder-Token';
 const GirderOtp = 'Girder-OTP';
 const GirderAuthorization = 'Girder-Authorization';
 
-function setCookieFromAuth(auth) {
+function setCookieFromAuth(auth: {token: string, expires: Date}) {
   cookies.set('girderToken', auth.token, { expires: new Date(auth.expires) });
 }
 
@@ -30,7 +29,7 @@ function setCookieFromAuth(auth) {
  * set cookie if special string is found in the hash.
  * @param {Location} location
  */
-function setCookieFromHash(location) {
+function setCookieFromHash(location: {hash: string,}) {
   const arr = location.hash.split(OauthTokenPrefix);
   const token = arr[arr.length - 1].split(OauthTokenSuffix)[0];
   if (token.length === GirderTokenLength) {
@@ -52,6 +51,7 @@ export default class RestClient extends Axios {
   authenticateWithCredentials: boolean;
   useGirderAuthorizationHeader: boolean;
   setLocalCookie: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: null | any;
 
   constructor({
@@ -68,6 +68,7 @@ export default class RestClient extends Axios {
         token,
       },
     });
+    this.apiRoot = apiRoot;
     this.axios = axios;
     this.token = token;
     this.authenticateWithCredentials = authenticateWithCredentials;
@@ -87,7 +88,7 @@ export default class RestClient extends Axios {
     })
   }
 
-  async login(username, password, otp = null) {
+  async login(username: string, password: string, otp = null) {
     try {
       await this.logout();
     } catch (err) {
@@ -95,7 +96,8 @@ export default class RestClient extends Axios {
     }
 
     let auth;
-    const headers = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const headers: Record<string, any> = {
       [GirderToken]: null,
     };
     if (this.useGirderAuthorizationHeader) {
@@ -128,7 +130,8 @@ export default class RestClient extends Axios {
     }
     try {
       await this.delete('user/authentication');
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       if (err.response.status !== 401) {
         throw err;
       }
@@ -148,7 +151,7 @@ export default class RestClient extends Axios {
     return this.user;
   }
 
-  async register(login, email, firstName, lastName, password, admin = false) {
+  async register(login: string, email: string, firstName: string, lastName: string, password: string, admin = false) {
     const resp = await this.post('user', stringify({
       login, email, firstName, lastName, password, admin,
     }));

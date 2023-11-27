@@ -141,7 +141,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     "fastq" "^1.6.0"
 
-"@popperjs/core@^2.11.8":
+"@popperjs/core@^2.11.8", "@popperjs/core@^2.9.2":
   "integrity" "sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A=="
   "resolved" "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
   "version" "2.11.8"
@@ -191,15 +191,32 @@
   "resolved" "https://registry.npmjs.org/@types/argparse/-/argparse-1.0.38.tgz"
   "version" "1.0.38"
 
+"@types/bootstrap@^5.2.10":
+  "integrity" "sha512-F2X+cd6551tep0MvVZ6nM8v7XgGN/twpdNDjqS1TUM7YFNEtQYWk+dKAnH+T1gr6QgCoGMPl487xw/9hXooa2g=="
+  "resolved" "https://registry.npmjs.org/@types/bootstrap/-/bootstrap-5.2.10.tgz"
+  "version" "5.2.10"
+  dependencies:
+    "@popperjs/core" "^2.9.2"
+
 "@types/estree@^1.0.0":
   "integrity" "sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw=="
   "resolved" "https://registry.npmjs.org/@types/estree/-/estree-1.0.5.tgz"
   "version" "1.0.5"
 
+"@types/js-cookie@^3.0.6":
+  "integrity" "sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ=="
+  "resolved" "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-3.0.6.tgz"
+  "version" "3.0.6"
+
 "@types/json-schema@^7.0.12":
   "integrity" "sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ=="
   "resolved" "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.13.tgz"
   "version" "7.0.13"
+
+"@types/qs@^6.9.10":
+  "integrity" "sha512-3Gnx08Ns1sEoCrWssEgTSJs/rsT2vhGP+Ja9cnnk9k4ALxinORlQneLXFeFKOTJMOeZUFD1s7w+w2AphTpvzZw=="
+  "resolved" "https://registry.npmjs.org/@types/qs/-/qs-6.9.10.tgz"
+  "version" "6.9.10"
 
 "@types/semver@^7.5.0":
   "integrity" "sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw=="

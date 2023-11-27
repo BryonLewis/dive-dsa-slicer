@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, Ref, computed, onMounted, ref } from 'vue'
-import type { XMLBaseValue } from '../parser/parserTypes';
+import type { XMLBaseValue } from '../../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
 const props = defineProps({
     data: {
@@ -10,9 +10,9 @@ const props = defineProps({
 })
 
 const error = computed(() => props.data.error)
-const currentValue: Ref<XMLBaseValue> = ref(0);
+const currentValue: Ref<boolean> = ref(false);
 onMounted(() => {
-    currentValue.value = props.data.value || props.data.defaultValue;
+    currentValue.value = !!props.data.value || !!props.data.defaultValue || false;
 })
 
 const emit = defineEmits<{
@@ -20,7 +20,7 @@ const emit = defineEmits<{
 }>();
 
 
-const validate = (e: XMLBaseValue) => {
+const validate = (e: Event) => {
     // Validation Logic for different types
     const update = { ...props.data }
     let value = (e.target as HTMLInputElement).checked as boolean;
