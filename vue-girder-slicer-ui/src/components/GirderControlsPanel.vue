@@ -4,11 +4,17 @@ import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
 import GirderSlicerParameter from './GirderSlicerParameter.vue';
+import { Collapse } from 'vue-collapsed'
+
 const props = defineProps({
   panel: {
     type: Object as PropType<XMLPanel>,
     required: true,
   },
+  collapseOverride: {
+    type: Boolean,
+    required: false,
+  }
 })
 const emit = defineEmits<{
   (e: "change", data: XMLParameters[]): void;
@@ -26,16 +32,18 @@ const updateParams = (e: XMLParameters[]) =>{
   <div class="card">
     <div
       v-if="panel.groups.length === 1"
-      class="card-title"
+      class="card-title mb-0"
     >
-      <div class="row justify-content-left g-0">
+      <div
+        class="row justify-content-left g-0"
+        @click="collapsed = !collapsed"
+      >
         <div class="col-auto">
           <svg-icon
             type="mdi"
             :path="collapsed ? mdiChevronUp : mdiChevronDown"
             size="30"
             class="pb-2 icon"
-            @click="collapsed = !collapsed"
           />
         </div>
         <div class="col-auto">
@@ -44,10 +52,12 @@ const updateParams = (e: XMLParameters[]) =>{
           </h5>
         </div>
       </div>
-      <Transition name="collapse">
+      <Collapse
+        :when="!collapsed || collapseOverride"
+      >
         <div
           v-if="!collapsed"
-          class="row justify-content-left g-0"
+          class="row"
         >
           <girder-slicer-parameter
             :parameters="panel.groups[0].parameters"
@@ -55,7 +65,7 @@ const updateParams = (e: XMLParameters[]) =>{
             @input-selected="$emit('input-selected', $event)"
           />
         </div>
-      </Transition>
+      </Collapse>
     </div>
   </div>
 </template>
