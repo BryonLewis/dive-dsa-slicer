@@ -27,7 +27,7 @@ export default defineConfig(() =>{
         },
       },
     },
-    plugins: [vue(), dts({ rollupTypes: true })],
+    plugins: [vue(), dts()],
     server: {
       host: "0.0.0.0",
       port: 8080,
