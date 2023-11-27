@@ -15,14 +15,14 @@ jobs:
           node-version: 16
       - run: npm ci
       - run: npm test
-  publishgpr:
+  publish-gpr:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     steps:
-        working-directory: ./vue-girder-slicer-ui
+      - working-directory: ./vue-girder-slicer-ui
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
