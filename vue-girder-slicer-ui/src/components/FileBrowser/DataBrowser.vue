@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<PropsType>(), {
 
 const emit = defineEmits<{
     (e: "close"): void;
-    (e: "submit", data : XMLParameters['fileValue']): void;
+    (e: "submit", data : { name: string; girderId: string; parentId: string; regExp?: boolean | undefined; fileId?: string | undefined; }): void;
 }>();
 
 const errorMsg = ref('');
@@ -478,7 +478,7 @@ const recalculatedSelected = () => {
                     type="mdi"
                     :path="mdiArrowUpRightBold"
                     color="blue"
-                    size="25"
+                    :size="25"
                     class="pb-2 icon level-up-button clickable"
                     @click="upLevel()"
                   />
@@ -779,7 +779,7 @@ const recalculatedSelected = () => {
             class="btn btn-primary"
             data-dismiss="modal"
             :disabled="selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)"
-            @click="submit"
+            @click="submit()"
           >
             Confirm
           </button>

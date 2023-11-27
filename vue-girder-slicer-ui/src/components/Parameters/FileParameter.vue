@@ -59,7 +59,7 @@ watch(() => props.data.fileValue, () => {
 });
 
 
-const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp: boolean, fileId?: string}) => {
+const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp?: boolean, fileId?: string}) => {
   showBrowser.value = false;
   const update = { ...props.data };
   update.fileValue = { name, girderId, parentId, regExp, fileId };
@@ -97,7 +97,7 @@ const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string
             type="mdi"
             :path="mdiFolderOpen"
             color="black"
-            size="15"
+            :size="15"
             class="icon clickable"
           />
         </button>
@@ -111,14 +111,14 @@ const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string
             type="mdi"
             :path="mdiFolderOpen"
             color="black"
-            size="15"
+            :size="15"
             class="icon clickable"
           />
           <svg-icon
             type="mdi"
             :path="mdiPlusThick"
             color="black"
-            size="15"
+            :size="15"
             class="icon clickable"
           />
         </button>

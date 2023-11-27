@@ -104,7 +104,7 @@ const processInput = async (name: string) => {
           <svg-icon
             type="mdi"
             :path="mdiClose"
-            size="30"
+            :size="30"
             class="pb-2 icon clickable"
             data-dismiss="modal"
             aria-label="Close"
