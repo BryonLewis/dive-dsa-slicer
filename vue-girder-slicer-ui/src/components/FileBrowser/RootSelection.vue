@@ -1,49 +1,53 @@
-<script setup lang="ts">
-import { PropType, computed } from 'vue'
+<script lang="ts">
+import { PropType, computed, defineComponent } from 'vue'
 import { GirderModel, GirderModelType} from '../../girderTypes';
 
-const props = defineProps({
-  value: {
-    type: String,
-    required: true,
+export default defineComponent({
+  props: {
+    value: {
+      type: String,
+      required: true,
+    },
+    home: {
+      type: String,
+      required: true,
+    },
+    users: {
+      type: Array as PropType<GirderModel[]>,
+      required: true,
+    },
+    collections: {
+      type: Array as PropType<GirderModel[]>,
+      required: true,
+    }
   },
-  home: {
-    type: String,
-    required: true,
-  },
-  users: {
-    type: Array as PropType<GirderModel[]>,
-    required: true,
-  },
-  collections: {
-    type: Array as PropType<GirderModel[]>,
-    required: true,
-  }
-})
+  setup(props, { emit }) {
 
-const emit = defineEmits<{
-    (e: "change", {val, type, name}: { val: string, type: GirderModelType, name:string}): void;
-}>();
-
-const filteredUsers = computed(() => props.users?.filter((item) => item._id !== props.home));
-const update = (e: Event) => {
-    let type: GirderModelType = 'user';
-    const val = (e.target as HTMLSelectElement).value;
-    let name = '';
-    if (props.collections && props.users) {
-        const findType = props.collections.concat(props.users)
-        const found = findType.find((item) => item._id === val);
-        if (found) {
-            type = found._modelType;
-            if (type === 'user') {
-                name = `${found.firstName} ${found.lastName}`
-            } else {
-                name = found.name;
+    const filteredUsers = computed(() => props.users?.filter((item) => item._id !== props.home));
+    const update = (e: Event) => {
+        let type: GirderModelType = 'user';
+        const val = (e.target as HTMLSelectElement).value;
+        let name = '';
+        if (props.collections && props.users) {
+            const findType = props.collections.concat(props.users)
+            const found = findType.find((item) => item._id === val);
+            if (found) {
+                type = found._modelType;
+                if (type === 'user') {
+                    name = `${found.firstName} ${found.lastName}`
+                } else {
+                    name = found.name;
+                }
             }
         }
+        emit('change', {val, type, name});
     }
-    emit('change', {val, type, name});
-}
+    return {
+      filteredUsers,
+      update,
+    }
+  }
+});
 </script>
 
 <template>

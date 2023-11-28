@@ -2,6 +2,7 @@ import $ from 'jquery';
 import _ from 'underscore';
 
 import panel from './panel';
+import { XMLPanel, XMLSpecification, XMLSpecificationStrings } from './parserTypes';
 
 /**
  * This is a parser for Slicer's GUI Schema:
@@ -22,7 +23,7 @@ import panel from './panel';
  *     the outputs of the spec.
  * @returns {object}
  */
-export default function parse(spec, opts = {}) {
+export default function parse(spec: string | object, opts = {} as object) {
     if (_.isString(spec)) {
         spec = $.parseXML(spec);
     }
@@ -30,23 +31,33 @@ export default function parse(spec, opts = {}) {
     const $spec = $(spec).find('executable:first');
 
     // top level metadata
-    const gui = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const gui: XMLSpecification = {
         title: $spec.find('executable > title').text(),
-        description: $spec.find('executable > description').text()
+        description: $spec.find('executable > description').text(),
+        version: '0',
+        panels: [],
+        license: '',
     };
 
     // optional metadata
     ['version', 'documentation-url', 'license', 'contributor', 'acknowledgements'].forEach((key) => {
         const val = $spec.find(`executable > ${key}:first`);
         if (val.length > 0) {
-            gui[key] = val.text();
+            if (key !== 'panels') {
+                gui[key as keyof XMLSpecificationStrings] = val.text();
+            }
         }
     });
 
-    gui.panels = _.filter(
-        _.map($spec.find('executable > parameters'), (p) => panel(p, opts)),
+    const panels = _.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        _.map($spec.find('executable > parameters'), (p: any) => panel(p, opts)),
         _.isObject
     );
+    if (panels) {
+        gui.panels = panels as XMLPanel[];
+    }
 
     return gui;
 }

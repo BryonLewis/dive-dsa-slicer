@@ -1,5 +1,5 @@
-import { GirderModel } from "@/girderTypes";
-import { XMLBaseValue, XMLPanel, XMLSpecification } from "../parser/parserTypes";
+import { GirderModel } from '../girderTypes'
+import { XMLBaseValue, XMLSpecification } from "../parser/parserTypes";
 import RestClient from "./girderRest"
 
 export interface SlicerImage {
@@ -22,7 +22,7 @@ export interface JobResponse {
 const fileTypes = ['file', 'directory', 'image', 'item', 'multi', 'new-file'];
 const fileImageItem = ['file', 'image', 'item', 'new-file'];
 const useGirderSlicerApi = (girderRest: RestClient) => {
-    const getSlicerList = async (filter?: string) => {
+    const getSlicerList = async (_filter?: string) => {
         return girderRest.get<SlicerImage[]>('slicer_cli_web/cli');
     }
     const getSlicerXML = async(id: string) => {

@@ -1,43 +1,48 @@
-<script setup lang="ts">
-import { PropType, Ref, computed, onMounted, ref } from 'vue'
+<script lang="ts">
+import { PropType, Ref, computed, defineComponent, onMounted, ref } from 'vue'
 import type { XMLBaseValue } from '../../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
-const props = defineProps({
+export default defineComponent({
+  props: {
     data: {
-        type: Object as PropType<XMLParameters & {error?: string}>,
+      type: Object as PropType<XMLParameters>,
         required: true,
-    },
-})
-
-const emit = defineEmits<{
-    (e: "change", data: XMLParameters): void;
-}>();
+    }
+  },
+  setup(props, { emit }) {
 
 
 const currentValue: Ref<XMLBaseValue> = ref(0);
-onMounted(() => {
-    if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
-        currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
-    } else {
-        currentValue.value = props.data.defaultValue || props.data.value || '';
+    onMounted(() => {
+        if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
+            currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
+        } else {
+            currentValue.value = props.data.defaultValue || props.data.value || '';
+        }
+    })
+
+    const validate = (e: Event) => {
+        // Validation Logic for different types
+        const update = { ...props.data };
+        let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
+
+        if (props.data.slicerType === 'number-enumeration') {
+            value = parseFloat(value as string);
+        }
+        update.value = value;
+        currentValue.value = value;
+        emit('change', update);
     }
-})
 
-const validate = (e: Event) => {
-    // Validation Logic for different types
-    const update = { ...props.data };
-    let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
 
-    if (props.data.slicerType === 'number-enumeration') {
-        value = parseFloat(value as string);
+    const error = computed(() => props.data.error);
+    return {
+      error,
+      currentValue,
+      validate
     }
-    update.value = value;
-    currentValue.value = value;
-    emit('change', update);
-}
-
-
-const error = computed(() => props.data.error)
+  }
+});
 </script>
 
 <template>

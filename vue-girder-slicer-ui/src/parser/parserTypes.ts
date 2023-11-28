@@ -69,7 +69,7 @@ export interface XMLPanel {
   groups: XMLGroups[];
 }
 
-export interface XMLSpecification {
+export interface XMLSpecificationStrings {
   title: string;
   license: string;
   description: string;
@@ -77,5 +77,9 @@ export interface XMLSpecification {
   'documentation-url'?: string;
   acknowledgements?: string;
   contributor?: string;
+}
+export interface XMLSpecificationPanel {
+
   panels: XMLPanel[];
 }
+export type XMLSpecification = XMLSpecificationStrings & XMLSpecificationPanel

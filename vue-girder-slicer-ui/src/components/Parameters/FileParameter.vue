@@ -1,74 +1,90 @@
-<script setup lang="ts">
-import { PropType, Ref, computed, onMounted, ref, watch } from 'vue'
+<script lang="ts">
+import { PropType, Ref, computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { XMLParameters } from '../../parser/parserTypes';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import DataBrowser from '../FileBrowser/DataBrowser.vue';
 
-const props = defineProps({
+export default defineComponent({
+  components: {
+    SvgIcon,
+    DataBrowser,
+  },
+  props: {
     data: {
-        type: Object as PropType<XMLParameters & {error?: string}>,
+      type: Object as PropType<XMLParameters>,
         required: true,
-    },
-})
-const currentValue: Ref<string |  null> = ref(null);
-const placeHolder = ref('Choose a file...');
-const batchload = ref(false);
+    }
+  },
+  setup(props, { emit }) {
+    const currentValue: Ref<string |  null> = ref(null);
+    const placeHolder = ref('Choose a file...');
+    const batchload = ref(false);
 
-const error = computed(() => props.data.error)
-onMounted(() => {
-  if (props.data.slicerType === 'file') {
-    placeHolder.value = !props.data.multiple ?  'Choose a file...' : 'Choose multiple files...'
-  }
-  if (props.data.slicerType === 'multi') {
-    placeHolder.value = 'Choose multiple files...'
-  }
-  if (props.data.slicerType === 'image') {
-    placeHolder.value = !props.data.multiple ?  'Choose an image...' : 'Choose multiple images...'
-  }
-  if (props.data.slicerType === 'directory') {
-    placeHolder.value = !props.data.multiple ?  'Choose a folder...' : 'Choose multiple folders...'
-  }
-  if (['file', 'item', 'image', 'multi'].includes(props.data.slicerType) && ! props.data.multiple) {
-    batchload.value = true;
+    const error = computed(() => props.data.error)
+    onMounted(() => {
+      if (props.data.slicerType === 'file') {
+        placeHolder.value = !props.data.multiple ?  'Choose a file...' : 'Choose multiple files...'
+      }
+      if (props.data.slicerType === 'multi') {
+        placeHolder.value = 'Choose multiple files...'
+      }
+      if (props.data.slicerType === 'image') {
+        placeHolder.value = !props.data.multiple ?  'Choose an image...' : 'Choose multiple images...'
+      }
+      if (props.data.slicerType === 'directory') {
+        placeHolder.value = !props.data.multiple ?  'Choose a folder...' : 'Choose multiple folders...'
+      }
+      if (['file', 'item', 'image', 'multi'].includes(props.data.slicerType) && ! props.data.multiple) {
+        batchload.value = true;
+      }
+    });
+
+    const showBrowser = ref(false);
+
+    const inputChanged = (name: string) => {
+      emit('input-selected', name);
+    }
+
+    const girderId: Ref<string | undefined> = ref(undefined);
+    const parentId: Ref<string | undefined> = ref(undefined);
+    const selectedName: Ref<string | undefined> = ref(undefined);
+    watch(() => props.data.fileValue, () => {
+      if (props.data.fileValue?.name) {
+        currentValue.value = props.data.fileValue.name;
+        girderId.value = props.data.fileValue.girderId;
+        parentId.value = props.data.fileValue.parentId;
+        selectedName.value = props.data.fileValue.name;
+      }
+    });
+
+
+    const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp?: boolean, fileId?: string}) => {
+      showBrowser.value = false;
+      const update = { ...props.data };
+      update.fileValue = { name, girderId, parentId, regExp, fileId };
+      currentValue.value = name;
+      if (props.data.channel === 'input') {
+        inputChanged(name);
+      }
+      emit('change', update);
+    }
+    return {
+      error,
+      currentValue,
+      placeHolder,
+      showBrowser,
+      mdiFolderOpen,
+      mdiPlusThick,
+      batchload,
+      girderId,
+      parentId,
+      selectedName,
+      acceptBrowser,
+
+    } 
   }
 });
-
-const emit = defineEmits<{
-    (e: "change", data: XMLParameters): void;
-    (e: "input-selected", name: string): void;
-}>();
-
-
-const showBrowser = ref(false);
-
-const inputChanged = (name: string) => {
-  emit('input-selected', name);
-}
-
-const girderId: Ref<string | undefined> = ref(undefined);
-const parentId: Ref<string | undefined> = ref(undefined);
-const selectedName: Ref<string | undefined> = ref(undefined);
-watch(() => props.data.fileValue, () => {
-  if (props.data.fileValue?.name) {
-    currentValue.value = props.data.fileValue.name;
-    girderId.value = props.data.fileValue.girderId;
-    parentId.value = props.data.fileValue.parentId;
-    selectedName.value = props.data.fileValue.name;
-  }
-});
-
-
-const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp?: boolean, fileId?: string}) => {
-  showBrowser.value = false;
-  const update = { ...props.data };
-  update.fileValue = { name, girderId, parentId, regExp, fileId };
-  currentValue.value = name;
-  if (props.data.channel === 'input') {
-    inputChanged(name);
-  }
-  emit('change', update);
-}
 
 </script>
 

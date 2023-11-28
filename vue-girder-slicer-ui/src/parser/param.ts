@@ -11,13 +11,15 @@ import constraints from './constraints';
  * @param {XML} param The parameter spec
  * @returns {object}
  */
-export default function param(paramTag, opts = {}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function param(paramTag: any , opts: Record<string, any> = {}) {
     const $param = $(paramTag);
-    let type = widget(paramTag);
+    let type = widget(paramTag) as string;
     let values = {};
-    let channel = $param.find('channel');
+    let channel: JQuery<HTMLElement> | string = $param.find('channel');
     const id = $param.find('name').text() || $param.find('longflag').text();
-    const extra = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const extra: Record<string, any> = {};
 
     if (channel.length > 0) {
         channel = channel.text();
@@ -76,7 +78,7 @@ export default function param(paramTag, opts = {}) {
         },
         values,
         defaultValue(type, $param.find('default')),
-        constraints(type, $param.find('constraints').get(0)),
+        constraints(type, $param.find('constraints').get(0) as HTMLElement),
         extra
     );
 }

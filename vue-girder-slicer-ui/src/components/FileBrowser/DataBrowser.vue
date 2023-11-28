@@ -1,366 +1,431 @@
 <script lang="ts">
-interface PropsType {
-  apiUrl?: string;
-  multi?: boolean;
-  type?: 'file' | 'directory' | 'image' | 'new-file'
-  multiple?: boolean;
-  limit?: number,
-  output?: boolean,
-  validation?: (id: GirderModel) => ({ valid: boolean, msg?: string});
-  name?: string;
-  parentId?: string;
-  girderId?: string;
-}
-</script>
 
-<script setup lang="ts">
-import { Ref, onMounted, ref, watch } from 'vue'
+
+import { PropType, Ref, defineComponent, onMounted, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
 import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDoubleRight, mdiChevronDown, mdiChevronLeft, mdiChevronRight, mdiChevronUp,
 mdiClose, mdiEarth, mdiFile, mdiFolder, mdiLock, mdiSitemap } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { Collapse } from 'vue-collapsed'
 import { convertInputNumber, convertInputString, countFormatter, isValidRegex, sizeFormatter } from './utils'
 
 import RootSelection from './RootSelection.vue';
-import { XMLParameters } from '../../parser/parserTypes';
 
-const props = withDefaults(defineProps<PropsType>(), {
-  apiUrl: 'api/v1',
-  multi: false,
-  type: 'file',
-  limit: 100,
-  multiple: false,
-  output: undefined,
-  name: undefined,
-  parentId: undefined,
-  girderId: undefined,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validation: (_id: GirderModel) => ({ valid:true }),
-});
+export default defineComponent({
+  components: {
+    SvgIcon,
+    RootSelection
+  },
+  props: {
+    apiUrl: {
+      type: String,
+      default: 'api/v1'
+    },
+    multi: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+      default: 'file',
+    },
+    limit: {
+      type: Number,
+      default: 100,
+    },
+    output: {
+      type: Boolean,
+      required: false,
+    },
+    validation: {
+      type: Function as PropType<(id: GirderModel) => ({ valid: boolean, msg?: string})>,
+      default: () => undefined
+    },
+    parentId: {
+      type: String,
+      required: false,
+      default: undefined
+    },
+    girderId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    name: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+  },
+  setup(props, { emit }) {
 
-const emit = defineEmits<{
-    (e: "close"): void;
-    (e: "submit", data : { name: string; girderId: string; parentId: string; regExp?: boolean | undefined; fileId?: string | undefined; }): void;
-}>();
+    const errorMsg = ref('');
 
-const errorMsg = ref('');
-
-const submit = async () => {
-  if (selectedModel.value === null) {
-    selectedModel.value = await girderRest.get(`folder/${currentParentId.value}`);
-  }
-  if (selected.value !== null && selectedModel.value !== null) 
-  {
-    errorMsg.value = '';
-    const result = props.validation(selectedModel.value);
-    if (result.valid) {
-      emit('submit', 
-        {
-          girderId: selected.value.girderId,
-          name: selected.value.name,
-          parentId: currentParentId.value,
-          regExp: props.multi || props.multiple,
-          fileId: selected.value.fileId,
+    const submit = async () => {
+      if (selectedModel.value === null) {
+        selectedModel.value = await girderRest.get(`folder/${currentParentId.value}`);
+      }
+      if (selected.value !== null && selectedModel.value !== null) 
+      {
+        errorMsg.value = '';
+        const result = props.validation(selectedModel.value);
+        if (result.valid) {
+          emit('submit', 
+            {
+              girderId: selected.value.girderId,
+              name: selected.value.name,
+              parentId: currentParentId.value,
+              regExp: props.multi,
+              fileId: selected.value.fileId,
+            }
+          );
+        } else if (result.msg) {
+          errorMsg.value = result.msg;
         }
-      );
-    } else if (result.msg) {
-      errorMsg.value = result.msg;
+      }
     }
-  }
-}
 
-const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
+    const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
 
-const iconMap: Ref<{user: string, collection:string, folder:string, item: string, file:string}> = ref({
-    'user': mdiAccount,
-    'collection' : mdiSitemap,
-    'folder': mdiFolder,
-    'item': mdiFile,
-    'file': mdiFile,
-})
-const home: Ref<string | null>  = ref(null);
-const users: Ref<GirderModel[] | null> =  ref(null);
-const collections: Ref<GirderModel[] | null> =  ref(null);
-const user: Ref<GirderModel | null> =  ref(null);
-const rootFolders: Ref<GirderModel[] | null>  = ref(null);
-const folderCount: Ref<number> = ref(0);
-const folderShow: Ref<boolean> = ref(false);
-const itemShow: Ref<boolean> = ref(false);
-const itemCount: Ref<number> = ref(0);
-const rootItems: Ref<GirderModel[] | null>  = ref(null);
-const folderOffset: Ref<number> = ref(0);
-const itemOffset: Ref<number> = ref(0);
-const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}> = ref({type: 'user', path:[]})
+    const iconMap: Ref<{user: string, collection:string, folder:string, item: string, file:string}> = ref({
+        'user': mdiAccount,
+        'collection' : mdiSitemap,
+        'folder': mdiFolder,
+        'item': mdiFile,
+        'file': mdiFile,
+    })
+    const home: Ref<string | null>  = ref(null);
+    const users: Ref<GirderModel[] | null> =  ref(null);
+    const collections: Ref<GirderModel[] | null> =  ref(null);
+    const user: Ref<GirderModel | null> =  ref(null);
+    const rootFolders: Ref<GirderModel[] | null>  = ref(null);
+    const folderCount: Ref<number> = ref(0);
+    const folderShow: Ref<boolean> = ref(false);
+    const itemShow: Ref<boolean> = ref(false);
+    const itemCount: Ref<number> = ref(0);
+    const rootItems: Ref<GirderModel[] | null>  = ref(null);
+    const folderOffset: Ref<number> = ref(0);
+    const itemOffset: Ref<number> = ref(0);
+    const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}> = ref({type: 'user' as GirderModelType, path:[]})
 
-const currentParentId = ref('');
-const currentParentType = ref('user');
+    const currentParentId = ref('');
+    const currentParentType = ref('user');
 
-const selected: Ref<null | {name: string, girderId: string, parentId?: string, fileId?: string}> = ref(null);
-const selectedModel: Ref<null | GirderModel> = ref(null);
+    const selected: Ref<null | {name: string, girderId: string, parentId?: string, fileId?: string}> = ref(null);
+    const selectedModel: Ref<null | GirderModel> = ref(null);
 
-onMounted(async () => {
-  await getData();
-  if (props.parentId && props.girderId && props.name) {
-    currentParentId.value = props.parentId;
-    currentParentType.value = 'user';
-    const hierarchy = (await (girderRest.get(`folder/${props.parentId}/rootpath`))).data;
-    breadCrumb.value.type = hierarchy[0]['type'];
-    breadCrumb.value.path = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    hierarchy.forEach((folder: any) => {
-      let name = folder['object']['name'];
-      if (!name && breadCrumb.value.type === 'user') {
-        name = `${folder['object']['firstName']} ${folder['object']['lastName']}`
-      } 
-      breadCrumb.value.path.push({ name, id: folder['object']['_id'] });
-    });
-    const baseFolder = (await (girderRest.get(`folder/${props.parentId}`))).data;
-    breadCrumb.value.path.push({name: baseFolder['name'], id: baseFolder['_id']});
-    updateMainView(props.parentId, 'folder', '', true);
-    selected.value = {
-      name: props.name,
-      girderId: props.girderId,
-      parentId: props.parentId,
-    }
-    recalculatedSelected();
-  }
-})
-
-
-
-const updateFolders = async (parentId: string, parentType: string) => {
-  const responseFolders = await girderRest.get(`folder`, {
-            params: {
-                limit: props.limit,
-                offset: folderOffset.value * props.limit,
-                sort: 'name',
-                sortdir: 1,
-                parentType,
-                parentId,
-
-            },
+    onMounted(async () => {
+      await getData();
+      if (props.parentId && props.girderId && props.name) {
+        currentParentId.value = props.parentId;
+        currentParentType.value = 'user';
+        const hierarchy = (await (girderRest.get(`folder/${props.parentId}/rootpath`))).data;
+        breadCrumb.value.type = hierarchy[0]['type'];
+        breadCrumb.value.path = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        hierarchy.forEach((folder: any) => {
+          let name = folder['object']['name'];
+          if (!name && breadCrumb.value.type === 'user') {
+            name = `${folder['object']['firstName']} ${folder['object']['lastName']}`
+          } 
+          breadCrumb.value.path.push({ name, id: folder['object']['_id'] });
+        });
+        const baseFolder = (await (girderRest.get(`folder/${props.parentId}`))).data;
+        breadCrumb.value.path.push({name: baseFolder['name'], id: baseFolder['_id']});
+        updateMainView(props.parentId, 'folder', '', true);
+        selected.value = {
+          name: props.name,
+          girderId: props.girderId,
+          parentId: props.parentId,
         }
-    );
-    folderCount.value = parseInt(responseFolders.headers['girder-total-count']);
-    rootFolders.value = responseFolders.data;
-    return responseFolders.data;
-};
+        recalculatedSelected();
+      }
+    })
 
-const updateItems = async (parentId: string) => {
-  const responseItems = await girderRest.get(`item`, {
+
+
+    const updateFolders = async (parentId: string, parentType: string) => {
+      const responseFolders = await girderRest.get(`folder`, {
                 params: {
                     limit: props.limit,
-                    offset: itemOffset.value * props.limit,
+                    offset: folderOffset.value * props.limit,
                     sort: 'name',
                     sortdir: 1,
-                    folderId: parentId,
+                    parentType,
+                    parentId,
 
                 },
             }
         );
-        itemCount.value = parseInt(responseItems.headers['girder-total-count']);
-        rootItems.value = responseItems.data;
-    return responseItems.data;
-}
-
-
-const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
-  if (props.type === 'directory' && parentType === 'folder') {
-    selected.value = {
-      name,
-      girderId: parentId,
+        folderCount.value = parseInt(responseFolders.headers['girder-total-count']);
+        rootFolders.value = responseFolders.data;
+        return responseFolders.data;
     };
-  } else if (parentType !== 'folder') {
-    selected.value = null;
-  }
 
-  currentParentId.value = parentId;
-  currentParentType.value = parentType;
-  if (resetShow) {
-    itemShow.value = false;
-    folderShow.value = false;
-  }
-    await updateFolders(parentId, parentType);
-    if (parentType  === 'folder') {
-      await updateItems(parentId)
-    } else {
-        rootItems.value = [];
+    const updateItems = async (parentId: string) => {
+      const responseItems = await girderRest.get(`item`, {
+                    params: {
+                        limit: props.limit,
+                        offset: itemOffset.value * props.limit,
+                        sort: 'name',
+                        sortdir: 1,
+                        folderId: parentId,
+
+                    },
+                }
+            );
+            itemCount.value = parseInt(responseItems.headers['girder-total-count']);
+            rootItems.value = responseItems.data;
+        return responseItems.data;
     }
-    const foundBreadCrumbIndex = breadCrumb.value.path.findIndex((item) => item.id === parentId);
-    if (foundBreadCrumbIndex !== -1) {
-        breadCrumb.value = {
-            type: breadCrumb.value.type,
-            path: breadCrumb.value.path.slice(0, foundBreadCrumbIndex + 1)
-        }
-    } else {
-        breadCrumb.value = {
-            type: breadCrumb.value.type,
-            path: [ ...breadCrumb.value.path , { name,  id: parentId }],
+
+
+    const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
+      if (props.type === 'directory' && parentType === 'folder') {
+        selected.value = {
+          name,
+          girderId: parentId,
         };
-    }
-}
+      } else if (parentType !== 'folder') {
+        selected.value = null;
+      }
 
-const setRoot = async ({ val, type, name}: {val: string,  type: GirderModelType, name: string}) => {
-    home.value = val;
-    breadCrumb.value = { type, path: []};
-    updateMainView(val, type, name, true);
-}
-
-const upLevel = () => {
-  if (breadCrumb.value.path.length > 1) { // we can't go up if add root
-    const newPath = breadCrumb.value.path[breadCrumb.value.path.length - 2]
-    let newPathType = 'folder';
-    if( breadCrumb.value.path.length === 2) {
-      newPathType = breadCrumb.value.type;
-    }
-    updateMainView(newPath.id, newPathType, newPath.name, true)
-  }
-}
-
-// This gets the main data for the Root Hierarchy Tool
-const getData = async () => {
-    const userResponse = (await girderRest.get('user/me')).data;
-    user.value = userResponse;
-
-    // REPLACE WITH A PROMISE ALL
-    const collectionsResponse = await girderRest.get('collection', {
-        params: {
-            limit: 1001,
-            offset: 0,
-            sort: 'name',
-            sortdir: 1,
-        },
-    });
-    const usersResponse = await girderRest.get('user', {
-        params: {
-            limit: 1001,
-            offset: 0,
-            sort: 'name',
-            sortdir: 1,
-            parentType: 'user',
-        },
-    });
-    const rootResponse =  await girderRest.get('folder', {
-        params: {
-            limit: 1001,
-            offset: 0,
-            sort: 'name',
-            sortdir: 1,
-            parentType: 'user',
-            parentId: userResponse._id,
-        },
-    });
-    users.value = usersResponse.data;
-    collections.value = collectionsResponse.data;
-    rootFolders.value = rootResponse.data
-    home.value = userResponse._id;
-    breadCrumb.value = {
-        type: 'user',
-        path: [{
-            name:`${userResponse.firstName} ${userResponse.lastName}`,
-            id: userResponse._id
-        }]
-    }
-}
-
-
-
-watch(folderOffset, () => updateFolders(currentParentId.value, currentParentType.value));
-watch(itemOffset, () => updateItems(currentParentId.value));
-
-const updateOffset = (type: 'folder' | 'item', value: number) => {
-  if (value < 0 || Number.isNaN(value)) {
-    folderOffset.value = 0;
-    return;
-  }
-  if (type === 'folder' && value >= Math.ceil(folderCount.value/ props.limit)) {
-    folderOffset.value = Math.ceil(folderCount.value/ props.limit)-1;
-
-    return;
-  }
-  if (type === 'item' && value >= Math.ceil(itemCount.value/ props.limit)) {
-    itemOffset.value = Math.ceil(itemCount.value/ props.limit)-1;
-    return;
-  }
-  if (type ==='folder') {
-    folderOffset.value = value;
-  }
-  if (type === 'item') {
-    itemOffset.value = value;
-  }
-}
-
-const selecting = async (item: GirderModel, type: 'folder' | 'file') => {
-  if (type === props.type) {
-    selected.value = {
-      name: item.name,
-      girderId: item._id,
-      parentId: type === 'file' ? item.parentId || undefined : undefined, 
-    };
-    selectedModel.value = item;
-  }
-  if (type === 'file' && selected.value) {
-    const files = (await (girderRest.get(`item/${item._id}/files`))).data
-    if (files.length) {
-      selected.value.fileId = files[0]['_id'];
-    }
-  }
-}
-
-const selectedItems: Ref<Record<string, boolean>> = ref({});
-
-const setSelectedName = async (data: string) => {
-  selected.value = {
-    name: data,
-    girderId: currentParentId.value,
-    parentId: currentParentId.value
-  };
-  recalculatedSelected();
-}
-
-const setRegularExpression = (data: string) => {
-  if (isValidRegex(data)) {
-    selected.value = {
-      name: data,
-      girderId: data,
-      parentId: currentParentId.value,
-    };
-    recalculatedSelected();
-    errorMsg.value = '';
-  } else {
-    errorMsg.value = 'Specify a valid Regular Expression';
-  }
-}
-
-const recalculatedSelected = () => {
-  selectedItems.value = {};
-  let reg: RegExp;
-  if (selected.value?.name) {
-    reg = new RegExp(selected.value.name);
-  } else {
-    return;
-  }
-    if (props.type !== 'directory' && rootItems.value) {
-      rootItems.value.forEach((item) => {
-        if (!props.multi && item.name === selected.value?.name) {
-          selectedItems.value[item.name] = true;
-        } else if (reg && reg.test(item.name)) {
-          selectedItems.value[item.name] = true;
+      currentParentId.value = parentId;
+      currentParentType.value = parentType;
+      if (resetShow) {
+        itemShow.value = false;
+        folderShow.value = false;
+      }
+        await updateFolders(parentId, parentType);
+        if (parentType  === 'folder') {
+          await updateItems(parentId)
+        } else {
+            rootItems.value = [];
         }
-      })
-    }
-    if (props.type === 'directory' && rootFolders.value) {
-      rootFolders.value.forEach((item) => {
-        if (!props.multi && item.name === selected.value?.name) {
-          selectedItems.value[item.name] = true;
-        } else if (reg && reg.test(item.name)) {
-          selectedItems.value[item.name] = true;
+        const foundBreadCrumbIndex = breadCrumb.value.path.findIndex((item) => item.id === parentId);
+        if (foundBreadCrumbIndex !== -1) {
+            breadCrumb.value = {
+                type: breadCrumb.value.type,
+                path: breadCrumb.value.path.slice(0, foundBreadCrumbIndex + 1)
+            }
+        } else {
+            breadCrumb.value = {
+                type: breadCrumb.value.type,
+                path: [ ...breadCrumb.value.path , { name,  id: parentId }],
+            };
         }
-      })
     }
-}
+
+    const setRoot = async ({ val, type, name}: {val: string,  type: GirderModelType, name: string}) => {
+        home.value = val;
+        breadCrumb.value = { type, path: []};
+        updateMainView(val, type, name, true);
+    }
+
+    const upLevel = () => {
+      if (breadCrumb.value.path.length > 1) { // we can't go up if add root
+        const newPath = breadCrumb.value.path[breadCrumb.value.path.length - 2]
+        let newPathType = 'folder';
+        if( breadCrumb.value.path.length === 2) {
+          newPathType = breadCrumb.value.type;
+        }
+        updateMainView(newPath.id, newPathType, newPath.name, true)
+      }
+    }
+
+    // This gets the main data for the Root Hierarchy Tool
+    const getData = async () => {
+        const userResponse = (await girderRest.get('user/me')).data;
+        user.value = userResponse;
+
+        // REPLACE WITH A PROMISE ALL
+        const collectionsResponse = await girderRest.get('collection', {
+            params: {
+                limit: 1001,
+                offset: 0,
+                sort: 'name',
+                sortdir: 1,
+            },
+        });
+        const usersResponse = await girderRest.get('user', {
+            params: {
+                limit: 1001,
+                offset: 0,
+                sort: 'name',
+                sortdir: 1,
+                parentType: 'user',
+            },
+        });
+        const rootResponse =  await girderRest.get('folder', {
+            params: {
+                limit: 1001,
+                offset: 0,
+                sort: 'name',
+                sortdir: 1,
+                parentType: 'user',
+                parentId: userResponse._id,
+            },
+        });
+        users.value = usersResponse.data;
+        collections.value = collectionsResponse.data;
+        rootFolders.value = rootResponse.data
+        home.value = userResponse._id;
+        breadCrumb.value = {
+            type: 'user',
+            path: [{
+                name:`${userResponse.firstName} ${userResponse.lastName}`,
+                id: userResponse._id
+            }]
+        }
+    }
+
+
+
+    watch(folderOffset, () => updateFolders(currentParentId.value, currentParentType.value));
+    watch(itemOffset, () => updateItems(currentParentId.value));
+
+    const updateOffset = (type: 'folder' | 'item', value: number) => {
+      if (value < 0 || Number.isNaN(value)) {
+        folderOffset.value = 0;
+        return;
+      }
+      if (type === 'folder' && value >= Math.ceil(folderCount.value/ props.limit)) {
+        folderOffset.value = Math.ceil(folderCount.value/ props.limit)-1;
+
+        return;
+      }
+      if (type === 'item' && value >= Math.ceil(itemCount.value/ props.limit)) {
+        itemOffset.value = Math.ceil(itemCount.value/ props.limit)-1;
+        return;
+      }
+      if (type ==='folder') {
+        folderOffset.value = value;
+      }
+      if (type === 'item') {
+        itemOffset.value = value;
+      }
+    }
+
+    const selecting = async (item: GirderModel, type: 'folder' | 'file') => {
+      if (type === props.type) {
+        selected.value = {
+          name: item.name,
+          girderId: item._id,
+          parentId: type === 'file' ? item.parentId || undefined : undefined, 
+        };
+        selectedModel.value = item;
+      }
+      if (type === 'file' && selected.value) {
+        const files = (await (girderRest.get(`item/${item._id}/files`))).data
+        if (files.length) {
+          selected.value.fileId = files[0]['_id'];
+        }
+      }
+    }
+
+    const selectedItems: Ref<Record<string, boolean>> = ref({});
+
+    const setSelectedName = async (data: string) => {
+      selected.value = {
+        name: data,
+        girderId: currentParentId.value,
+        parentId: currentParentId.value
+      };
+      recalculatedSelected();
+    }
+
+    const setRegularExpression = (data: string) => {
+      if (isValidRegex(data)) {
+        selected.value = {
+          name: data,
+          girderId: data,
+          parentId: currentParentId.value,
+        };
+        recalculatedSelected();
+        errorMsg.value = '';
+      } else {
+        errorMsg.value = 'Specify a valid Regular Expression';
+      }
+    }
+
+    const recalculatedSelected = () => {
+      selectedItems.value = {};
+      let reg: RegExp;
+      if (selected.value?.name) {
+        reg = new RegExp(selected.value.name);
+      } else {
+        return;
+      }
+        if (props.type !== 'directory' && rootItems.value) {
+          rootItems.value.forEach((item) => {
+            if (!props.multi && item.name === selected.value?.name) {
+              selectedItems.value[item.name] = true;
+            } else if (reg && reg.test(item.name)) {
+              selectedItems.value[item.name] = true;
+            }
+          })
+        }
+        if (props.type === 'directory' && rootFolders.value) {
+          rootFolders.value.forEach((item) => {
+            if (!props.multi && item.name === selected.value?.name) {
+              selectedItems.value[item.name] = true;
+            } else if (reg && reg.test(item.name)) {
+              selectedItems.value[item.name] = true;
+            }
+          })
+        }
+    }
+    return {
+      home,
+      collections,
+      user,
+      rootFolders,
+      folderCount,
+      folderShow,
+      folderOffset,
+      rootItems,
+      itemCount,
+      itemShow,
+      itemOffset,
+      iconMap,
+      breadCrumb,
+      selected,
+      selectedItems,
+      selectedModel,
+      errorMsg,
+      users,
+      currentParentType,
+
+      // icons
+      mdiAccount,
+      mdiArrowUpRightBold,
+      mdiChevronDoubleLeft,
+      mdiChevronDoubleRight,
+      mdiChevronDown, mdiChevronLeft,
+      mdiChevronRight,
+      mdiChevronUp,
+      mdiClose,
+      mdiEarth,
+      mdiFile,
+      mdiFolder,
+      mdiLock,
+      mdiSitemap,
+      updateOffset,
+      setRegularExpression,
+      setSelectedName,
+      updateMainView,
+      upLevel,
+      countFormatter,
+      setRoot,
+      convertInputString,
+      convertInputNumber,
+      selecting,
+      submit,
+      sizeFormatter,
+
+    }
+  },
+});
 
 
 
@@ -389,7 +454,7 @@ const recalculatedSelected = () => {
             class="pb-2 icon close clickable"
             data-dismiss="modal"
             aria-label="Close"
-            @click="emit('close')"
+            @click="$emit('close')"
           >
             <span aria-hidden="true">&times;</span>
           </svg-icon>
@@ -568,42 +633,38 @@ const recalculatedSelected = () => {
                 <div class="col-2" />
               </div>
             </div>
-            <Collapse
-              :when="!folderShow || !(rootFolders && rootFolders.length)"
+            <div
+              v-for="item in rootFolders"
+              :key="item._id"
+              :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
+              class="row justify-content-left g-0 item-row"
+              @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
             >
-              <div
-                v-for="item in rootFolders"
-                :key="item._id"
-                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
-                class="row justify-content-left g-0 item-row"
-                @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
-              >
-                <div class="col">
-                  <svg-icon
-                    type="mdi"
-                    :path="iconMap[item._modelType]"
-                    color="lightblue"
-                    :size="30"
-                    class="pb-2 icon"
-                  />
-                  <span
-                    class="col-auto clickable"
-                  >
-                    {{ item.name }}
-                  </span>
-                </div>
-                <div class="col-auto">
-                  <svg-icon
-                    type="mdi"
-                    :path="item.public ? mdiEarth : mdiLock"
-                    color="gray"
-                    :size="30"
-                    class="pb-2 icon"
-                  />
-                  <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
-                </div>
+              <div class="col">
+                <svg-icon
+                  type="mdi"
+                  :path="iconMap[item._modelType]"
+                  color="lightblue"
+                  :size="30"
+                  class="pb-2 icon"
+                />
+                <span
+                  class="col-auto clickable"
+                >
+                  {{ item.name }}
+                </span>
               </div>
-            </Collapse>
+              <div class="col-auto">
+                <svg-icon
+                  type="mdi"
+                  :path="item.public ? mdiEarth : mdiLock"
+                  color="gray"
+                  :size="30"
+                  class="pb-2 icon"
+                />
+                <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+              </div>
+            </div>
             <div
               v-if="(itemCount > limit || folderCount > limit) && itemCount"
               class="item-header"
@@ -686,43 +747,39 @@ const recalculatedSelected = () => {
               </div>
             </div>
 
-            <Collapse
-              :when="!itemShow || !(rootItems && rootItems.length)"
+            <div
+              v-for="item in rootItems"
+              :key="item._id"
+              class="row justify-content-left g-0  item-row"
+              :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
+              @click="selecting(item, 'file')"
             >
-              <div
-                v-for="item in rootItems"
-                :key="item._id"
-                class="row justify-content-left g-0  item-row"
-                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
-                @click="selecting(item, 'file')"
-              >
-                <div class="col">
-                  <svg-icon
-                    type="mdi"
-                    :path="iconMap[item._modelType]"
-                    color="lightblue"
-                    :size="30"
-                    class="pb-2 icon"
-                  />
-                  <span>
-                    {{ item.name }}
-                  </span>
-                </div>
-                <div class="col-auto">
-                  <span class="row-info">{{ sizeFormatter(item.size) }}</span>
-                </div>
-                <div class="col-auto">
-                  <svg-icon
-                    type="mdi"
-                    :path="item.public ? mdiEarth : mdiLock"
-                    color="gray"
-                    :size="30"
-                    class="pb-2 icon"
-                  />
-                  <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
-                </div>
+              <div class="col">
+                <svg-icon
+                  type="mdi"
+                  :path="iconMap[item._modelType]"
+                  color="lightblue"
+                  :size="30"
+                  class="pb-2 icon"
+                />
+                <span>
+                  {{ item.name }}
+                </span>
               </div>
-            </Collapse>
+              <div class="col-auto">
+                <span class="row-info">{{ sizeFormatter(item.size) }}</span>
+              </div>
+              <div class="col-auto">
+                <svg-icon
+                  type="mdi"
+                  :path="item.public ? mdiEarth : mdiLock"
+                  color="gray"
+                  :size="30"
+                  class="pb-2 icon"
+                />
+                <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -770,7 +827,7 @@ const recalculatedSelected = () => {
           <button
             type="button"
             class="btn btn-secondary"
-            @click="emit('close')"
+            @click="$emit('close')"
           >
             Cancel
           </button>

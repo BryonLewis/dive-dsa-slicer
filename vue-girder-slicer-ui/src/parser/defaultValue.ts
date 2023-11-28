@@ -5,7 +5,7 @@ import convert from './convert';
  * If the default value appears to be a templated string, also return an
  * empty object.
  */
-export default function defaultValue(type, value) {
+export default function defaultValue(type: string, value: JQuery<HTMLElement>) {
     if (value.length > 0) {
         if (value.text().substr(0, 2) !== '{{' || value.text().substr(Math.max(0, value.text().length - 2)) !== '}}') {
             return {value: convert(type, value.text())};

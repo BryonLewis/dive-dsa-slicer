@@ -1,13 +1,7 @@
+
 <script lang="ts">
-interface PropsType {
-  apiUrl?: string;
-  taskId: string | null;
-  colorMode?: string;
-}
-</script>
-<script setup lang="ts">
-import { Ref, computed, ref, watch } from 'vue';
-import { parse } from '../parser/index';
+import { PropType, Ref, computed, defineComponent, ref, watch } from 'vue';
+import parse from '../parser/parse';
 import GirderControlsPanel from './GirderControlsPanel.vue';
 import RestClient from '../api/girderRest';
 import { JobResponse, useGirderSlicerApi } from '../api/girderSlicerApi';
@@ -15,57 +9,81 @@ import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
 
-const props = withDefaults(defineProps<PropsType>(), {
-  apiUrl: 'api/v1',
-  taskId: '64e8aff6072d5e5fbb8719a4',
-  colorMode: undefined,
-});
 
-const emit = defineEmits<{
-  (e: "run-task", jobId: string): void;
-}>();
+export default defineComponent({
+  components: {
+    GirderControlsPanel,
+    SvgIcon
+  },
+  props: {
+    apiUrl: {
+      type: String,
+      default: 'api/v1',
+    },
+    taskId: {
+      type: String as PropType<string | null>,
+      default: '64e8aff6072d5e5fbb8719a4'
+    },
+    colorMode: {
+      type:String,
+      default: undefined
+    }
+  },
+  setup(props, { emit }) {
 
-const girderRest = new RestClient({apiRoot: props.apiUrl});
-const loggedIn = computed(() => girderRest?.token);
-const result: Ref<XMLSpecification | null> = ref(null);
-const jobData: Ref<null | JobResponse> = ref(null)
-const slicerApi = useGirderSlicerApi(girderRest);
-const getData = async () => {
-  if (props.taskId) {
-    const response = await slicerApi.getSlicerXML(props.taskId);
-    result.value = parse(response.data);
-  }
-}
-if (props.taskId) {
-  getData();
-}
-watch(() => props.taskId, () => {
-  getData();
-})
 
-const updateParameters = (e: XMLParameters[], index: number) => {
-  if (result.value) {
-    result.value.panels[index].groups[0].parameters = e;
-  }
-}
+    const girderRest = new RestClient({apiRoot: props.apiUrl});
+    const loggedIn = computed(() => girderRest?.token);
+    const result: Ref<XMLSpecification | null> = ref(null);
+    const jobData: Ref<null | JobResponse> = ref(null)
+    const slicerApi = useGirderSlicerApi(girderRest);
+    const getData = async () => {
+      if (props.taskId) {
+        const response = await slicerApi.getSlicerXML(props.taskId);
+        result.value = parse(response.data);
+      }
+    }
+    if (props.taskId) {
+      getData();
+    }
+    watch(() => props.taskId, () => {
+      getData();
+    })
 
-const runTask = async () => {
-  // First we need to validate the task has all parameters required.
-  if (result.value && props.taskId) {
-    const resp = await slicerApi.runTask(result.value, props.taskId);
-    if (resp) {
-      jobData.value = resp;
-      emit('run-task', jobData.value._id);
+    const updateParameters = (e: XMLParameters[], index: number) => {
+      if (result.value) {
+        result.value.panels[index].groups[0].parameters = e;
+      }
+    }
+
+    const runTask = async () => {
+      // First we need to validate the task has all parameters required.
+      if (result.value && props.taskId) {
+        const resp = await slicerApi.runTask(result.value, props.taskId);
+        if (resp) {
+          jobData.value = resp;
+          emit('run-task', jobData.value._id);
+        }
+      }
+    }
+
+    const processInput = async (name: string) => {
+      if (result.value) {
+        await slicerApi.processInput(result.value, name);
+      }
+
+    }
+    return {
+      result,
+      runTask,
+      updateParameters,
+      processInput,
+      jobData,
+      loggedIn,
+      mdiClose,
     }
   }
-}
-
-const processInput = async (name: string) => {
-  if (result.value) {
-    await slicerApi.processInput(result.value, name);
-  }
-
-}
+});
 
 </script>
 

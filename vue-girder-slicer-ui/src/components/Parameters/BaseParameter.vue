@@ -1,44 +1,51 @@
-<script setup lang="ts">
-import { PropType, Ref, computed, onMounted, ref } from 'vue'
+<script lang="ts">
+import { PropType, Ref, computed, defineComponent, onMounted, ref } from 'vue'
 import type { XMLBaseValue } from '../../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
-const props = defineProps({
+export default defineComponent({
+  props: {
     data: {
-        type: Object as PropType<XMLParameters>,
+      type: Object as PropType<XMLParameters>,
         required: true,
-    },
+    }
+  },
+  setup(props, { emit }) {
+    const error = computed(() => props.data.error)
+    const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
+    const numbers = ref(['integer', 'float', 'double']);
+    const currentValue: Ref<XMLBaseValue> = ref(0);
+    onMounted(() => {
+        if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
+            currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
+        } else {
+            currentValue.value = props.data.defaultValue || props.data.value || '';
+        }
+    })
+
+    const validate = (e: Event) => {
+        // Validation Logic for different types
+        const update = { ...props.data };
+        let value = (e.target as HTMLInputElement).value as XMLBaseValue;
+        if (numberVectors.value.includes(props.data.slicerType)) {
+            value = (value as string).split(',').map(parseFloat);
+        } else if (props.data.slicerType === 'string-vector') {
+            value = (value as string).split(',');
+        }
+        update.value = value;
+        currentValue.value = value;
+        emit('change', update);
+    }
+    return {
+      error,
+      numberVectors,
+      numbers,
+      currentValue,
+      validate
+    }
+
+  }
 })
 
-const error = computed(() => props.data.error)
-const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
-const numbers = ref(['integer', 'float', 'double']);
-const currentValue: Ref<XMLBaseValue> = ref(0);
-onMounted(() => {
-    if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
-        currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
-    } else {
-        currentValue.value = props.data.defaultValue || props.data.value || '';
-    }
-})
-
-const emit = defineEmits<{
-    (e: "change", data: XMLParameters): void;
-}>();
-
-
-const validate = (e: Event) => {
-    // Validation Logic for different types
-    const update = { ...props.data };
-    let value = (e.target as HTMLInputElement).value as XMLBaseValue;
-    if (numberVectors.value.includes(props.data.slicerType)) {
-        value = (value as string).split(',').map(parseFloat);
-    } else if (props.data.slicerType === 'string-vector') {
-        value = (value as string).split(',');
-    }
-    update.value = value;
-    currentValue.value = value;
-    emit('change', update);
-}
 
 </script>
 

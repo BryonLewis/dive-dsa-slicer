@@ -2,7 +2,7 @@ import axios_, { Axios, AxiosInstance } from 'axios';
 import cookies from 'js-cookie';
 import { stringify } from 'qs';
 
-interface GirderRestClientParams {
+export interface GirderRestClientParams {
     apiRoot: string;
     token?: string;
     axios?: AxiosInstance;

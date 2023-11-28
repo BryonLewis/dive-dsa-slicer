@@ -3,7 +3,9 @@
  * @param {XML} param The full xml parameter spec
  * @return {string} The widget type
  */
-export default function widget(param) {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function widget(param: any) {
     const typeMap = {
         integer: 'number',
         float: 'number',
@@ -25,5 +27,6 @@ export default function widget(param) {
         directory: 'directory',
         multi: 'multi'
     };
-    return typeMap[param.tagName];
+    type typeMapType = keyof typeof typeMap
+    return typeMap[param.tagName as typeMapType];
 }

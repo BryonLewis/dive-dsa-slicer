@@ -1,31 +1,38 @@
-<script setup lang="ts">
-import { PropType, ref } from 'vue'
+<script lang="ts">
+import { PropType, defineComponent, ref } from 'vue'
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
 import GirderSlicerParameter from './GirderSlicerParameter.vue';
-import { Collapse } from 'vue-collapsed'
-
-const props = defineProps({
-  panel: {
+export default defineComponent({
+  components: {
+    GirderSlicerParameter,
+  },
+  props: {
+    panel: {
     type: Object as PropType<XMLPanel>,
     required: true,
+    },
+    collapseOverride: {
+      type: Boolean,
+      required: false,
+    }
   },
-  collapseOverride: {
-    type: Boolean,
-    required: false,
+  setup(props, { emit }) {
+
+  const collapsed = ref(!props.panel.advanced)
+
+  const updateParams = (e: XMLParameters[]) =>{
+    emit('change', e);
+  };
+  return {
+    collapsed,
+    updateParams,
+    mdiChevronDown,
+    mdiChevronUp,
   }
-})
-const emit = defineEmits<{
-  (e: "change", data: XMLParameters[]): void;
-  (e: "input-selected", data: string): void;
-}>();
-
-const collapsed = ref(!props.panel.advanced)
-
-const updateParams = (e: XMLParameters[]) =>{
-  emit('change', e);
 }
+});
 </script>
 
 <template>
@@ -52,20 +59,16 @@ const updateParams = (e: XMLParameters[]) =>{
           </h5>
         </div>
       </div>
-      <Collapse
-        :when="!collapsed || collapseOverride"
+      <div
+        v-if="!collapsed"
+        class="row"
       >
-        <div
-          v-if="!collapsed"
-          class="row"
-        >
-          <girder-slicer-parameter
-            :parameters="panel.groups[0].parameters"
-            @change="updateParams($event)"
-            @input-selected="$emit('input-selected', $event)"
-          />
-        </div>
-      </Collapse>
+        <girder-slicer-parameter
+          :parameters="panel.groups[0].parameters"
+          @change="updateParams($event)"
+          @input-selected="$emit('input-selected', $event)"
+        />
+      </div>
     </div>
   </div>
 </template>

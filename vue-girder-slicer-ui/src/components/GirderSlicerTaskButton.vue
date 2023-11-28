@@ -1,13 +1,5 @@
 <script lang="ts">
-interface PropsType {
-  apiUrl?: string;
-  filter?: string;
-  colorMode?: string
-}
-</script>
-
-<script setup lang="ts">
-import { Ref, computed, onMounted, ref } from 'vue';
+import { Ref, computed, defineComponent, onMounted, ref,  } from 'vue';
 import { Tooltip } from 'bootstrap'
 import {extractImageInfo } from '../utils';
 
@@ -17,56 +9,75 @@ import { useGirderSlicerApi } from '../api/girderSlicerApi';
 import { mdiAlert } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 
-
-
 type TaskHierarchy =  Record<string, {tag: string, tasks:{ imageBase:string, imageTag: string; _id: string; name:string; description: string}[]}[]>;
-const props = withDefaults(defineProps<PropsType>(), {
-  apiUrl: 'api/v1',
-  filter: '',
-  colorMode: undefined,
-});
 
-onMounted(() => {
-  new Tooltip(document.body, {
-      selector: "[data-bs-toggle='tooltip']",
-    })
 
-})
-const girderRest = new RestClient({apiRoot: props.apiUrl});
-const loggedIn = computed(() => girderRest?.token);
-const slicerApi = useGirderSlicerApi(girderRest);
-const results: Ref<TaskHierarchy> = ref({});
-const getData = async () => {
-  const response = await slicerApi.getSlicerList();
-  // ground items by their image
-  const taskHierarchy: TaskHierarchy = {};
-  response.data.forEach((task) => {
-    // Lets get the base image name
-    const imageInfo = extractImageInfo(task.image);
-    if (imageInfo) {
-      // We create a root for it
-      if (taskHierarchy[imageInfo.baseName] === undefined) {
-        taskHierarchy[imageInfo.baseName] = [{tag:imageInfo.tag, tasks:[]}];
-      }
-      const foundIndex = taskHierarchy[imageInfo.baseName].findIndex((item) => item.tag === imageInfo.tag);
-      if (foundIndex !== -1){
-        taskHierarchy[imageInfo.baseName][foundIndex].tasks.push({ imageBase: imageInfo.baseName, imageTag: imageInfo.tag, _id: task._id, name: task.name, description: task.description});
-      }
-      else if (foundIndex === -1){
-        taskHierarchy[imageInfo.baseName].push({tag:imageInfo.tag, tasks:[{ imageBase: imageInfo.baseName, imageTag: imageInfo.tag, _id: task._id, name: task.name, description: task.description}]});
-      }
+export default defineComponent({
+  components: {
+    SvgIcon,
+  },
+  props: {
+    apiUrl: {
+      type: String,
+      default: 'api/v1',
+    },
+    filter: {
+      type: String,
+      default: ''
+    },
+    colorMode: {
+      type:String,
+      default: undefined
     }
-  })
-  results.value = taskHierarchy;
-}
-const emit = defineEmits<{
-    (e: "selected", id: string): void;
-}>();
+  },
+  setup(props, { emit }) {
 
-const select = (id: string) => {
-  emit('selected', id);
-}
-onMounted(() => getData());
+    const girderRest = new RestClient({apiRoot: props.apiUrl});
+    const loggedIn = computed(() => girderRest?.token);
+    const slicerApi = useGirderSlicerApi(girderRest);
+    const results: Ref<TaskHierarchy> = ref({});
+    const getData = async () => {
+      const response = await slicerApi.getSlicerList();
+      // ground items by their image
+      const taskHierarchy: TaskHierarchy = {};
+      response.data.forEach((task) => {
+        // Lets get the base image name
+        const imageInfo = extractImageInfo(task.image);
+        if (imageInfo) {
+          // We create a root for it
+          if (taskHierarchy[imageInfo.baseName] === undefined) {
+            taskHierarchy[imageInfo.baseName] = [{tag:imageInfo.tag, tasks:[]}];
+          }
+          const foundIndex = taskHierarchy[imageInfo.baseName].findIndex((item) => item.tag === imageInfo.tag);
+          if (foundIndex !== -1){
+            taskHierarchy[imageInfo.baseName][foundIndex].tasks.push({ imageBase: imageInfo.baseName, imageTag: imageInfo.tag, _id: task._id, name: task.name, description: task.description});
+          }
+          else if (foundIndex === -1){
+            taskHierarchy[imageInfo.baseName].push({tag:imageInfo.tag, tasks:[{ imageBase: imageInfo.baseName, imageTag: imageInfo.tag, _id: task._id, name: task.name, description: task.description}]});
+          }
+        }
+      })
+      results.value = taskHierarchy;
+    }
+
+    const select = (id: string) => {
+      emit('selected', id);
+    };
+
+    onMounted(() => {
+      new Tooltip(document.body, {
+          selector: "[data-bs-toggle='tooltip']",
+        })
+        getData();
+    });
+    return {
+      results,
+      mdiAlert,
+      loggedIn,
+      select,
+    };
+  },
+});
 
 </script>
 

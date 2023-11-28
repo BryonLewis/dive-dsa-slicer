@@ -1,25 +1,45 @@
-<script setup lang="ts">
-import { Ref, ref } from 'vue';
+<script lang="ts">
+import { Ref, defineComponent, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
 import DataBrowser from './components/FileBrowser/DataBrowser.vue';
-import { GirderModel } from './girderTypes';
+import type { GirderModel } from './girderTypes';
 
 
-const selected: Ref<string | null> = ref(null);
+export default defineComponent({
+  name: 'App',
+  components: {
+    GirderSlicerTaskButton,
+    GirderSlicerTaskCard,
+    DataBrowser,
+  },
+  props: {
+    
+  },
+  setup() {
+    const selected: Ref<string | null> = ref(null);
 
-const select = (id: string) => {
-  selected.value = id;
-}
-const showBrowser = ref(false);
+    const select = (id: string) => {
+      selected.value = id;
+    }
+    const showBrowser = ref(false);
 
-const validate = (e: GirderModel) => {
-  if (e.name.includes('jpg')) {
-    return  { valid: true}
-  } else {
-    return {valid: false, msg: 'Item needs to be of type jpg'}
-  }
-};
+    const validate = (e: GirderModel) => {
+      if (e.name.includes('jpg')) {
+        return  { valid: true}
+      } else {
+        return {valid: false, msg: 'Item needs to be of type jpg'}
+      }
+    };
+    return {
+      selected,
+      select,
+      showBrowser,
+      validate,
+    };
+
+  },
+});
 </script>
 
 <template>
