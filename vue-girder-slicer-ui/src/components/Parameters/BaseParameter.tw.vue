@@ -10,9 +10,10 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-
-
-const currentValue: Ref<XMLBaseValue> = ref(0);
+    const error = computed(() => props.data.error)
+    const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
+    const numbers = ref(['integer', 'float', 'double']);
+    const currentValue: Ref<XMLBaseValue> = ref(0);
     onMounted(() => {
         if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
             currentValue.value = props.data.defaultValue.join(',') || props.data.value || '';
@@ -20,64 +21,56 @@ const currentValue: Ref<XMLBaseValue> = ref(0);
             currentValue.value = props.data.defaultValue || props.data.value || '';
         }
     })
-
     const validate = (e: Event) => {
         // Validation Logic for different types
         const update = { ...props.data };
-        let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
-
-        if (props.data.slicerType === 'number-enumeration') {
-            value = parseFloat(value as string);
+        let value = (e.target as HTMLInputElement).value as XMLBaseValue;
+        if (numberVectors.value.includes(props.data.slicerType)) {
+            value = (value as string).split(',').map(parseFloat);
+        } else if (props.data.slicerType === 'string-vector') {
+            value = (value as string).split(',');
         }
         update.value = value;
         currentValue.value = value;
         emit('change', update);
     }
-
-
-    const error = computed(() => props.data.error);
     return {
       error,
+      numberVectors,
+      numbers,
       currentValue,
       validate
     }
   }
-});
+})
 </script>
-
 <template>
-  <div class="form-group">
+  <div>
     <label for="parameterInput">{{ data.title }} <span
       v-if="error"
-      class="text-danger"
+      class="text-red"
     > {{ error }}</span></label>
-    <input 
-      v-if="data.constraints && typeof data.constraints.min === 'number' && typeof data.constraints.max === 'number'"
+    <input
+      v-if="numbers.includes(data.slicerType) || data.slicerType === 'string'"
       id="parameterInput"
-      class="form-control"
-      type="range"
-      :min="data.constraints.min || 0"
-      :max="data.constraints.max || 1"
+      class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+      :type="numbers.includes(data.slicerType) ? 'number' : 'text'"
       :value="currentValue"
       @change="validate($event)"
     >
-    <input 
-      v-else
+    <input
+      v-else-if="(numberVectors.includes(data.slicerType) || data.slicerType === 'string-vector')"
       id="parameterInput"
-      class="form-control"
-      type="range"
-      min="0"
-      max="1"
+      class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+      type="text"
       :value="currentValue"
       @change="validate($event)"
     >
-
     <small
       v-if="data.description"
-      class="form-text text-muted"
+      class="block mt-1 text-grey"
     >{{ data.description }}</small>
   </div>
 </template>
-
 <style scoped>
 </style>

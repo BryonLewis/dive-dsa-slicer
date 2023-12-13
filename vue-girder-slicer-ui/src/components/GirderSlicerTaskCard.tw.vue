@@ -1,16 +1,14 @@
-
 <script lang="ts">
 import { PropType, Ref, computed, defineComponent, ref, watch } from 'vue';
 import parse from '../parser/parse';
-import GirderControlsPanel from './GirderControlsPanel.vue';
+import GirderControlsPanel from './GirderControlsPanel.tw.vue';
 import RestClient from '../api/girderRest';
 import { JobResponse, useGirderSlicerApi } from '../api/girderSlicerApi';
 import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
-
-
 export default defineComponent({
+  compatConfig: { mode: 2 },
   components: {
     GirderControlsPanel,
     SvgIcon
@@ -22,7 +20,7 @@ export default defineComponent({
     },
     taskId: {
       type: String as PropType<string | null>,
-      default: '64e8aff6072d5e5fbb8719a4'
+      default: '64e8aff6072d5e5fbb8719aa'
     },
     colorMode: {
       type:String,
@@ -30,8 +28,6 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-
-
     const girderRest = new RestClient({apiRoot: props.apiUrl});
     const loggedIn = computed(() => girderRest?.token);
     const result: Ref<XMLSpecification | null> = ref(null);
@@ -49,13 +45,11 @@ export default defineComponent({
     watch(() => props.taskId, () => {
       getData();
     })
-
     const updateParameters = (e: XMLParameters[], index: number) => {
       if (result.value) {
         result.value.panels[index].groups[0].parameters = e;
       }
     }
-
     const runTask = async () => {
       // First we need to validate the task has all parameters required.
       if (result.value && props.taskId) {
@@ -66,12 +60,10 @@ export default defineComponent({
         }
       }
     }
-
     const processInput = async (name: string) => {
       if (result.value) {
         await slicerApi.processInput(result.value, name);
       }
-
     }
     return {
       result,
@@ -84,38 +76,36 @@ export default defineComponent({
     }
   }
 });
-
 </script>
-
 <template>
   <div
     v-if="result"
-    class="card"
-    :data-bs-theme="colorMode"
+    class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light"
+    :class="{dark: colorMode === 'dark'}"
   >
-    <div class="card-body">
-      <div class="card-title row justify-content-left g-0">
-        <div class="col-10">
+    <div class="flex-auto p-6">
+      <div class="grid grid-cols-12 gap-4 pb-2">
+        <span class="col-span-10">
           <h5>
             {{ result.title }}
           </h5>
-        </div>
-        <div class="col-auto ">
+        </span>
+        <span class="col-span-2">
           <button
             type="button"
-            class="btn btn-primary"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded border-2"
             @click="runTask()"
           >
             Run
           </button>
-        </div>
+        </span>
       </div>
       <div
         v-if="jobData"
-        class="card-title row justify-content-left g-0"
+        class="mb-3 flex flex-wrap justify-content-left g-0"
       >
         <div
-          class="alert alert-success alert-dismissible fade show"
+          class="relative px-3 py-3 mb-4 border rounded text-green-darker border-green-dark bg-green-lighter  opacity-0 opacity-100 block"
           role="alert"
         >
           <span>{{ jobData.title }} running</span>
@@ -133,7 +123,7 @@ export default defineComponent({
           </svg-icon>
         </div>
       </div>
-      <p class="card-text">
+      <p class="mb-0">
         {{ result.description }}
       </p>
       <GirderControlsPanel
@@ -147,9 +137,9 @@ export default defineComponent({
     </div>
   </div>
   <div v-else-if="!loggedIn">
-    <div class="card">
+    <div class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light">
       <div
-        class="alert alert-warning"
+        class="relative px-3 py-3 mb-4 border rounded text-yellow-darker border-yellow-dark bg-yellow-lighter"
         role="warning"
       >
         <h4>User Not Logged In.  Cannot display Task information.</h4>>
@@ -157,9 +147,7 @@ export default defineComponent({
     </div>
   </div>
 </template>
-
 <style scoped>
-
 a {
   color: #42b983;
 }
