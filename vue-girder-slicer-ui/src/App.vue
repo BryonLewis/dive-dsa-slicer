@@ -2,6 +2,8 @@
 import { Ref, defineComponent, ref } from 'vue';
 import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.tw.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.tw.vue';
+import GirderSlicerTaskMenu from './components/GirderSlicerTaskMenu.tw.vue';
+import GirderSlicerTaskMenuModal from './components/GlicerSlicerTaskMenuModalButton.tw.vue';
 import DataBrowser from './components/FileBrowser/DataBrowser.tw.vue';
 import Modal from './components/FileBrowser/Modal.tw.vue';
 import type { GirderModel } from './girderTypes';
@@ -11,7 +13,9 @@ export default defineComponent({
   name: 'App',
   components: {
     GirderSlicerTaskButton,
+    GirderSlicerTaskMenu,
     GirderSlicerTaskCard,
+    GirderSlicerTaskMenuModal,
     DataBrowser,
     Modal,
   },
@@ -53,7 +57,7 @@ export default defineComponent({
 >
 
   <div class="col">
-    <girder-slicer-task-card :task-id="selected" />
+    <!-- <girder-slicer-task-card :task-id="selected" />
 
     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
     @click="showBrowser = true"
@@ -65,8 +69,10 @@ export default defineComponent({
       :validation="validate"
       type="file"
       @close="showBrowser=false"
-    />
-    <girder-slicer-task-button @selected="select($event)" colorMode="dark" />
+    /> -->
+    <girder-slicer-task-menu-modal />
+    <!-- <girder-slicer-task-menu /> -->
+    <!-- <girder-slicer-task-button @selected="select($event)" colorMode="dark" /> -->
   </div>
   </div>
   </div>

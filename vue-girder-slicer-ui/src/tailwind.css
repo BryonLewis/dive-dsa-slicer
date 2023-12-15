@@ -8,15 +8,16 @@
     .breadcrumb {
         @apply text-sky-400 bg-gray-200;
       }
-      .disabled-icon {
-        @apply text-gray-500;
-      }
-      .disabled-icon:hover {
-        cursor: default;
-      }
+    .disabled-icon {
+      @apply text-gray-500;
+    }
+    .disabled-icon:hover {
+      cursor: default;
+    }
       
-    .icon {
+    .gsu-icon {
         @apply text-sky-400;
+        display:inline;
       }
     }
     .clickable {
@@ -29,10 +30,10 @@
         right: 5px;
         font-size: 10px;
     }
-    .item-row {
+    .gsu-item-row {
       @apply border-solid border-t-2 border-x-2 border-gray-500 hover:bg-yellow-400 hover:cursor-pointer;
     }
-    .row-info {
+    .gsu-row-info {
       color: var(--bs-body-color);
       padding-right: 10px;
     }
@@ -58,21 +59,22 @@
       font-weight: bold;
       color:red;
     }
-    .selected-items {
+    .gsu-selected-items {
       @apply bg-yellow-200;
     }
     .header{
       color: var(--bs-body-color);
     }
-    .selection {
+    .gsu-selection {
     }
     .text-left {
       text-align: left;
     }
-    .icon {
-      display:inline;
-    }
     
     .number-input {
       border:1px solid gray;
+    }
+
+    .gsu-disabled-button {
+      @apply bg-gray-300 cursor-not-allowed opacity-50
     }

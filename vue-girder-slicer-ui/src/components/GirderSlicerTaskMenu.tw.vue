@@ -5,11 +5,9 @@ import RestClient from "../api/girderRest";
 import { useGirderSlicerApi } from "../api/girderSlicerApi";
 import { mdiAlert, mdiChevronDown, mdiChevronRight } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
-import { OnClickOutside } from '@vueuse/components'
+import { cloneDeep } from 'lodash';
 
-type TaskHierarchy = Record<
-  string,
-  {
+interface TaskInfo {
     tag: string;
     tasks: {
       imageBase: string;
@@ -18,12 +16,15 @@ type TaskHierarchy = Record<
       name: string;
       description: string;
     }[];
-  }[]
+}
+
+type TaskHierarchy = Record<
+  string,
+  [TaskInfo]
 >;
 export default defineComponent({
   components: {
     SvgIcon,
-    OnClickOutside,
   },
   props: {
     apiUrl: {
@@ -44,11 +45,10 @@ export default defineComponent({
     const loggedIn = computed(() => girderRest?.token);
     const slicerApi = useGirderSlicerApi(girderRest);
     const results: Ref<TaskHierarchy> = ref({});
-    const clicked = ref(false);
+    const clicked: Ref<Record<string, boolean>> = ref({})
     const getData = async () => {
       try {
         const response = await slicerApi.getSlicerList();
-        console.log(response);
         // ground items by their image
         const taskHierarchy: TaskHierarchy = {};
         response.data.forEach((task) => {
@@ -57,6 +57,7 @@ export default defineComponent({
           if (imageInfo) {
             // We create a root for it
             if (taskHierarchy[imageInfo.baseName] === undefined) {
+              clicked.value[imageInfo.baseName] = false;
               taskHierarchy[imageInfo.baseName] = [
                 { tag: imageInfo.tag, tasks: [] },
               ];
@@ -65,6 +66,7 @@ export default defineComponent({
               (item) => item.tag === imageInfo.tag
             );
             if (foundIndex !== -1) {
+              clicked.value[`${imageInfo.baseName}.${imageInfo.tag}`] = false;
               taskHierarchy[imageInfo.baseName][foundIndex].tasks.push({
                 imageBase: imageInfo.baseName,
                 imageTag: imageInfo.tag,
@@ -93,12 +95,33 @@ export default defineComponent({
         console.error("Cannot communicate with server");
       }
     };
-    const select = (id: string) => {
-      emit("selected", id);
+    const select = (id: string, name: string) => {
+    console.log(`Emitting: ${id} ${name}`);
+      emit("selected", {id, name});
     };
     onMounted(() => {
       getData();
     });
+    const selectItem = (item: string) => {
+        const tempClicked = cloneDeep(clicked.value);
+        if (tempClicked[item]) {
+            //Then we toggle it off and all children
+            tempClicked[item] = false;
+        } else {
+            Object.keys(tempClicked).forEach((key) => tempClicked[key] = false );
+            const splits = item.split('.');
+            const builtString: string[] = [];
+            splits.forEach((key) => {
+                builtString.push(key);
+                const testString = builtString.join('.');
+                if (tempClicked[testString] !== undefined) {
+                    tempClicked[testString] = true;
+                }
+            });
+        }
+        clicked.value = tempClicked;
+
+    }
     return {
       results,
       mdiAlert,
@@ -107,82 +130,70 @@ export default defineComponent({
       loggedIn,
       select,
       clicked,
+      selectItem,
     };
   },
 });
 </script>
 <template>
   <div  :class="{dark: colorMode === 'dark'}">
-    <on-click-outside @trigger="clicked = false">
-    <div v-if="loggedIn" class="dropdown inline-block relative w-56">
-      <button
-        class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center
-        rounded-sm flex items-center min-w-32"
-        @click="clicked = true"
-      >
-        <span class="pr-1 font-semibold flex-1">Tasks</span>
-        <span>
-          <svg-icon type="mdi" :path="mdiChevronDown" :size="30" class="pb-1" />
-
-        </span>
-      </button>
+    <div v-if="loggedIn">
       <ul
-        v-if="clicked"
-        class="absolute text-gray-700"
+        class="text-gray-700"
       >
         <li
-          class="dropdown w-56"
           v-for="(item, key) in results"
           :key="key"
         >
-        <a class="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+        <span class="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" @click="selectItem(item.length === 1 ? `${key}.${item[0].tag}` : key )" >
             <span class="pr-1 flex-1"
               >{{ item.length === 1 ? `${key}:${item[0].tag}` : key }}
             </span>
             <span class="mr-auto">
+                <svg-icon type="mdi" :path="clicked[item.length === 1 ? `${key}.${item[0].tag}` : key] ? mdiChevronDown : mdiChevronRight" :size="30" class="pb-1" style="display:inline" />
             </span>
-          </a>
+        </span>
           <ul
-            v-if="item.length === 1"
-            class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+            v-if="item.length === 1 && clicked[`${key}.${item[0].tag}`]"
+            class="text-gray-700"
           >
             <li
               v-for="task in item[0].tasks"
               :key="task._id"
-              class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
-              @click="select(task._id)"
+              class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-8"
+              @click="select(task._id, `${key}:${item[0].tag} -> ${task.name}`)"
             >
               {{ task.name }}
             </li>
           </ul>
           <ul
-            v-else
-            class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+            v-else-if="clicked[key] && item.length > 1"
+            class="text-gray-700"
           >
             <li
               v-for="tag in item"
               :key="tag.tag"
-              class="dropdown w-56"
             >
-            <a class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+            <span class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-8" @click="selectItem(`${key}.${tag.tag}`)">
                 <span class="pr-1">{{ tag.tag }}</span>
                 <span class="mr-auto">
-                  <svg-icon type="mdi" :path="mdiChevronRight" :size="30" class="pb-1" style="display:inline" />
+                  <svg-icon type="mdi" :path="clicked[`${key}.${tag.tag}`] ? mdiChevronDown : mdiChevronRight" :size="30" class="pb-1" style="display:inline" />
 
                 </span>
-              </a>
+            </span>
               <ul
-                class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+                v-if="clicked[`${key}.${tag.tag}`]"
+                class="text-gray-700"
               >
                 <li
                   v-for="task in tag.tasks"
                   :key="task._id"
-                  @click="select(task._id)"
-                  class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
+                  @click="select(task._id,`${key}:${tag.tag} -> ${task.name}` )"
+                  class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-12"
                 >
-                  <a class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+                  <span class=" py-2 px-4 block whitespace-no-wrap" href="#">
                   {{ task.name }}
-                  </a>
+                  </span>
                 </li>
               </ul>
             </li>
@@ -191,23 +202,11 @@ export default defineComponent({
       </ul>
     </div>
     <div v-else>
-      <button
-        type="button"
-        class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline text-yellow-dark border-yellow bg-white hover:bg-yellow-light hover:text-yellow-darker"
-        data-toggle=""
-        data-placement="top"
-        title="Not Logged In"
-      >
         Error
         <svg-icon type="mdi" :path="mdiAlert" :size="30" class="pb-1" />
-      </button>
     </div>
-    </on-click-outside>
   </div>
 </template>
 <style scoped lang="scss">
-.dropdown:hover > .dropdown-content {
-	display: block;
-}
 
 </style>

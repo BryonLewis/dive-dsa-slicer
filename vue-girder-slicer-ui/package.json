@@ -59,6 +59,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.14.202",
     "@types/qs": "^6.9.10",
     "@types/underscore": "^1.11.15",
     "@typescript-eslint/eslint-plugin": "^6.7.4",

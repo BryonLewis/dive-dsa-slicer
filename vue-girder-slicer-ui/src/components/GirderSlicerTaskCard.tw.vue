@@ -8,6 +8,7 @@ import type { XMLParameters, XMLSpecification } from '../parser/parserTypes';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
 export default defineComponent({
+  name:'GirderSlicerTaskCard',
   compatConfig: { mode: 2 },
   components: {
     GirderControlsPanel,
@@ -80,7 +81,7 @@ export default defineComponent({
 <template>
   <div
     v-if="result"
-    class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light"
+    class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light pa-2"
     :class="{dark: colorMode === 'dark'}"
   >
     <div class="flex-auto p-6">
@@ -113,7 +114,7 @@ export default defineComponent({
             type="mdi"
             :path="mdiClose"
             :size="30"
-            class="pb-2 icon clickable"
+            class="pb-2 gsu-icon clickable"
             data-dismiss="modal"
             aria-label="Close"
             style="float:right"

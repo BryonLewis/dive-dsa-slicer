@@ -60,7 +60,7 @@ export default class RestClient extends Axios {
     axios = axios_.create(),
     authenticateWithCredentials = false,
     useGirderAuthorizationHeader = false,
-    setLocalCookie = true,
+    setLocalCookie = false,
   } = {}) {
     super({
       data: {

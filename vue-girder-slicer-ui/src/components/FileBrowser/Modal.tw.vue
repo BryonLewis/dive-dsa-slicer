@@ -1,11 +1,20 @@
 <script lang='ts'>
   import {defineComponent} from 'vue';
+  import { mdiClose } from '@mdi/js';
+  import SvgIcon from '@jamescoyle/vue-icon';
 
 export default defineComponent({
+    components: {
+      SvgIcon
+    },
     props: {
         isVisible: {
             type: Boolean,
             default: false,
+        },
+        disabledConfrm: {
+          type: Boolean,
+          default: true,
         }
     },
     setup(_, { emit}) {
@@ -17,7 +26,8 @@ export default defineComponent({
         }
         return {
             cancel,
-            confirm
+            confirm,
+            mdiClose,
 
         }
     }
@@ -30,25 +40,40 @@ export default defineComponent({
       <div class="flex flex-col max-w-5xl rounded-lg shadow-lg bg-white">
         <!-- Header -->
         <div class="p-5">
-          <div class="flex justify-between items-start">
-            <h3 class="text-2xl font-semibold">Modal Header</h3>
-            <button class="p-1 leading-none" @click="cancel">
-              <div class="text-xl font-semibold h-6 w-6">
-                <span>x</span>
-              </div>
-            </button>
+          <div class="grid grid-cols-12">
+            <span class="col-span-10 text-xl my-2 ml-5">
+              <slot name="header">
+              <h3 class="text-2xl font-semibold">Modal Header</h3>
+            </slot>
+            </span>
+            <span class="col-start-12 col-span-1 justify-self-end mr-5 my-2	" @click="$emit('cancel')">
+            <svg-icon
+              type="mdi"
+              :path="mdiClose"
+              :size="30"
+              class="gsu-icon clickable"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </svg-icon>
+          </span>
           </div>
         </div>
         
-        <!-- Body -->
-        <div class="p-6">
-          <p>This is a modal body content. Let's make this line a bit longer to see the width.</p>
-        </div>
+        <slot name="body">
+          <div class="p-6">
+            <p>This is a modal body content. Let's make this line a bit longer to see the width.</p>
+          </div>
+        </slot>
         
-        <!-- Footer -->
         <div class="p-6 flex justify-end items-center">
           <button class="btn-outline font-bold py-2 px-4 rounded" @click="cancel">Cancel</button>
-          <button class="btn ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="confirm">Confirm</button>
+          <button 
+            class="btn ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            :class="{ 'gsu-disabled-button': disabledConfrm }"
+            @click="confirm"
+          >Confirm</button>
         </div>
       </div>
     </div>

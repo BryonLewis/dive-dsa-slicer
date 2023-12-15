@@ -614,8 +614,8 @@ export default defineComponent({
               <div
                 v-for="item in rootFolders"
                 :key="item._id"
-                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
-                class="grid grid-cols-8 justify-content-left g-0 item-row"
+                :class="{'gsu-selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
+                class="grid grid-cols-8 justify-content-left g-0 gsu-item-row"
                 @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
               >
                 <div class="col-start-1 col-span-7 flex-grow text-left">
@@ -640,7 +640,7 @@ export default defineComponent({
                     :size="30"
                     class="pb-2 icon"
                   />
-                  <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+                  <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
                 </div>
               </div>
             </span>
@@ -739,8 +739,8 @@ export default defineComponent({
               <div
                 v-for="item in rootItems"
                 :key="item._id"
-                class="grid grid-cols-8 justify-content-left g-0  item-row"
-                :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item._id)}"
+                class="grid grid-cols-8 justify-content-left g-0  gsu-item-row"
+                :class="{'gsu-' :selectedItems[item.name] || (selected && selected.girderId === item._id)}"
                 @click="selecting(item, 'file')"
               >
                 <div class="col-start-1 col-span-6 flex-grow text-left">
@@ -756,7 +756,7 @@ export default defineComponent({
                   </span>
                 </div>
                   <div class="col-span-1">
-                    <span class="row-info">{{ sizeFormatter(item.size) }}</span>
+                    <span class="gsu-row-info">{{ sizeFormatter(item.size) }}</span>
                   </div>
                   <div class="col-span-1">
                     <svg-icon
@@ -766,7 +766,7 @@ export default defineComponent({
                       :size="30"
                       class="pb-2 icon"
                     />
-                    <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+                    <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
                   </div>
               </div>
             </span>
@@ -774,7 +774,7 @@ export default defineComponent({
         </div>
         <div
           v-if="['directory', 'file'].includes(type)"
-          class="mx-5 selection mb-2"
+          class="mx-5 gsu-selection mb-2"
         >
           <div v-if="!multi">
             <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
