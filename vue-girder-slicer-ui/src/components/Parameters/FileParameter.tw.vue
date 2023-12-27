@@ -87,7 +87,7 @@ export default defineComponent({
     <div class="relative flex items-stretch w-full">
       <input
         id="parameterInput"
-        class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+        class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
         type="text"
         disabled
         :value="currentValue"
@@ -96,36 +96,33 @@ export default defineComponent({
       <span class="input-group-append">
         <button
           type="button"
-          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline select-btn"
+          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn"
           @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
             :path="mdiFolderOpen"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
         </button>
         <button
           v-if="!batchload"
           type="button"
-          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline select-btn-multi"
+          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn-multi"
           @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
             :path="mdiFolderOpen"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
           <svg-icon
             type="mdi"
             :path="mdiPlusThick"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
         </button>
       </span>

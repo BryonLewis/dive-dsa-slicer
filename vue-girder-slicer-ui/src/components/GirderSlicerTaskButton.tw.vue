@@ -116,7 +116,7 @@ export default defineComponent({
     <on-click-outside @trigger="clicked = false">
     <div v-if="loggedIn" class="dropdown inline-block relative w-56">
       <button
-        class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center
+        class="bg-backgroundColor text-textColor font-semibold py-2 px-4 rounded inline-flex items-center
         rounded-sm flex items-center min-w-32"
         @click="clicked = true"
       >
@@ -128,14 +128,14 @@ export default defineComponent({
       </button>
       <ul
         v-if="clicked"
-        class="absolute text-gray-700"
+        class="absolute text-textColor"
       >
         <li
           class="dropdown w-56"
           v-for="(item, key) in results"
           :key="key"
         >
-        <a class="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+        <a class="rounded-t bg-backgroundColor hover:bg-bgMutedColor py-2 px-4 block whitespace-no-wrap" href="#">
             <span class="pr-1 flex-1"
               >{{ item.length === 1 ? `${key}:${item[0].tag}` : key }}
             </span>
@@ -144,12 +144,12 @@ export default defineComponent({
           </a>
           <ul
             v-if="item.length === 1"
-            class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+            class="dropdown-content absolute hidden text-textColor left-44 top-0"
           >
             <li
               v-for="task in item[0].tasks"
               :key="task._id"
-              class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
+              class="bg-backgroundColor hover:bg-bgMutedColor py-2 px-4 block whitespace-no-wrap"
               @click="select(task._id)"
             >
               {{ task.name }}
@@ -157,14 +157,14 @@ export default defineComponent({
           </ul>
           <ul
             v-else
-            class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+            class="dropdown-content absolute hidden text-textColor left-44 top-0"
           >
             <li
               v-for="tag in item"
               :key="tag.tag"
               class="dropdown w-56"
             >
-            <a class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+            <a class="bg-backgroundColor hover:bg-bgMutedColor py-2 px-4 block whitespace-no-wrap" href="#">
                 <span class="pr-1">{{ tag.tag }}</span>
                 <span class="mr-auto">
                   <svg-icon type="mdi" :path="mdiChevronRight" :size="30" class="pb-1" style="display:inline" />
@@ -172,15 +172,15 @@ export default defineComponent({
                 </span>
               </a>
               <ul
-                class="dropdown-content absolute hidden text-gray-700 left-44 top-0"
+                class="dropdown-content absolute hidden text-textColor left-44 top-0"
               >
                 <li
                   v-for="task in tag.tasks"
                   :key="task._id"
                   @click="select(task._id)"
-                  class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
+                  class="bg-backgroundColor hover:bg-bgMutedColor py-2 px-4 block whitespace-no-wrap"
                 >
-                  <a class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">
+                  <a class="bg-backgroundColor hover:bg-bgMutedColor py-2 px-4 block whitespace-no-wrap" href="#">
                   {{ task.name }}
                   </a>
                 </li>

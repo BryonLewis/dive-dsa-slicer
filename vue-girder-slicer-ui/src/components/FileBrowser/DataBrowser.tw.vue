@@ -396,7 +396,7 @@ export default defineComponent({
 <template>
   <div>
     <div class="fixed inset-0 z-50 flex justify-center items-center">
-      <div class="flex flex-col max-w-5xl rounded-lg shadow-lg bg-white text-black dark:bg-gray-600 dark:text-gray-300">
+      <div class="flex flex-col max-w-5xl rounded-lg shadow-lg bg-backgroundColor text-textColor">
         <!-- Header -->
         <div class="grid grid-cols-12">
           <span class="col-span-10 text-xl my-2 ml-5">
@@ -407,7 +407,7 @@ export default defineComponent({
               type="mdi"
               :path="mdiClose"
               :size="30"
-              class="icon clickable"
+              class="gsu-icon gsu-clickable"
               data-dismiss="modal"
               aria-label="Close"
             >
@@ -433,8 +433,8 @@ export default defineComponent({
                 class="grow my-1"
               />
             </div>
-            <div class="breadcrumb mb-0">
-              <div class="grid grid-cols-7 bg-grey-light rounded mb-0 ">
+            <div class="gsu-breadcrumb mb-0">
+              <div class="grid grid-cols-7 rounded mb-0 ">
                 <div class="col-start-1 col-span-4 flex flex-row">
                   <div class="grow">
                   <span
@@ -450,18 +450,18 @@ export default defineComponent({
                         :path="iconMap[breadCrumb.type]"
                         color="lightblue"
                         :size="30"
-                        class="pb-2 icon clickable"
+                        class="pb-2 gsu-icon gsu-clickable"
                         style="display:inline"
                       />
                       <span
-                        class="clickable"
+                        class="gsu-clickable"
                       > 
                         {{ item.name }}
                       </span>
                     </span>
                     <span
                       v-else-if="index !== breadCrumb.path. length - 1"
-                      class="clickable"
+                      class="gsu-clickable"
                       @click="updateMainView(item.id, 'folder', item.name, true)"
                     > 
                       {{ item.name }}
@@ -483,7 +483,7 @@ export default defineComponent({
                       :path="iconMap['folder']"
                       color="gray"
                       :size="30"
-                      class="pb-2 icon"
+                      class="pb-2 gsu-icon"
                     />
                     <span
                       class="number-badge"
@@ -495,7 +495,7 @@ export default defineComponent({
                       :path="iconMap['item']"
                       color="gray"
                       :size="30"
-                      class="pb-2 icon"
+                      class="pb-2 gsu-icon"
                     />
                     <span
                       class="number-badge"
@@ -507,7 +507,7 @@ export default defineComponent({
                       :path="mdiArrowUpRightBold"
                       color="blue"
                       :size="25"
-                      class="pb-2 icon level-up-button clickable"
+                      class="pb-2 gsu-icon gsu-clickable"
                       @click="upLevel()"
                     />
                   </div>
@@ -530,7 +530,7 @@ export default defineComponent({
                     type="mdi"
                     :path="folderShow ? mdiChevronDown : mdiChevronUp"
                     :size="30"
-                    class="icon clickable header"
+                    class="gsu-icon gsu-clickable header"
                   />
                   <span class="header">
                     Folders
@@ -549,8 +549,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset === 0}"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset === 0}"
                       />
                     </div>
                     <div
@@ -561,8 +561,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset === 0}"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset === 0}"
                       />
                     </div>
                     <div
@@ -589,8 +589,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronRight"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset >= Math.ceil(folderCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset >= Math.ceil(folderCount/limit)-1}"
                       />
                     </div>
                     <div
@@ -601,8 +601,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronDoubleRight"
                         :size="30"
-                        :class="{'disabled-icon': folderOffset === Math.ceil(folderCount/limit)-1}"
-                        class="icon clickable"
+                        :class="{'gsu-disabled-icon': folderOffset === Math.ceil(folderCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
                       />
                     </div>
                   </div>
@@ -624,10 +624,10 @@ export default defineComponent({
                     :path="iconMap[item._modelType]"
                     color="lightblue"
                     :size="30"
-                    class="pb-2 icon"
+                    class="pb-2 gsu-icon"
                   />
                   <span
-                    class=" clickable"
+                    class=" gsu-clickable"
                   >
                     {{ item.name }}
                   </span>
@@ -638,7 +638,7 @@ export default defineComponent({
                     :path="item.public ? mdiEarth : mdiLock"
                     color="gray"
                     :size="30"
-                    class="pb-2 icon"
+                    class="pb-2 gsu-icon"
                   />
                   <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
                 </div>
@@ -657,7 +657,7 @@ export default defineComponent({
                     type="mdi"
                     :path="itemShow ? mdiChevronDown : mdiChevronUp"
                     :size="30"
-                    class="icon clickable"
+                    class="gsu-icon gsu-clickable"
                   />
                   <span class="header">
                     Items
@@ -676,8 +676,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset === 0}"
+                        class="icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset === 0}"
                       />
                     </div>
                     <div
@@ -688,8 +688,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset === 0}"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset === 0}"
                       />
                     </div>
                     <div class="">
@@ -714,8 +714,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronRight"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
                       />
                     </div>
                     <div
@@ -726,8 +726,8 @@ export default defineComponent({
                         type="mdi"
                         :path="mdiChevronDoubleRight"
                         :size="30"
-                        :class="{'disabled-icon': itemOffset === Math.ceil(itemCount/limit)-1}"
-                        class="icon clickable"
+                        :class="{'gsu-disabled-icon': itemOffset === Math.ceil(itemCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
                       />
                     </div>
                   </div>
@@ -749,7 +749,7 @@ export default defineComponent({
                     :path="iconMap[item._modelType]"
                     color="lightblue"
                     :size="30"
-                    class="pb-2 icon"
+                    class="pb-2 gsu-icon"
                   />
                   <span>
                     {{ item.name }}
@@ -764,7 +764,7 @@ export default defineComponent({
                       :path="item.public ? mdiEarth : mdiLock"
                       color="gray"
                       :size="30"
-                      class="pb-2 icon"
+                      class="pb-2 gsu-icon"
                     />
                     <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
                   </div>
@@ -781,7 +781,7 @@ export default defineComponent({
             <input
               v-if="type === 'directory'"
               :value="selected ? selected.name : 'Select a folder'"
-              class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               placeholder="Select a folder…"
               readonly
@@ -789,7 +789,7 @@ export default defineComponent({
             <input
               v-if="type === 'file'"
               :value="selected && selected.name"
-              class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               :placeholder="!output ? 'Select an item' : 'Output name:'"
               :disabled="!output || currentParentType !== 'folder'"
@@ -800,7 +800,7 @@ export default defineComponent({
             <span> {{ type === 'directory' ? 'Folder' : 'Item' }} Filter (Regular Expression)</span>
             <input
               :value="selected && selected.name"
-              class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               placeholder="Regular Expression"
               @input="setRegularExpression(convertInputString($event))"
@@ -819,15 +819,16 @@ export default defineComponent({
         <div class="p-6 flex justify-end items-center">
           <button
             type="button"
-            class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline text-grey-lightest bg-grey hover:bg-grey-light mx-3"
+            class="gsu-btn inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline mx-3"
             @click="$emit('close')"
           >
             Cancel
           </button>
           <button
             type="button"
-            class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline text-blue-lightest bg-blue hover:bg-blue-light"
+            class="gsu-btn-accept inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline"
             data-dismiss="modal"
+            :class="{'gsu-btn-disabled': selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)}"
             :disabled="selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)"
             @click="submit()"
           >

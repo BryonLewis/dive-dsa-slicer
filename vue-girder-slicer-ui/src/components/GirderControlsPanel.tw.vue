@@ -34,7 +34,7 @@ export default defineComponent({
 });
 </script>
 <template>
-  <div class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light">
+  <div class="gsu-card relative flex flex-col min-w-0 rounded break-words">
     <div
       v-if="panel.groups.length === 1"
       class="mb-3 mb-0"

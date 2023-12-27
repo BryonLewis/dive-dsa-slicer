@@ -5,7 +5,7 @@ import GirderSlicerTaskCard from './GirderSlicerTaskCard.tw.vue';
 
 
 export default defineComponent({
-  name: 'App',
+  name: 'GirderSlicerTasksIntegrated',
   components: {
     GirderSlicerTaskCard,
     GirderSlicerTaskMenuModalButton,
@@ -35,10 +35,8 @@ export default defineComponent({
         <div class="card-body">
             <div class="card-title justify-content-center row g-20">
                 <div class="col">
-                    <girder-slicer-task-card :task-id="selected" />
-
                     <girder-slicer-task-menu-modal-button
-                        @selected="select = $event"
+                        @selected="select($event)"
                     />
                     <girder-slicer-task-card :task-id="selected" />
                 </div>
@@ -48,20 +46,5 @@ export default defineComponent({
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  align-content: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
 
 </style>

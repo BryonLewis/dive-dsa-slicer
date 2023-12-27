@@ -36,8 +36,8 @@ export default defineComponent({
 
 <template>
 <div v-if="isVisible">
-    <div class="fixed inset-0 z-50 flex justify-center items-center">
-      <div class="flex flex-col max-w-5xl rounded-lg shadow-lg bg-white">
+    <div class="fixed inset-0 z-50 flex justify-center items-center ">
+      <div class="gsu-card flex flex-col max-w-5xl rounded-lg shadow-lg">
         <!-- Header -->
         <div class="p-5">
           <div class="grid grid-cols-12">
@@ -51,7 +51,7 @@ export default defineComponent({
               type="mdi"
               :path="mdiClose"
               :size="30"
-              class="gsu-icon clickable"
+              class="gsu-icon gsu-clickable"
               data-dismiss="modal"
               aria-label="Close"
             >
@@ -70,7 +70,7 @@ export default defineComponent({
         <div class="p-6 flex justify-end items-center">
           <button class="btn-outline font-bold py-2 px-4 rounded" @click="cancel">Cancel</button>
           <button 
-            class="btn ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            class="gsu-btn-accept btn ml-2 font-bold py-2 px-4 rounded"
             :class="{ 'gsu-disabled-button': disabledConfrm }"
             @click="confirm"
           >Confirm</button>

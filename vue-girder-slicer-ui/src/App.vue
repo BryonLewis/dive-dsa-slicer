@@ -4,6 +4,7 @@ import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.tw.vue';
 import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.tw.vue';
 import GirderSlicerTaskMenu from './components/GirderSlicerTaskMenu.tw.vue';
 import GirderSlicerTaskMenuModal from './components/GlicerSlicerTaskMenuModalButton.tw.vue';
+import GirderSlicerTasksIntegrated from './components/GriderSlicerTasksIntegrated.tw.vue'
 import DataBrowser from './components/FileBrowser/DataBrowser.tw.vue';
 import Modal from './components/FileBrowser/Modal.tw.vue';
 import type { GirderModel } from './girderTypes';
@@ -16,6 +17,7 @@ export default defineComponent({
     GirderSlicerTaskMenu,
     GirderSlicerTaskCard,
     GirderSlicerTaskMenuModal,
+    GirderSlicerTasksIntegrated,
     DataBrowser,
     Modal,
   },
@@ -70,7 +72,7 @@ export default defineComponent({
       type="file"
       @close="showBrowser=false"
     /> -->
-    <girder-slicer-task-menu-modal />
+    <girder-slicer-tasks-integrated />
     <!-- <girder-slicer-task-menu /> -->
     <!-- <girder-slicer-task-button @selected="select($event)" colorMode="dark" /> -->
   </div>

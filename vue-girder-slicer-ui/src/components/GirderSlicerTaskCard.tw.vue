@@ -26,7 +26,8 @@ export default defineComponent({
     colorMode: {
       type:String,
       default: undefined
-    }
+    },
+    defaults: {}
   },
   setup(props, { emit }) {
     const girderRest = new RestClient({apiRoot: props.apiUrl});
@@ -81,7 +82,7 @@ export default defineComponent({
 <template>
   <div
     v-if="result"
-    class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light pa-2"
+    class="gsu-card relative flex flex-col min-w-0 rounded break-words border pa-2"
     :class="{dark: colorMode === 'dark'}"
   >
     <div class="flex-auto p-6">
@@ -94,7 +95,7 @@ export default defineComponent({
         <span class="col-span-2">
           <button
             type="button"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded border-2"
+            class="gsu-btn-accept font-bold py-2 px-4 rounded border-2"
             @click="runTask()"
           >
             Run
@@ -114,7 +115,7 @@ export default defineComponent({
             type="mdi"
             :path="mdiClose"
             :size="30"
-            class="pb-2 gsu-icon clickable"
+            class="pb-2 gsu-icon gsu-clickable"
             data-dismiss="modal"
             aria-label="Close"
             style="float:right"
@@ -138,7 +139,7 @@ export default defineComponent({
     </div>
   </div>
   <div v-else-if="!loggedIn">
-    <div class="relative flex flex-col min-w-0 rounded break-words border bg-white text-black dark:bg-gray-600 dark:text-gray-300 border-1 border-grey-light">
+    <div class="gsu-card relative flex flex-col min-w-0 rounded break-words">
       <div
         class="relative px-3 py-3 mb-4 border rounded text-yellow-darker border-yellow-dark bg-yellow-lighter"
         role="warning"
@@ -149,13 +150,4 @@ export default defineComponent({
   </div>
 </template>
 <style scoped>
-a {
-  color: #42b983;
-}
-.clickable {
-    color: var(--bs-link-color);
-}
-.clickable:hover {
-    cursor: pointer;
-}
 </style>

@@ -53,7 +53,7 @@ export default defineComponent({
     <input
       v-if="numbers.includes(data.slicerType) || data.slicerType === 'string'"
       id="parameterInput"
-      class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+      class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
       :type="numbers.includes(data.slicerType) ? 'number' : 'text'"
       :value="currentValue"
       @change="validate($event)"
@@ -61,7 +61,7 @@ export default defineComponent({
     <input
       v-else-if="(numberVectors.includes(data.slicerType) || data.slicerType === 'string-vector')"
       id="parameterInput"
-      class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+      class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
       type="text"
       :value="currentValue"
       @change="validate($event)"

@@ -3,56 +3,104 @@
 @tailwind utilities;
 
 
+/* :root {
+  --gsu-color-primary: rgb(59, 130, 246);
+  --gsu-color-secondary: #000;
+  --gsu-color-link: rgb(56, 189, 248);
+  --gsu-color-text: #696969;
+  --gsu-color-muted-text: #b8b8b8;
+  --gsu-color-background: rgb(255, 255, 255);
+  --gsu-background-muted: rgb(136, 136, 136);
+  --gsu-color-highlight: rgb(250, 204, 21);
+  --gsu-color-selected: "#ffff":
+} */
+
+
+:root {
+  --gsu-color-primary: rgb(59, 130, 246);
+  --gsu-color-secondary: #000;
+  --gsu-color-link: rgb(56, 189, 248);
+  --gsu-color-text: #ffff;
+  --gsu-color-muted-text: #ffffff92;
+  --gsu-color-background: rgb(75, 85, 99);
+  --gsu-background-muted: rgb(107, 114, 128);
+  --gsu-color-highlight: rgb(250, 204, 21);
+  --gsu-color-selected: "#ffff":
+}
+
+
+
 @layer components {
 
-    .breadcrumb {
-        @apply text-sky-400 bg-gray-200;
-      }
-    .disabled-icon {
-      @apply text-gray-500;
+    .gsu-background {
+      @apply bg-backgroundColor;
     }
-    .disabled-icon:hover {
+    .gsu-link {
+      @apply text-linkColor;
+    }
+
+    .gsu-breadcrumb {
+        @apply bg-backgroundColor text-linkColor border-solid border-l-2 border-r-2 border-t-2 border-bgMutedColor;
+      }
+    .gsu-disabled-icon {
+      @apply text-bgMutedColor;
+    }
+    .gsu-disabled-icon:hover {
       cursor: default;
+    }
+
+    .gsu-card {
+      @apply bg-backgroundColor border-2 border-bgMutedColor text-textColor
+    }
+
+    .gsu-input {
+      @apply bg-backgroundColor border-bgMutedColor border-2 border-solid;
+    }
+    .gsu-btn {
+      @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-bgMutedColor
+    }
+
+    .gsu-btn-accept {
+      @apply bg-primary hover:bg-bgMutedColor text-textColor
+    }
+    .gsu-btn-disabled {
+      @apply bg-bgMutedColor text-textMutedColor
     }
       
     .gsu-icon {
-        @apply text-sky-400;
+        @apply text-linkColor;
         display:inline;
       }
-    }
-    .clickable {
-        @apply text-sky-400 hover:cursor-pointer;
+    .gsu-clickable {
+        @apply text-linkColor hover:cursor-pointer;
       }
   
-      .number-badge {
+    .number-badge {
         position: relative;
         bottom: -10px;
         right: 5px;
         font-size: 10px;
     }
     .gsu-item-row {
-      @apply border-solid border-t-2 border-x-2 border-gray-500 hover:bg-yellow-400 hover:cursor-pointer;
+      @apply border-solid border-t-2 border-x-2 border-bgMutedColor hover:bg-highlightedColor hover:cursor-pointer;
     }
     .gsu-row-info {
-      color: var(--bs-body-color);
+      @apply text-textColor;
       padding-right: 10px;
-    }
-    .level-up-button {
-      border: 1px solid var(--bs-border-color);
     }
     .data-list {
       max-height: 70vh;
       overflow-y: auto;
       overflow-x: hidden;
-      @apply border-solid border-b-2 border-gray-500;
+      @apply border-solid border-b-2 border-bgMutedColor;
     }
     .folder-header {
       user-select: none;
-      @apply border-solid border-t-2 border-x-2 border-gray-500;
+      @apply border-solid border-t-2 border-x-2 border-bgMutedColor;
     }
     .item-header {
       user-select: none;
-      @apply border-solid border-t-2 border-x-2 border-gray-500;
+      @apply border-solid border-t-2 border-x-2 border-bgMutedColor;
 
     }
     .error-msg {
@@ -76,5 +124,10 @@
     }
 
     .gsu-disabled-button {
-      @apply bg-gray-300 cursor-not-allowed opacity-50
+      @apply bg-backgroundColor cursor-not-allowed opacity-50
     }
+
+    .gsu-menu-item {
+      @apply text-textMutedColor bg-backgroundColor  hover:bg-bgMutedColor border-2 border-bgMutedColor;
+    }
+  }

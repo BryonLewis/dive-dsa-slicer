@@ -51,11 +51,12 @@ export default defineComponent({
 <template>
 <span>
     <button
-        class="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center
+        class="gsu-btn font-semibold py-2 px-4 rounded inline-flex items-center
         rounded-sm flex items-center min-w-32"
         @click="modalOpen = true"
       >
-        <span class="pr-1 font-semibold flex-1">Tasks</span>
+      <span v-if="!selectedName" class="pr-1 font-semibold flex-1">Choose Task</span>
+      <span v-else-if="selectedName" class="pr-1 text-xs font-semibold flex-1">{{ selectedName }}</span>
     </button>
     <Modal 
     :isVisible="modalOpen"

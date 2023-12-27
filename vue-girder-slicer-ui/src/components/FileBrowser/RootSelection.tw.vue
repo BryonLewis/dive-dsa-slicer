@@ -50,7 +50,7 @@ export default defineComponent({
 <template>
   <select
     :value="value"
-    class="root-select"
+    class="root-select bg-backgroundColor border-solid border-2 border-bgMutedColor"
     @change="update($event)"
   >
     <option :value="home">

@@ -139,13 +139,13 @@ export default defineComponent({
   <div  :class="{dark: colorMode === 'dark'}">
     <div v-if="loggedIn">
       <ul
-        class="text-gray-700"
+        class="text-textColor"
       >
         <li
           v-for="(item, key) in results"
           :key="key"
         >
-        <span class="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" @click="selectItem(item.length === 1 ? `${key}.${item[0].tag}` : key )" >
+        <span class="gsu-menu-item rounded-t py-2 px-4 block whitespace-no-wrap" @click="selectItem(item.length === 1 ? `${key}.${item[0].tag}` : key )" >
             <span class="pr-1 flex-1"
               >{{ item.length === 1 ? `${key}:${item[0].tag}` : key }}
             </span>
@@ -155,12 +155,12 @@ export default defineComponent({
         </span>
           <ul
             v-if="item.length === 1 && clicked[`${key}.${item[0].tag}`]"
-            class="text-gray-700"
+            class="text-textColor"
           >
             <li
               v-for="task in item[0].tasks"
               :key="task._id"
-              class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-8"
+              class="gsu-menu-item py-2 px-4 block whitespace-no-wrap pl-8"
               @click="select(task._id, `${key}:${item[0].tag} -> ${task.name}`)"
             >
               {{ task.name }}
@@ -168,13 +168,13 @@ export default defineComponent({
           </ul>
           <ul
             v-else-if="clicked[key] && item.length > 1"
-            class="text-gray-700"
+            class="text-textColor"
           >
             <li
               v-for="tag in item"
               :key="tag.tag"
             >
-            <span class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-8" @click="selectItem(`${key}.${tag.tag}`)">
+            <span class="py-2 px-4 block whitespace-no-wrap pl-8" @click="selectItem(`${key}.${tag.tag}`)">
                 <span class="pr-1">{{ tag.tag }}</span>
                 <span class="mr-auto">
                   <svg-icon type="mdi" :path="clicked[`${key}.${tag.tag}`] ? mdiChevronDown : mdiChevronRight" :size="30" class="pb-1" style="display:inline" />
@@ -183,13 +183,13 @@ export default defineComponent({
             </span>
               <ul
                 v-if="clicked[`${key}.${tag.tag}`]"
-                class="text-gray-700"
+                class="text-textColor"
               >
                 <li
                   v-for="task in tag.tasks"
                   :key="task._id"
                   @click="select(task._id,`${key}:${tag.tag} -> ${task.name}` )"
-                  class="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap pl-12"
+                  class="py-2 px-4 block whitespace-no-wrap pl-12"
                 >
                   <span class=" py-2 px-4 block whitespace-no-wrap" href="#">
                   {{ task.name }}
