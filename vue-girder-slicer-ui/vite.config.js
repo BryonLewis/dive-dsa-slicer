@@ -20,11 +20,6 @@ export default defineConfig(() =>{
         // into your library
         external: ['vue'],
         output: {
-          // Provide global variables to use in the UMD build
-          // for externalized deps
-          globals: {
-            vue: 'Vue',
-          },
         },
       },
     },
@@ -36,7 +31,7 @@ export default defineConfig(() =>{
     },
     server: {
       host: "0.0.0.0",
-      port: 8080,
+      port: 3000,
       proxy: {
         "/api": {
           target: "http://localhost:8010",

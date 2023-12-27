@@ -29,27 +29,26 @@ export default defineComponent({
     }
   },
 });
-
 </script>
-
 <template>
-  <div class="form-check">
-    <label for="parameterInput">{{ data.title }} <span
-      v-if="error"
-      class="text-danger"
-    > {{ error }}</span></label>
-    <input
-      class="form-check-input"
-      type="checkbox"
-      :checked="currentValue"
-      @change="validate($event)"
-    >
-    <small
-      v-if="data.description"
-      class="form-text text-muted"
-    >{{ data.description }}</small>
+  <div>
+    <div class="grid grid-cols-2 gap-4 pl-4">
+      <label for="parameterInput">{{ data.title }} <span
+        v-if="error"
+        class="text-red"
+      > {{ error }}</span></label>
+      <input
+        class="absolute mt-1 -ml-6"
+        type="checkbox"
+        :checked="currentValue"
+        @change="validate($event)"
+      >
+    </div>
+    <p
+        v-if="data.description"
+        class="block ml-4 text-grey text-xs"
+      >{{ data.description }}</p>
   </div>
 </template>
-
 <style scoped>
 </style>

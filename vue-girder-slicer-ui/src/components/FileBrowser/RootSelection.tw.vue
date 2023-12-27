@@ -1,7 +1,6 @@
 <script lang="ts">
 import { PropType, computed, defineComponent } from 'vue'
 import { GirderModel, GirderModelType} from '../../girderTypes';
-
 export default defineComponent({
   props: {
     value: {
@@ -22,7 +21,6 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-
     const filteredUsers = computed(() => props.users?.filter((item) => item._id !== props.home));
     const update = (e: Event) => {
         let type: GirderModelType = 'user';
@@ -49,11 +47,10 @@ export default defineComponent({
   }
 });
 </script>
-
 <template>
   <select
     :value="value"
-    class="root-select"
+    class="root-select bg-backgroundColor border-solid border-2 border-bgMutedColor"
     @change="update($event)"
   >
     <option :value="home">
@@ -79,7 +76,6 @@ export default defineComponent({
     </optgroup>
   </select>
 </template>
-
 <style scoped>
 .root-select {
   height: 34px;

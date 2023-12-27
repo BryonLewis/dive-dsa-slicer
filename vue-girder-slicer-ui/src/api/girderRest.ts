@@ -56,11 +56,11 @@ export default class RestClient extends Axios {
 
   constructor({
     apiRoot = '/api/v1',
-    token = cookies.get('girderToken') || setCookieFromHash(window.location),
+    token = window.localStorage.getItem('girderToken') || cookies.get('girderToken') || setCookieFromHash(window.location),
     axios = axios_.create(),
     authenticateWithCredentials = false,
     useGirderAuthorizationHeader = false,
-    setLocalCookie = true,
+    setLocalCookie = false,
   } = {}) {
     super({
       data: {

@@ -1,7 +1,7 @@
-<script lang="ts">
+<script  lang="ts">
 import { PropType, Ref, computed, defineComponent, onMounted, ref } from 'vue'
-import type { XMLBaseValue } from '../../parser/parserTypes';
 import { XMLParameters } from '../../parser/parserTypes';
+import type { XMLBaseValue } from '../../parser/parserTypes';
 export default defineComponent({
   props: {
     data: {
@@ -10,7 +10,6 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const error = computed(() => props.data.error)
     const currentValue: Ref<XMLBaseValue> = ref(0);
     onMounted(() => {
         if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
@@ -19,55 +18,41 @@ export default defineComponent({
             currentValue.value = props.data.defaultValue || props.data.value || '';
         }
     })
-
-
+    const error = computed(() => props.data.error)
     const validate = (e: Event) => {
         // Validation Logic for different types
         const update = { ...props.data };
-        let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
-
-        if (props.data.slicerType === 'number-enumeration') {
-            value = parseFloat(value as string);
-        }
+        let value = (e.target as HTMLInputElement).value as XMLBaseValue;
         update.value = value;
         currentValue.value = value;
         emit('change', update);
     }
     return {
-      error,
       currentValue,
-      validate,
-
+      error,
+      validate
     }
   }
 });
-
 </script>
-
 <template>
-  <div>
+  <div class="mb-4">
     <label for="parameterInput">{{ data.title }} <span
       v-if="error"
-      class="text-danger"
+      class="text-red"
     > {{ error }}</span></label>
-    <select
-      :value="data.value"
+    <input
+      id="parameterInput"
+      class="block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-black dark:bg-gray-600 dark:text-gray-300 text-grey-darker border border-grey rounded"
+      type="color"
+      :value="currentValue"
       @change="validate($event)"
     >
-      <option
-        v-for="item in data.values"
-        :key="`${data.title}_${item}`"
-        :value="item"
-      >
-        {{ item }}
-      </option>
-    </select>
     <small
       v-if="data.description"
-      class="form-text text-muted"
+      class="block mt-1 text-grey"
     >{{ data.description }}</small>
   </div>
 </template>
-
 <style scoped>
 </style>

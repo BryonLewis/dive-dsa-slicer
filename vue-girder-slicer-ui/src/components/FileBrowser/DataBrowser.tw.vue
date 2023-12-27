@@ -1,6 +1,4 @@
 <script lang="ts">
-
-
 import { PropType, Ref, defineComponent, onMounted, ref, watch } from 'vue'
 import RestClient from '../../api/girderRest';
 import { GirderModel, GirderModelType } from '../../girderTypes';
@@ -8,9 +6,7 @@ import { mdiAccount, mdiArrowUpRightBold, mdiChevronDoubleLeft, mdiChevronDouble
 mdiClose, mdiEarth, mdiFile, mdiFolder, mdiLock, mdiSitemap } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { convertInputNumber, convertInputString, countFormatter, isValidRegex, sizeFormatter } from './utils'
-
-import RootSelection from './RootSelection.vue';
-
+import RootSelection from './RootSelection.tw.vue';
 export default defineComponent({
   components: {
     SvgIcon,
@@ -39,7 +35,7 @@ export default defineComponent({
     },
     validation: {
       type: Function as PropType<(id: GirderModel) => ({ valid: boolean, msg?: string})>,
-      default: () => undefined
+      default: () => ({valid: true})
     },
     parentId: {
       type: String,
@@ -58,9 +54,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-
     const errorMsg = ref('');
-
     const submit = async () => {
       if (selectedModel.value === null) {
         selectedModel.value = await girderRest.get(`folder/${currentParentId.value}`);
@@ -84,9 +78,7 @@ export default defineComponent({
         }
       }
     }
-
     const girderRest = new RestClient({apiRoot: props.apiUrl, authenticateWithCredentials: true});
-
     const iconMap: Ref<{user: string, collection:string, folder:string, item: string, file:string}> = ref({
         'user': mdiAccount,
         'collection' : mdiSitemap,
@@ -100,20 +92,17 @@ export default defineComponent({
     const user: Ref<GirderModel | null> =  ref(null);
     const rootFolders: Ref<GirderModel[] | null>  = ref(null);
     const folderCount: Ref<number> = ref(0);
-    const folderShow: Ref<boolean> = ref(false);
-    const itemShow: Ref<boolean> = ref(false);
+    const folderShow: Ref<boolean> = ref(true);
+    const itemShow: Ref<boolean> = ref(true);
     const itemCount: Ref<number> = ref(0);
     const rootItems: Ref<GirderModel[] | null>  = ref(null);
     const folderOffset: Ref<number> = ref(0);
     const itemOffset: Ref<number> = ref(0);
     const breadCrumb: Ref<{type: GirderModelType, path: {name:string, id: string}[]}> = ref({type: 'user' as GirderModelType, path:[]})
-
     const currentParentId = ref('');
     const currentParentType = ref('user');
-
     const selected: Ref<null | {name: string, girderId: string, parentId?: string, fileId?: string}> = ref(null);
     const selectedModel: Ref<null | GirderModel> = ref(null);
-
     onMounted(async () => {
       await getData();
       if (props.parentId && props.girderId && props.name) {
@@ -141,9 +130,6 @@ export default defineComponent({
         recalculatedSelected();
       }
     })
-
-
-
     const updateFolders = async (parentId: string, parentType: string) => {
       const responseFolders = await girderRest.get(`folder`, {
                 params: {
@@ -153,7 +139,6 @@ export default defineComponent({
                     sortdir: 1,
                     parentType,
                     parentId,
-
                 },
             }
         );
@@ -161,7 +146,6 @@ export default defineComponent({
         rootFolders.value = responseFolders.data;
         return responseFolders.data;
     };
-
     const updateItems = async (parentId: string) => {
       const responseItems = await girderRest.get(`item`, {
                     params: {
@@ -170,7 +154,6 @@ export default defineComponent({
                         sort: 'name',
                         sortdir: 1,
                         folderId: parentId,
-
                     },
                 }
             );
@@ -178,8 +161,6 @@ export default defineComponent({
             rootItems.value = responseItems.data;
         return responseItems.data;
     }
-
-
     const updateMainView = async (parentId: string, parentType: string, name = '', resetShow=false) => {
       if (props.type === 'directory' && parentType === 'folder') {
         selected.value = {
@@ -189,7 +170,6 @@ export default defineComponent({
       } else if (parentType !== 'folder') {
         selected.value = null;
       }
-
       currentParentId.value = parentId;
       currentParentType.value = parentType;
       if (resetShow) {
@@ -215,13 +195,11 @@ export default defineComponent({
             };
         }
     }
-
     const setRoot = async ({ val, type, name}: {val: string,  type: GirderModelType, name: string}) => {
         home.value = val;
         breadCrumb.value = { type, path: []};
         updateMainView(val, type, name, true);
     }
-
     const upLevel = () => {
       if (breadCrumb.value.path.length > 1) { // we can't go up if add root
         const newPath = breadCrumb.value.path[breadCrumb.value.path.length - 2]
@@ -232,12 +210,10 @@ export default defineComponent({
         updateMainView(newPath.id, newPathType, newPath.name, true)
       }
     }
-
     // This gets the main data for the Root Hierarchy Tool
     const getData = async () => {
         const userResponse = (await girderRest.get('user/me')).data;
         user.value = userResponse;
-
         // REPLACE WITH A PROMISE ALL
         const collectionsResponse = await girderRest.get('collection', {
             params: {
@@ -278,20 +254,17 @@ export default defineComponent({
             }]
         }
     }
-
-
-
     watch(folderOffset, () => updateFolders(currentParentId.value, currentParentType.value));
     watch(itemOffset, () => updateItems(currentParentId.value));
-
     const updateOffset = (type: 'folder' | 'item', value: number) => {
+      console.log(type);
+      console.log(value);
       if (value < 0 || Number.isNaN(value)) {
         folderOffset.value = 0;
         return;
       }
       if (type === 'folder' && value >= Math.ceil(folderCount.value/ props.limit)) {
         folderOffset.value = Math.ceil(folderCount.value/ props.limit)-1;
-
         return;
       }
       if (type === 'item' && value >= Math.ceil(itemCount.value/ props.limit)) {
@@ -305,7 +278,6 @@ export default defineComponent({
         itemOffset.value = value;
       }
     }
-
     const selecting = async (item: GirderModel, type: 'folder' | 'file') => {
       if (type === props.type) {
         selected.value = {
@@ -322,9 +294,7 @@ export default defineComponent({
         }
       }
     }
-
     const selectedItems: Ref<Record<string, boolean>> = ref({});
-
     const setSelectedName = async (data: string) => {
       selected.value = {
         name: data,
@@ -333,7 +303,6 @@ export default defineComponent({
       };
       recalculatedSelected();
     }
-
     const setRegularExpression = (data: string) => {
       if (isValidRegex(data)) {
         selected.value = {
@@ -347,7 +316,6 @@ export default defineComponent({
         errorMsg.value = 'Specify a valid Regular Expression';
       }
     }
-
     const recalculatedSelected = () => {
       selectedItems.value = {};
       let reg: RegExp;
@@ -395,7 +363,6 @@ export default defineComponent({
       errorMsg,
       users,
       currentParentType,
-
       // icons
       mdiAccount,
       mdiArrowUpRightBold,
@@ -422,47 +389,39 @@ export default defineComponent({
       selecting,
       submit,
       sizeFormatter,
-
     }
   },
 });
-
-
-
 </script>
-
 <template>
-  <div
-    class="modal modal-lg"
-    tabindex="-1"
-    role="dialog"
-    style="display:block;"
-  >
-    <div
-      class="modal-dialog modal-dialog-centered "
-      role="document"
-    >
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title header">
+  <div>
+    <div class="fixed inset-0 z-50 flex justify-center items-center">
+      <div class="flex flex-col max-w-5xl rounded-lg shadow-lg bg-backgroundColor text-textColor">
+        <!-- Header -->
+        <div class="grid grid-cols-12">
+          <span class="col-span-10 text-xl my-2 ml-5">
             File Browser
-          </h4>
-          <svg-icon
-            type="mdi"
-            :path="mdiClose"
-            :size="30"
-            class="pb-2 icon close clickable"
-            data-dismiss="modal"
-            aria-label="Close"
-            @click="$emit('close')"
-          >
-            <span aria-hidden="true">&times;</span>
-          </svg-icon>
+          </span>
+          <span class="col-start-12 col-span-1 justify-self-end mr-5 my-2	" @click="$emit('close')">
+            <svg-icon
+              type="mdi"
+              :path="mdiClose"
+              :size="30"
+              class="gsu-icon gsu-clickable"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </svg-icon>
+          </span>
         </div>
-        <div class="modal-body">
-          <div class="container-fluid">
+        
+        <!-- Body -->
+        <div class="py-2 px-6">
+          <div class="modal-body">
+          <div class="mx-auto mx-auto">
             <div
-              class="row"
+              class="flex flex-nowrap"
             >
               <root-selection
                 v-if="home && user && collections && users"
@@ -471,83 +430,89 @@ export default defineComponent({
                 :collections="collections"
                 :users="users"
                 @change="setRoot($event)"
+                class="grow my-1"
               />
             </div>
-            <div class="row breadcrumb mb-0">
-              <div class="col text-left pt-1">
-                <span
-                  v-for="(item, index) in breadCrumb.path"
-                  :key="`breadCrumb_${item.id}`"
-                >
+            <div class="gsu-breadcrumb mb-0">
+              <div class="grid grid-cols-7 rounded mb-0 ">
+                <div class="col-start-1 col-span-4 flex flex-row">
+                  <div class="grow">
                   <span
-                    v-if="index === 0"
-                    @click="updateMainView(item.id, breadCrumb.type, item.name, true);"
+                    v-for="(item, index) in breadCrumb.path"
+                    :key="`breadCrumb_${item.id}`"
                   >
-                    <svg-icon
-                      type="mdi"
-                      :path="iconMap[breadCrumb.type]"
-                      color="lightblue"
-                      :size="30"
-                      class="pb-2 icon clickable"
-                    />
                     <span
-                      class="clickable"
+                      v-if="index === 0"
+                      @click="updateMainView(item.id, breadCrumb.type, item.name, true);"
+                    >
+                      <svg-icon
+                        type="mdi"
+                        :path="iconMap[breadCrumb.type]"
+                        color="lightblue"
+                        :size="30"
+                        class="pb-2 gsu-icon gsu-clickable"
+                        style="display:inline"
+                      />
+                      <span
+                        class="gsu-clickable"
+                      > 
+                        {{ item.name }}
+                      </span>
+                    </span>
+                    <span
+                      v-else-if="index !== breadCrumb.path. length - 1"
+                      class="gsu-clickable"
+                      @click="updateMainView(item.id, 'folder', item.name, true)"
                     > 
                       {{ item.name }}
                     </span>
-
+                    <span v-else> 
+                      {{ item.name }}
+                    </span>
+                    <span class="px-2">
+                      /
+                    </span>
                   </span>
-                  <span
-                    v-else-if="index !== breadCrumb.path. length - 1"
-                    class="clickable"
-                    @click="updateMainView(item.id, 'folder', item.name, true)"
-                  > 
-                    {{ item.name }}
-                  </span>
-                  <span v-else> 
-                    {{ item.name }}
-                  </span>
-                  <span class="px-2">
-                    /
-                  </span>
-                </span>
-              </div>
-              <div class="col-auto">
-                <span>
-                  <svg-icon
-                    type="mdi"
-                    :path="iconMap['folder']"
-                    color="gray"
-                    :size="30"
-                    class="pb-2 icon"
-                  />
-                  <span
-                    class="number-badge"
-                  >{{ countFormatter(folderCount) }}</span>
-                </span>
-                <span>
-                  <svg-icon
-                    type="mdi"
-                    :path="iconMap['item']"
-                    color="gray"
-                    :size="30"
-                    class="pb-1 icon"
-                  />
-                  <span
-            
-                    class="number-badge"
-                  >{{ countFormatter(itemCount) }}</span>
-                </span>
-                <span class="px-2">
-                  <svg-icon
-                    type="mdi"
-                    :path="mdiArrowUpRightBold"
-                    color="blue"
-                    :size="25"
-                    class="pb-2 icon level-up-button clickable"
-                    @click="upLevel()"
-                  />
-                </span>
+                  </div>
+                </div>
+                <div class="col-start-7 col-span-3">
+                <div class="flex flex-row">
+                  <div class="flex flex-row">
+                    <svg-icon
+                      type="mdi"
+                      :path="iconMap['folder']"
+                      color="gray"
+                      :size="30"
+                      class="pb-2 gsu-icon"
+                    />
+                    <span
+                      class="number-badge"
+                    >{{ countFormatter(folderCount) }}</span>
+                  </div>
+                  <div class="flex flex-row">
+                    <svg-icon
+                      type="mdi"
+                      :path="iconMap['item']"
+                      color="gray"
+                      :size="30"
+                      class="pb-2 gsu-icon"
+                    />
+                    <span
+                      class="number-badge"
+                    >{{ countFormatter(itemCount) }}</span>
+                  </div>
+                  <div class="px-2">
+                    <svg-icon
+                      type="mdi"
+                      :path="mdiArrowUpRightBold"
+                      color="blue"
+                      :size="25"
+                      class="pb-2 gsu-icon gsu-clickable"
+                      @click="upLevel()"
+                    />
+                  </div>
+                </div>
+                </div>
               </div>
             </div>
           </div>
@@ -556,45 +521,53 @@ export default defineComponent({
               v-if="(folderCount > limit || itemCount > limit) && folderCount"
               class="folder-header"
             >
-              <div class="row">
-                <div class="col-2">
+              <div class="flex flex-wrap">
+                <div
+                  class="w-1/5"
+                  @click="folderShow = !folderShow"
+                >
                   <svg-icon
                     type="mdi"
                     :path="folderShow ? mdiChevronDown : mdiChevronUp"
                     :size="30"
-                    class="icon clickable header"
-                    @click="folderShow = !folderShow"
+                    class="gsu-icon gsu-clickable header"
                   />
                   <span class="header">
                     Folders
                   </span>
                 </div>
-                <div class="col-8">
+                <div class="w-2/3">
                   <div
                     v-if="folderCount > limit"
-                    class="row justify-content-center"
+                    class="flex flex-wrap justify-content-center"
                   >
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('folder', 0)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset === 0}"
-                        @click="updateOffset('folder', 0)"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset === 0}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('folder', folderOffset - 1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset === 0}"
-                        @click="updateOffset('folder', folderOffset - 1)"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset === 0}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                    >
                       <span class="header"> Page
                         <input
                           type="number"
@@ -603,111 +576,123 @@ export default defineComponent({
                           Lmax=""
                           inputmode="numeric"
                           style="width:40px"
+                          class="number-input"
                           @change="updateOffset('folder', convertInputNumber($event))"
                         >
-
                         of {{ Math.ceil(folderCount / limit) }}</span>
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('folder', folderOffset + 1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronRight"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': folderOffset >= Math.ceil(folderCount/limit)-1}"
-                        @click="updateOffset('folder', folderOffset + 1)"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': folderOffset >= Math.ceil(folderCount/limit)-1}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('folder', Math.ceil(folderCount/limit)-1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleRight"
                         :size="30"
-                        :class="{'disabled-icon': folderOffset === Math.ceil(folderCount/limit)-1}"
-                        class="icon clickable"
-                        @click="updateOffset('folder', Math.ceil(folderCount/limit)-1)"
+                        :class="{'gsu-disabled-icon': folderOffset === Math.ceil(folderCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
                       />
                     </div>
                   </div>
                 </div>
-                <div class="col-2" />
+                <div class="w-1/5" />
               </div>
             </div>
-            <div
-              v-for="item in rootFolders"
-              :key="item._id"
-              :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
-              class="row justify-content-left g-0 item-row"
-              @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
-            >
-              <div class="col">
-                <svg-icon
-                  type="mdi"
-                  :path="iconMap[item._modelType]"
-                  color="lightblue"
-                  :size="30"
-                  class="pb-2 icon"
-                />
-                <span
-                  class="col-auto clickable"
-                >
-                  {{ item.name }}
-                </span>
+            <span v-if="((itemCount > limit || folderCount > limit) && folderShow) || (itemCount <= limit && folderCount <= limit)">
+              <div
+                v-for="item in rootFolders"
+                :key="item._id"
+                :class="{'gsu-selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
+                class="grid grid-cols-8 justify-content-left g-0 gsu-item-row"
+                @click="selecting(item, 'folder'); updateMainView(item._id, item._modelType, item.name)"
+              >
+                <div class="col-start-1 col-span-7 flex-grow text-left">
+                  <svg-icon
+                    type="mdi"
+                    :path="iconMap[item._modelType]"
+                    color="lightblue"
+                    :size="30"
+                    class="pb-2 gsu-icon"
+                  />
+                  <span
+                    class=" gsu-clickable"
+                  >
+                    {{ item.name }}
+                  </span>
+                </div>
+                <div class="">
+                  <svg-icon
+                    type="mdi"
+                    :path="item.public ? mdiEarth : mdiLock"
+                    color="gray"
+                    :size="30"
+                    class="pb-2 gsu-icon"
+                  />
+                  <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+                </div>
               </div>
-              <div class="col-auto">
-                <svg-icon
-                  type="mdi"
-                  :path="item.public ? mdiEarth : mdiLock"
-                  color="gray"
-                  :size="30"
-                  class="pb-2 icon"
-                />
-                <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
-              </div>
-            </div>
+            </span>
             <div
               v-if="(itemCount > limit || folderCount > limit) && itemCount"
               class="item-header"
             >
-              <div class="row">
-                <div class="col-2">
+              <div
+                class="flex flex-wrap"
+                @click="itemShow = !itemShow"
+              >
+                <div class="w-1/5">
                   <svg-icon
                     type="mdi"
                     :path="itemShow ? mdiChevronDown : mdiChevronUp"
                     :size="30"
-                    class="icon clickable"
-                    @click="itemShow = !itemShow"
+                    class="gsu-icon gsu-clickable"
                   />
                   <span class="header">
                     Items
                   </span>
                 </div>
-                <div class="col-8">
+                <div class="w-2/3">
                   <div
                     v-if="itemCount > limit"
-                    class="row justify-content-center"
+                    class="flex flex-wrap justify-content-center"
                   >
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('item', 0)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset === 0}"
-                        @click="updateOffset('item', 0)"
+                        class="icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset === 0}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('item', itemOffset - 1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronLeft"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset === 0}"
-                        @click="updateOffset('item', itemOffset - 1)"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset === 0}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div class="">
                       <span class="header"> Page
                         <input
                           type="number"
@@ -716,82 +701,87 @@ export default defineComponent({
                           Lmax=""
                           inputmode="numeric"
                           style="width:40px"
+                          class="number-input"
                           @change="updateOffset('item', convertInputNumber($event))"
                         >
-
                         of {{ Math.ceil(itemCount / limit) }}</span>
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('item', itemOffset + 1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronRight"
                         :size="30"
-                        class="icon clickable"
-                        :class="{'disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
-                        @click="updateOffset('item', itemOffset + 1)"
+                        class="gsu-icon gsu-clickable"
+                        :class="{'gsu-disabled-icon': itemOffset >= Math.ceil(itemCount/limit)-1}"
                       />
                     </div>
-                    <div class="col-auto">
+                    <div
+                      class=""
+                      @click="updateOffset('item', Math.ceil(folderCount/limit)-1)"
+                    >
                       <svg-icon
                         type="mdi"
                         :path="mdiChevronDoubleRight"
                         :size="30"
-                        :class="{'disabled-icon': itemOffset === Math.ceil(itemCount/limit)-1}"
-                        class="icon clickable"
-                        @click="updateOffset('item', Math.ceil(folderCount/limit)-1)"
+                        :class="{'gsu-disabled-icon': itemOffset === Math.ceil(itemCount/limit)-1}"
+                        class="gsu-icon gsu-clickable"
                       />
                     </div>
                   </div>
                 </div>
-                <div class="col-2" />
+                <div class="w-1/5" />
               </div>
             </div>
-
-            <div
-              v-for="item in rootItems"
-              :key="item._id"
-              class="row justify-content-left g-0  item-row"
-              :class="{'selected-items' :selectedItems[item.name] || (selected && selected.girderId === item.girderId)}"
-              @click="selecting(item, 'file')"
-            >
-              <div class="col">
-                <svg-icon
-                  type="mdi"
-                  :path="iconMap[item._modelType]"
-                  color="lightblue"
-                  :size="30"
-                  class="pb-2 icon"
-                />
-                <span>
-                  {{ item.name }}
-                </span>
+            <span v-if="((itemCount > limit || folderCount > limit) && itemShow) || (itemCount <= limit && folderCount <= limit)">
+              <div
+                v-for="item in rootItems"
+                :key="item._id"
+                class="grid grid-cols-8 justify-content-left g-0  gsu-item-row"
+                :class="{'gsu-' :selectedItems[item.name] || (selected && selected.girderId === item._id)}"
+                @click="selecting(item, 'file')"
+              >
+                <div class="col-start-1 col-span-6 flex-grow text-left">
+                  <svg-icon
+                    type="mdi"
+                    :path="iconMap[item._modelType]"
+                    color="lightblue"
+                    :size="30"
+                    class="pb-2 gsu-icon"
+                  />
+                  <span>
+                    {{ item.name }}
+                  </span>
+                </div>
+                  <div class="col-span-1">
+                    <span class="gsu-row-info">{{ sizeFormatter(item.size) }}</span>
+                  </div>
+                  <div class="col-span-1">
+                    <svg-icon
+                      type="mdi"
+                      :path="item.public ? mdiEarth : mdiLock"
+                      color="gray"
+                      :size="30"
+                      class="pb-2 gsu-icon"
+                    />
+                    <span class="gsu-row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
+                  </div>
               </div>
-              <div class="col-auto">
-                <span class="row-info">{{ sizeFormatter(item.size) }}</span>
-              </div>
-              <div class="col-auto">
-                <svg-icon
-                  type="mdi"
-                  :path="item.public ? mdiEarth : mdiLock"
-                  color="gray"
-                  :size="30"
-                  class="pb-2 icon"
-                />
-                <span class="row-info"> {{ item.public ? 'Public' : 'Private' }}</span>
-              </div>
-            </div>
+            </span>
           </div>
         </div>
         <div
           v-if="['directory', 'file'].includes(type)"
-          class="mx-5 selection mb-2"
+          class="mx-5 gsu-selection mb-2"
         >
           <div v-if="!multi">
             <span> Selected {{ type === 'directory' ? 'folder' : 'file' }}:</span>
             <input
               v-if="type === 'directory'"
               :value="selected ? selected.name : 'Select a folder'"
-              class="form-control"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               placeholder="Select a folder…"
               readonly
@@ -799,7 +789,7 @@ export default defineComponent({
             <input
               v-if="type === 'file'"
               :value="selected && selected.name"
-              class="form-control"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               :placeholder="!output ? 'Select an item' : 'Output name:'"
               :disabled="!output || currentParentType !== 'folder'"
@@ -810,7 +800,7 @@ export default defineComponent({
             <span> {{ type === 'directory' ? 'Folder' : 'Item' }} Filter (Regular Expression)</span>
             <input
               :value="selected && selected.name"
-              class="form-control"
+              class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal rounded"
               type="text"
               placeholder="Regular Expression"
               @input="setRegularExpression(convertInputString($event))"
@@ -823,18 +813,22 @@ export default defineComponent({
         >
           {{ errorMsg }}
         </div>
-        <div class="modal-footer">
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-6 flex justify-end items-center">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="gsu-btn inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline mx-3"
             @click="$emit('close')"
           >
             Cancel
           </button>
           <button
             type="button"
-            class="btn btn-primary"
+            class="gsu-btn-accept inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline"
             data-dismiss="modal"
+            :class="{'gsu-btn-disabled': selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)}"
             :disabled="selected === null || !!errorMsg || (multi && Object.values(selectedItems).length === 0)"
             @click="submit()"
           >
@@ -843,96 +837,9 @@ export default defineComponent({
         </div>
       </div>
     </div>
+    <div class="opacity-25 fixed inset-0 z-40 bg-black"></div>
   </div>
 </template>
-
 <style scoped>
-.breadcrumb {
-  background-color: var(--bs-tertiary-bg);
-  color: var(--bs-link-color)
-
-}
-
-.clickable {
-    color: var(--bs-link-color);
-}
-.clickable:hover {
-    cursor: pointer;
-}
-
-.disabled-icon{
-  color: var(--bs-border-color);
-}
-.disabled-icon:hover {
-  cursor: default;
-}
-.number-badge {
-    position: relative;
-    bottom: 0px;
-    right: 5px;
-    height: 5px;
-    background-color: var(--bs-highlight-bg);
-    color: var(--bs-body-color);
-    font-size: 10px;
-}
-.item-row {
-  border-top: 1px solid var(--bs-border-color);
-  border-left: 2px solid var(--bs-border-color);
-  border-right: 2px solid var(--bs-border-color);
-  color: var(--bs-body-color)
-}
-.item-row:hover {
-  background-color: var(--bs-highlight-bg);
-  cursor: pointer;
-}
-.row-info {
-  color: var(--bs-body-color);
-  padding-right: 10px;
-}
-.level-up-button {
-  border: 1px solid var(--bs-border-color);
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.data-list {
-  max-height: 70vh;
-  max-width: 800px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  border-bottom: 1px solid var(--bs-border-color);
-
-}
-.folder-header {
-  user-select: none;
-  border-left: 2px solid var(--bs-border-color);
-  border-right: 2px solid var(--bs-border-color);
-  border-top: 1px solid var(--bs-border-color);
-}
-
-.item-header {
-  user-select: none;
-  border-left: 2px solid var(--bs-border-color);
-  border-right: 2px solid var(--bs-border-color);
-  border-top: 1px solid var(--bs-border-color);
-
-}
-
-.error-msg {
-  font-weight: bold;
-  color:red;
-}
-
-.selected-items {
-  background-color: var(--bs-highlight-bg);
-}
-
-.header{
-  color: var(--bs-body-color);
-}
-
-.selection {
-  color: var(--bs-body-color);
-}
 
 </style>

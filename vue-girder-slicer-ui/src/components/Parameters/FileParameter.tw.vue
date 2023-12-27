@@ -3,8 +3,7 @@ import { PropType, Ref, computed, defineComponent, onMounted, ref, watch } from 
 import { XMLParameters } from '../../parser/parserTypes';
 import { mdiFolderOpen, mdiPlusThick } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
-import DataBrowser from '../FileBrowser/DataBrowser.vue';
-
+import DataBrowser from '../FileBrowser/DataBrowser.tw.vue';
 export default defineComponent({
   components: {
     SvgIcon,
@@ -20,7 +19,6 @@ export default defineComponent({
     const currentValue: Ref<string |  null> = ref(null);
     const placeHolder = ref('Choose a file...');
     const batchload = ref(false);
-
     const error = computed(() => props.data.error)
     onMounted(() => {
       if (props.data.slicerType === 'file') {
@@ -39,13 +37,10 @@ export default defineComponent({
         batchload.value = true;
       }
     });
-
     const showBrowser = ref(false);
-
     const inputChanged = (name: string) => {
       emit('input-selected', name);
     }
-
     const girderId: Ref<string | undefined> = ref(undefined);
     const parentId: Ref<string | undefined> = ref(undefined);
     const selectedName: Ref<string | undefined> = ref(undefined);
@@ -57,8 +52,6 @@ export default defineComponent({
         selectedName.value = props.data.fileValue.name;
       }
     });
-
-
     const acceptBrowser = ({name, girderId, parentId, regExp, fileId}: {name: string, girderId: string, parentId: string, regExp?: boolean, fileId?: string}) => {
       showBrowser.value = false;
       const update = { ...props.data };
@@ -81,23 +74,20 @@ export default defineComponent({
       parentId,
       selectedName,
       acceptBrowser,
-
     } 
   }
 });
-
 </script>
-
 <template>
   <div>
     <label for="parameterInput">{{ data.title }} <span
       v-if="error"
-      class="text-danger"
+      class="text-red"
     > {{ error }}</span></label>
-    <div class="input-group">
+    <div class="relative flex items-stretch w-full">
       <input
         id="parameterInput"
-        class="form-control"
+        class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
         type="text"
         disabled
         :value="currentValue"
@@ -106,43 +96,40 @@ export default defineComponent({
       <span class="input-group-append">
         <button
           type="button"
-          class="btn select-btn"
+          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn"
           @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
             :path="mdiFolderOpen"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
         </button>
         <button
           v-if="!batchload"
           type="button"
-          class="btn select-btn-multi"
+          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn-multi"
           @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
             :path="mdiFolderOpen"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
           <svg-icon
             type="mdi"
             :path="mdiPlusThick"
-            color="black"
             :size="15"
-            class="icon clickable"
+            class="gsu-icon gsu-clickable"
           />
         </button>
       </span>
     </div>
     <small
       v-if="data.description"
-      class="form-text text-muted"
+      class="block mt-1 text-grey"
     >{{ data.description }}</small>
     <data-browser
       v-if="showBrowser"
@@ -155,9 +142,7 @@ export default defineComponent({
     />
   </div>
 </template>
-
 <style scoped>
-
 .icon {
   color: var(--bs-heading-color);
 }

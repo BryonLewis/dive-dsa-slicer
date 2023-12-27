@@ -1,8 +1,12 @@
 <script lang="ts">
 import { Ref, defineComponent, ref } from 'vue';
-import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.vue';
-import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.vue';
-import DataBrowser from './components/FileBrowser/DataBrowser.vue';
+import GirderSlicerTaskButton from './components/GirderSlicerTaskButton.tw.vue';
+import GirderSlicerTaskCard from './components/GirderSlicerTaskCard.tw.vue';
+import GirderSlicerTaskMenu from './components/GirderSlicerTaskMenu.tw.vue';
+import GirderSlicerTaskMenuModal from './components/GlicerSlicerTaskMenuModalButton.tw.vue';
+import GirderSlicerTasksIntegrated from './components/GriderSlicerTasksIntegrated.tw.vue'
+import DataBrowser from './components/FileBrowser/DataBrowser.tw.vue';
+import Modal from './components/FileBrowser/Modal.tw.vue';
 import type { GirderModel } from './girderTypes';
 
 
@@ -10,8 +14,12 @@ export default defineComponent({
   name: 'App',
   components: {
     GirderSlicerTaskButton,
+    GirderSlicerTaskMenu,
     GirderSlicerTaskCard,
+    GirderSlicerTaskMenuModal,
+    GirderSlicerTasksIntegrated,
     DataBrowser,
+    Modal,
   },
   props: {
     
@@ -43,24 +51,33 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
-    <girder-slicer-task-button @selected="select($event)" />
-    <girder-slicer-task-card :task-id="selected" />
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-dismiss="modal"
-      @click="showBrowser = true"
-    >
-      File Browser
-    </button>
+    <div
+    class="card"
+  >
+    <div class="card-body">
+      <div class="card-title justify-content-center row g-20"
+>
 
+  <div class="col">
+    <!-- <girder-slicer-task-card :task-id="selected" />
+
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    @click="showBrowser = true"
+    >
+    File Browser
+  </button>
     <data-browser
       v-if="showBrowser"
       :validation="validate"
       type="file"
       @close="showBrowser=false"
-    />
+    /> -->
+    <girder-slicer-tasks-integrated />
+    <!-- <girder-slicer-task-menu /> -->
+    <!-- <girder-slicer-task-button @selected="select($event)" colorMode="dark" /> -->
+  </div>
+  </div>
+  </div>
   </div>
 </template>
 
@@ -72,4 +89,13 @@ export default defineComponent({
   color: #2c3e50;
   margin-top: 60px;
 }
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  align-content: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
 </style>

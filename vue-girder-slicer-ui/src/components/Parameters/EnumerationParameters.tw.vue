@@ -11,8 +11,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const error = computed(() => props.data.error)
-    const numberVectors = ref(['integer-vector', 'float-vector', 'double-vector', 'string-vector']);
-    const numbers = ref(['integer', 'float', 'double']);
     const currentValue: Ref<XMLBaseValue> = ref(0);
     onMounted(() => {
         if (props.data.defaultValue && Array.isArray(props.data.defaultValue)) {
@@ -21,15 +19,12 @@ export default defineComponent({
             currentValue.value = props.data.defaultValue || props.data.value || '';
         }
     })
-
     const validate = (e: Event) => {
         // Validation Logic for different types
         const update = { ...props.data };
-        let value = (e.target as HTMLInputElement).value as XMLBaseValue;
-        if (numberVectors.value.includes(props.data.slicerType)) {
-            value = (value as string).split(',').map(parseFloat);
-        } else if (props.data.slicerType === 'string-vector') {
-            value = (value as string).split(',');
+        let value = (e.target as HTMLSelectElement).value as XMLBaseValue;
+        if (props.data.slicerType === 'number-enumeration') {
+            value = parseFloat(value as string);
         }
         update.value = value;
         currentValue.value = value;
@@ -37,46 +32,35 @@ export default defineComponent({
     }
     return {
       error,
-      numberVectors,
-      numbers,
       currentValue,
-      validate
+      validate,
     }
-
   }
-})
-
-
+});
 </script>
-
 <template>
   <div>
     <label for="parameterInput">{{ data.title }} <span
       v-if="error"
-      class="text-danger"
+      class="text-red"
     > {{ error }}</span></label>
-    <input
-      v-if="numbers.includes(data.slicerType) || data.slicerType === 'string'"
-      id="parameterInput"
-      class="form-control"
-      :type="numbers.includes(data.slicerType) ? 'number' : 'text'"
-      :value="currentValue"
+    <select
+      :value="data.value"
       @change="validate($event)"
     >
-    <input
-      v-else-if="(numberVectors.includes(data.slicerType) || data.slicerType === 'string-vector')"
-      id="parameterInput"
-      class="form-control"
-      type="text"
-      :value="currentValue"
-      @change="validate($event)"
-    >
+      <option
+        v-for="item in data.values"
+        :key="`${data.title}_${item}`"
+        :value="item"
+      >
+        {{ item }}
+      </option>
+    </select>
     <small
       v-if="data.description"
-      class="form-text text-muted"
+      class="block mt-1 text-grey"
     >{{ data.description }}</small>
   </div>
 </template>
-
 <style scoped>
 </style>

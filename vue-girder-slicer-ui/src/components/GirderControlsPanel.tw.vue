@@ -3,10 +3,11 @@ import { PropType, defineComponent, ref } from 'vue'
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js' ;
 import SvgIcon from '@jamescoyle/vue-icon';
 import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
-import GirderSlicerParameter from './GirderSlicerParameter.vue';
+import GirderSlicerParameter from './GirderSlicerParameter.tw.vue';
 export default defineComponent({
   components: {
     GirderSlicerParameter,
+    SvgIcon,
   },
   props: {
     panel: {
@@ -19,9 +20,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-
   const collapsed = ref(!props.panel.advanced)
-
   const updateParams = (e: XMLParameters[]) =>{
     emit('change', e);
   };
@@ -34,18 +33,17 @@ export default defineComponent({
 }
 });
 </script>
-
 <template>
-  <div class="card">
+  <div class="gsu-card relative flex flex-col min-w-0 rounded break-words">
     <div
       v-if="panel.groups.length === 1"
-      class="card-title mb-0"
+      class="mb-3 mb-0"
     >
       <div
-        class="row justify-content-left g-0"
+        class="flex flex-wrap justify-content-left g-0"
         @click="collapsed = !collapsed"
       >
-        <div class="col-auto">
+        <div class=":flex-growauto">
           <svg-icon
             type="mdi"
             :path="collapsed ? mdiChevronUp : mdiChevronDown"
@@ -53,15 +51,15 @@ export default defineComponent({
             class="pb-2 icon"
           />
         </div>
-        <div class="col-auto">
-          <h5 @click="collapsed = !collapsed">
+        <div class=":flex-growauto">
+          <h5>
             {{ panel.groups[0].label }}
           </h5>
         </div>
       </div>
       <div
         v-if="!collapsed"
-        class="row"
+        class="flex flex-wrap pad-left"
       >
         <girder-slicer-parameter
           :parameters="panel.groups[0].parameters"
@@ -72,9 +70,7 @@ export default defineComponent({
     </div>
   </div>
 </template>
-
 <style scoped>
-
 .icon:hover {
   cursor: pointer;
 }
@@ -83,6 +79,9 @@ export default defineComponent({
 }
 .collapse-leave-active {
   animation: collapsing 500ms ease;
+}
+.pad-left {
+  padding-left: 15px;
 }
 @keyframes collapsing {
   from {
