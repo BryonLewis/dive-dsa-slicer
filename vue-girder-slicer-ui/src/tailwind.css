@@ -57,7 +57,7 @@
       @apply bg-backgroundColor border-bgMutedColor border-2 border-solid;
     }
     .gsu-btn {
-      @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-bgMutedColor
+      @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-bgMutedColor text-textColor
     }
 
     .gsu-btn-accept {

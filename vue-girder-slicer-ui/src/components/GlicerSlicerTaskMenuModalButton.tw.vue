@@ -1,9 +1,10 @@
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import SvgIcon from "@jamescoyle/vue-icon";
 import Modal from './FileBrowser/Modal.tw.vue';
 import GirderSlicerTaskMenu from "./GirderSlicerTaskMenu.tw.vue";
-
+import RestClient from "../api/girderRest";
+import { mdiAlert } from "@mdi/js";
 export default defineComponent({
   components: {
     SvgIcon,
@@ -24,8 +25,11 @@ export default defineComponent({
       default: undefined,
     },
   },
-  setup(_props, { emit }) {
+  setup(props, { emit }) {
     const modalOpen = ref(false);
+    const girderRest = new RestClient({ apiRoot: props.apiUrl });
+    const loggedIn = computed(() => girderRest?.token);
+
     const accept = () => {
         emit('selected', selectedId.value);
         modalOpen.value = false;
@@ -44,6 +48,8 @@ export default defineComponent({
         selected,
         selectedId,
         selectedName,
+        loggedIn,
+        mdiAlert,
     };
   },
 });
@@ -55,7 +61,11 @@ export default defineComponent({
         rounded-sm flex items-center min-w-32"
         @click="modalOpen = true"
       >
-      <span v-if="!selectedName" class="pr-1 font-semibold flex-1">Choose Task</span>
+      <span v-if="!loggedIn" class="pr-1 font-semibold flex-1">
+        Log In
+        <svg-icon style="display:inline" type="mdi" color="orange" :path="mdiAlert" :size="30" class="pb-1" />
+      </span>
+      <span v-else-if="!selectedName" class="pr-1 font-semibold flex-1">Choose Task</span>
       <span v-else-if="selectedName" class="pr-1 text-xs font-semibold flex-1">{{ selectedName }}</span>
     </button>
     <Modal 

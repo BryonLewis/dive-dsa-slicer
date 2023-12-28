@@ -201,9 +201,12 @@ export default defineComponent({
         </li>
       </ul>
     </div>
-    <div v-else>
-        Error
-        <svg-icon type="mdi" :path="mdiAlert" :size="30" class="pb-1" />
+    <div v-else class="mx-6">
+        <span>
+            Error
+            <svg-icon style="display:inline" type="mdi" color="orange" :path="mdiAlert" :size="30" class="pb-1" />
+        </span>
+        <div>The User is not logged in.</div>
     </div>
   </div>
 </template>

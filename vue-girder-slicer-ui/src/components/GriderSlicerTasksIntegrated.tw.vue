@@ -1,7 +1,8 @@
 <script lang="ts">
-import { Ref, defineComponent, ref } from 'vue';
+import { Ref, defineComponent, ref, PropType } from 'vue';
 import GirderSlicerTaskMenuModalButton from './GlicerSlicerTaskMenuModalButton.tw.vue';
 import GirderSlicerTaskCard from './GirderSlicerTaskCard.tw.vue';
+import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
 
 
 export default defineComponent({
@@ -11,7 +12,18 @@ export default defineComponent({
     GirderSlicerTaskMenuModalButton,
   },
   props: {
-    
+    apiUrl: {
+      type: String,
+      default: 'api/v1',
+    },
+    colorMode: {
+      type:String,
+      default: undefined
+    },
+    defaults: {
+        type: Function as PropType<(item: XMLParameters) => undefined | null | XMLParameters>,
+        default: (_item: XMLParameters) => undefined,
+    }
   },
   setup() {
     const selected: Ref<string | null> = ref(null);
@@ -38,7 +50,7 @@ export default defineComponent({
                     <girder-slicer-task-menu-modal-button
                         @selected="select($event)"
                     />
-                    <girder-slicer-task-card :task-id="selected" />
+                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" />
                 </div>
             </div>
         </div>
