@@ -1,7 +1,9 @@
 <script lang="ts">
-import { Ref, defineComponent, ref } from 'vue';
+import { Ref, defineComponent, ref, PropType } from 'vue';
 import GirderSlicerTaskMenuModalButton from './GlicerSlicerTaskMenuModalButton.tw.vue';
 import GirderSlicerTaskCard from './GirderSlicerTaskCard.tw.vue';
+import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
+import { SlicerImage } from '../api/girderSlicerApi';
 
 
 export default defineComponent({
@@ -11,7 +13,18 @@ export default defineComponent({
     GirderSlicerTaskMenuModalButton,
   },
   props: {
-    
+    apiUrl: {
+      type: String,
+      default: 'api/v1',
+    },
+    filter: {
+      type: Function as PropType<(task: SlicerImage) => boolean>,
+      default: (_task: SlicerImage) => true,
+    },
+    defaults: {
+        type: Function as PropType<(item: XMLParameters) => undefined | null | XMLParameters>,
+        default: (_item: XMLParameters) => undefined,
+    }
   },
   setup() {
     const selected: Ref<string | null> = ref(null);
@@ -36,9 +49,10 @@ export default defineComponent({
             <div class="card-title justify-content-center row g-20">
                 <div class="col">
                     <girder-slicer-task-menu-modal-button
+                        :filter="filter"
                         @selected="select($event)"
                     />
-                    <girder-slicer-task-card :task-id="selected" />
+                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" />
                 </div>
             </div>
         </div>

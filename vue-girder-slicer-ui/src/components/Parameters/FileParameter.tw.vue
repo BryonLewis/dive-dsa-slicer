@@ -36,6 +36,12 @@ export default defineComponent({
       if (['file', 'item', 'image', 'multi'].includes(props.data.slicerType) && ! props.data.multiple) {
         batchload.value = true;
       }
+      if (props.data.fileValue?.name) {
+        currentValue.value = props.data.fileValue.name;
+        girderId.value = props.data.fileValue.girderId;
+        parentId.value = props.data.fileValue.parentId;
+        selectedName.value = props.data.fileValue.name;
+      }
     });
     const showBrowser = ref(false);
     const inputChanged = (name: string) => {

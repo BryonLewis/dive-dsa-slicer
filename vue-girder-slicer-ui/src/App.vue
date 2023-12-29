@@ -8,6 +8,8 @@ import GirderSlicerTasksIntegrated from './components/GriderSlicerTasksIntegrate
 import DataBrowser from './components/FileBrowser/DataBrowser.tw.vue';
 import Modal from './components/FileBrowser/Modal.tw.vue';
 import type { GirderModel } from './girderTypes';
+import { XMLParameters } from './parser/parserTypes';
+import { SlicerTask } from './api/girderSlicerApi';
 
 
 export default defineComponent({
@@ -39,11 +41,39 @@ export default defineComponent({
         return {valid: false, msg: 'Item needs to be of type jpg'}
       }
     };
+
+    const chanelDefaults = (item: XMLParameters) => {
+      if (item.channel === 'input' && item.type === 'file') {
+        item.fileValue = {
+          fileId: '6433f9123b271b58c749ddbc',
+          girderId: '6433f9123b271b58c749ddbb',
+          name: 'SampleVideo.mp4',
+          parentId: '6433f9113b271b58c749ddb6',
+          regExp: false,
+        }
+        return item;
+      }
+      if (item.channel === 'output' && item.type === 'new-file') {
+        item.fileValue = {
+          fileId: undefined,
+          girderId: '6433f9113b271b58c749ddb6',
+          name: 'SampleFile.json',
+          parentId: '6433f9113b271b58c749ddb6',
+          regExp: false,
+        }
+        return item;
+      }
+
+    }
+
+    const filter = (item: SlicerTask) => item.image.includes('dive');
     return {
       selected,
       select,
       showBrowser,
       validate,
+      chanelDefaults,
+      filter,
     };
 
   },
@@ -72,9 +102,9 @@ export default defineComponent({
       type="file"
       @close="showBrowser=false"
     /> -->
-    <girder-slicer-tasks-integrated />
+    <girder-slicer-tasks-integrated :defaults="chanelDefaults" :filter="filter" />
     <!-- <girder-slicer-task-menu /> -->
-    <!-- <girder-slicer-task-button @selected="select($event)" colorMode="dark" /> -->
+    <!-- <girder-slicer-task-button @selected="select($event)" /> -->
   </div>
   </div>
   </div>

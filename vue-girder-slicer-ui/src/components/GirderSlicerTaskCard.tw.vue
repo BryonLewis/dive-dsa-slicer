@@ -23,11 +23,10 @@ export default defineComponent({
       type: String as PropType<string | null>,
       default: '64e8aff6072d5e5fbb8719aa'
     },
-    colorMode: {
-      type:String,
-      default: undefined
-    },
-    defaults: {}
+    defaults: {
+        type: Function as PropType<(item: XMLParameters) => undefined | null | XMLParameters>,
+        default: (_item: XMLParameters) => undefined,
+    }
   },
   setup(props, { emit }) {
     const girderRest = new RestClient({apiRoot: props.apiUrl});
@@ -38,7 +37,32 @@ export default defineComponent({
     const getData = async () => {
       if (props.taskId) {
         const response = await slicerApi.getSlicerXML(props.taskId);
-        result.value = parse(response.data);
+        const parseParams = parse(response.data);
+        // We need to assign default values if they exists
+        const updateParams: {panelIndex: number, groupIndex: number, parameterIndex: number, value: XMLParameters}[] = [];
+        parseParams.panels.forEach((panel, panelIndex) => {
+          panel.groups.forEach((group, groupIndex) => {
+            group.parameters.forEach((parameter, parameterIndex) => {
+              const paramResult = props.defaults(parameter);
+              if (paramResult && parseParams) {
+                // Reset the parameter
+                updateParams.push({
+                  panelIndex,
+                  groupIndex,
+                  parameterIndex,
+                  value: paramResult,
+                });
+              }
+            });
+          });
+        });
+        console.log(updateParams);
+        updateParams.forEach((item) => {
+          if (parseParams) {
+            parseParams.panels[item.panelIndex].groups[item.groupIndex].parameters[item.parameterIndex] = item.value;
+          }
+        });
+        result.value = parseParams;
       }
     }
     if (props.taskId) {
@@ -83,7 +107,6 @@ export default defineComponent({
   <div
     v-if="result"
     class="gsu-card relative flex flex-col min-w-0 rounded break-words border pa-2"
-    :class="{dark: colorMode === 'dark'}"
   >
     <div class="flex-auto p-6">
       <div class="grid grid-cols-12 gap-4 pb-2">
@@ -136,16 +159,6 @@ export default defineComponent({
         @change="updateParameters($event, index)"
         @input-selected="processInput($event)"
       />
-    </div>
-  </div>
-  <div v-else-if="!loggedIn">
-    <div class="gsu-card relative flex flex-col min-w-0 rounded break-words">
-      <div
-        class="relative px-3 py-3 mb-4 border rounded text-yellow-darker border-yellow-dark bg-yellow-lighter"
-        role="warning"
-      >
-        <h4>User Not Logged In.  Cannot display Task information.</h4>>
-      </div>
     </div>
   </div>
 </template>

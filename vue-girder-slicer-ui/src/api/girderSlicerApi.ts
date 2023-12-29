@@ -18,11 +18,19 @@ export interface JobResponse {
     type: string;
 }
 
+export interface SlicerTask {
+    _id: string;
+    description: string;
+    image: string;
+    name: string;
+    type: string;
+}
+
 
 const fileTypes = ['file', 'directory', 'image', 'item', 'multi', 'new-file'];
 const fileImageItem = ['file', 'image', 'item', 'new-file'];
 const useGirderSlicerApi = (girderRest: RestClient) => {
-    const getSlicerList = async (_filter?: string) => {
+    const getSlicerList = async () => {
         return girderRest.get<SlicerImage[]>('slicer_cli_web/cli');
     }
     const getSlicerXML = async(id: string) => {

@@ -20,12 +20,12 @@
   --gsu-color-primary: rgb(59, 130, 246);
   --gsu-color-secondary: #000;
   --gsu-color-link: rgb(56, 189, 248);
-  --gsu-color-text: #ffff;
-  --gsu-color-muted-text: #ffffff92;
+  --gsu-color-text: #dcdcdc;
+  --gsu-color-muted-text: #d6d6d692;
   --gsu-color-background: rgb(75, 85, 99);
   --gsu-background-muted: rgb(107, 114, 128);
   --gsu-color-highlight: rgb(250, 204, 21);
-  --gsu-color-selected: "#ffff":
+  --gsu-color-selected: rgb(250, 204, 21):
 }
 
 
@@ -57,7 +57,7 @@
       @apply bg-backgroundColor border-bgMutedColor border-2 border-solid;
     }
     .gsu-btn {
-      @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-bgMutedColor
+      @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-bgMutedColor text-textColor
     }
 
     .gsu-btn-accept {
