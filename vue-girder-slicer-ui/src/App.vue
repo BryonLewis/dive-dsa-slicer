@@ -9,6 +9,7 @@ import DataBrowser from './components/FileBrowser/DataBrowser.tw.vue';
 import Modal from './components/FileBrowser/Modal.tw.vue';
 import type { GirderModel } from './girderTypes';
 import { XMLParameters } from './parser/parserTypes';
+import { SlicerTask } from './api/girderSlicerApi';
 
 
 export default defineComponent({
@@ -64,12 +65,15 @@ export default defineComponent({
       }
 
     }
+
+    const filter = (item: SlicerTask) => item.image.includes('dive');
     return {
       selected,
       select,
       showBrowser,
       validate,
       chanelDefaults,
+      filter,
     };
 
   },
@@ -98,9 +102,9 @@ export default defineComponent({
       type="file"
       @close="showBrowser=false"
     /> -->
-    <girder-slicer-tasks-integrated :defaults="chanelDefaults" />
+    <girder-slicer-tasks-integrated :defaults="chanelDefaults" :filter="filter" />
     <!-- <girder-slicer-task-menu /> -->
-    <!-- <girder-slicer-task-button @selected="select($event)" colorMode="dark" /> -->
+    <!-- <girder-slicer-task-button @selected="select($event)" /> -->
   </div>
   </div>
   </div>

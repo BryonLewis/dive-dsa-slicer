@@ -34,10 +34,6 @@ export default defineComponent({
       type: String,
       default: "",
     },
-    colorMode: {
-      type: String,
-      default: undefined,
-    },
   },
   setup(props, { emit }) {
     const girderRest = new RestClient({ apiRoot: props.apiUrl });
@@ -112,7 +108,7 @@ export default defineComponent({
 });
 </script>
 <template>
-  <div  :class="{dark: colorMode === 'dark'}">
+  <div>
     <on-click-outside @trigger="clicked = false">
     <div v-if="loggedIn" class="dropdown inline-block relative w-56">
       <button

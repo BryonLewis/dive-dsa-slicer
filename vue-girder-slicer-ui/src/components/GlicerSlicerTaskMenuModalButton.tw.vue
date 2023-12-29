@@ -5,6 +5,8 @@ import Modal from './FileBrowser/Modal.tw.vue';
 import GirderSlicerTaskMenu from "./GirderSlicerTaskMenu.tw.vue";
 import RestClient from "../api/girderRest";
 import { mdiAlert } from "@mdi/js";
+import { PropType } from "vue/types/v3-component-props";
+import { SlicerImage } from "../api/girderSlicerApi";
 export default defineComponent({
   components: {
     SvgIcon,
@@ -17,12 +19,8 @@ export default defineComponent({
       default: "api/v1",
     },
     filter: {
-      type: String,
-      default: "",
-    },
-    colorMode: {
-      type: String,
-      default: undefined,
+      type: Function as PropType<(task: SlicerImage) => boolean>,
+      default: (_task: SlicerImage) => true,
     },
   },
   setup(props, { emit }) {
@@ -80,7 +78,6 @@ export default defineComponent({
         <template slot="body">
             <GirderSlicerTaskMenu
             :api-url="apiUrl"
-            :color-mode="colorMode"
             :filter="filter"
             @selected="processSelected($event)"
             />

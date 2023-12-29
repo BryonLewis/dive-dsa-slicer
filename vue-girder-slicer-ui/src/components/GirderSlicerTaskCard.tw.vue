@@ -23,10 +23,6 @@ export default defineComponent({
       type: String as PropType<string | null>,
       default: '64e8aff6072d5e5fbb8719aa'
     },
-    colorMode: {
-      type:String,
-      default: undefined
-    },
     defaults: {
         type: Function as PropType<(item: XMLParameters) => undefined | null | XMLParameters>,
         default: (_item: XMLParameters) => undefined,
@@ -111,7 +107,6 @@ export default defineComponent({
   <div
     v-if="result"
     class="gsu-card relative flex flex-col min-w-0 rounded break-words border pa-2"
-    :class="{dark: colorMode === 'dark'}"
   >
     <div class="flex-auto p-6">
       <div class="grid grid-cols-12 gap-4 pb-2">

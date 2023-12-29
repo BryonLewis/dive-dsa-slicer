@@ -44,7 +44,13 @@ export interface XMLParameters {
   constraints?: {min?: XMLBaseValue; max?: XMLBaseValue; step?: XMLBaseValue};
   defaultValue?: XMLBaseValue;
   // Extra
-  fileValue?: {girderId: string, name: string, parentId: string, regExp?: boolean | undefined, fileId?: string | undefined}; // Added to handle files
+  fileValue?: {
+    girderId: string; // item/folder Id for the selected item
+    name: string; //File Name for display purposes
+    parentId: string; // Parent folder to open when using DataBrowser
+    regExp?: boolean | undefined; // When selecting multiple the regExp pattern
+    fileId?: string | undefined; // fileId used
+  }; // Added to handle files
   required?: boolean;
   extensions?: string | undefined;
   reference?: string | undefined;

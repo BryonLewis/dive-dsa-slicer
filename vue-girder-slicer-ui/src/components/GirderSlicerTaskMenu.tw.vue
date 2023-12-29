@@ -2,10 +2,11 @@
 import { Ref, computed, defineComponent, onMounted, ref } from "vue";
 import { extractImageInfo } from "../utils";
 import RestClient from "../api/girderRest";
-import { useGirderSlicerApi } from "../api/girderSlicerApi";
+import { SlicerImage, useGirderSlicerApi } from "../api/girderSlicerApi";
 import { mdiAlert, mdiChevronDown, mdiChevronRight } from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import { cloneDeep } from 'lodash';
+import { PropType } from "vue/types/v3-component-props";
 
 interface TaskInfo {
     tag: string;
@@ -32,12 +33,8 @@ export default defineComponent({
       default: "api/v1",
     },
     filter: {
-      type: String,
-      default: "",
-    },
-    colorMode: {
-      type: String,
-      default: undefined,
+      type: Function as PropType<(task: SlicerImage) => boolean>,
+      default: (_task: SlicerImage) => true,
     },
   },
   setup(props, { emit }) {
@@ -49,9 +46,10 @@ export default defineComponent({
     const getData = async () => {
       try {
         const response = await slicerApi.getSlicerList();
+        const filtered = response.data.filter((task) => props.filter(task));
         // ground items by their image
         const taskHierarchy: TaskHierarchy = {};
-        response.data.forEach((task) => {
+        filtered.forEach((task) => {
           // Lets get the base image name
           const imageInfo = extractImageInfo(task.image);
           if (imageInfo) {
@@ -136,7 +134,7 @@ export default defineComponent({
 });
 </script>
 <template>
-  <div  :class="{dark: colorMode === 'dark'}">
+  <div>
     <div v-if="loggedIn">
       <ul
         class="text-textColor"
