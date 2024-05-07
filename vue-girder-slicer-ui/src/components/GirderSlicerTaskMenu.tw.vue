@@ -43,6 +43,7 @@ export default defineComponent({
     const slicerApi = useGirderSlicerApi(girderRest);
     const results: Ref<TaskHierarchy> = ref({});
     const clicked: Ref<Record<string, boolean>> = ref({})
+    const selected: Ref<null | string> = ref(null);
     const getData = async () => {
       try {
         const response = await slicerApi.getSlicerList();
@@ -94,8 +95,8 @@ export default defineComponent({
       }
     };
     const select = (id: string, name: string) => {
-    console.log(`Emitting: ${id} ${name}`);
       emit("selected", {id, name});
+      selected.value = id;
     };
     onMounted(() => {
       getData();
@@ -129,6 +130,7 @@ export default defineComponent({
       select,
       clicked,
       selectItem,
+      selected,
     };
   },
 });
@@ -160,6 +162,7 @@ export default defineComponent({
               :key="task._id"
               class="gsu-menu-item py-2 px-4 block whitespace-no-wrap pl-8"
               @click="select(task._id, `${key}:${item[0].tag} -> ${task.name}`)"
+              :class="`${task._id === selected ? 'bg-highlightedColor': ''}`"
             >
               {{ task.name }}
             </li>
@@ -188,6 +191,7 @@ export default defineComponent({
                   :key="task._id"
                   @click="select(task._id,`${key}:${tag.tag} -> ${task.name}` )"
                   class="py-2 px-4 block whitespace-no-wrap pl-12"
+                  :class="`${task._id === selected ? 'bg-bgMutedColor': ''}`"
                 >
                   <span class=" py-2 px-4 block whitespace-no-wrap" href="#">
                   {{ task.name }}

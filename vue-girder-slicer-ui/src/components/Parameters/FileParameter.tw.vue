@@ -93,7 +93,7 @@ export default defineComponent({
     <div class="relative flex items-stretch w-full">
       <input
         id="parameterInput"
-        class="gsu-input block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
+        class="gsu-input block border-colid border-2 border-borderColor appearance-none w-full py-1 px-2 mb-1 text-base leading-normal"
         type="text"
         disabled
         :value="currentValue"

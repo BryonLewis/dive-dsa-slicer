@@ -2,7 +2,7 @@
 import { Ref, defineComponent, ref, PropType } from 'vue';
 import GirderSlicerTaskMenuModalButton from './GlicerSlicerTaskMenuModalButton.tw.vue';
 import GirderSlicerTaskCard from './GirderSlicerTaskCard.tw.vue';
-import type { XMLPanel, XMLParameters } from '../parser/parserTypes';
+import type { XMLParameters } from '../parser/parserTypes';
 import { SlicerImage } from '../api/girderSlicerApi';
 
 
@@ -28,13 +28,22 @@ export default defineComponent({
   },
   setup() {
     const selected: Ref<string | null> = ref(null);
-
+    const menuModelButton: Ref<typeof GirderSlicerTaskMenuModalButton | null> = ref(null);
     const select = (id: string) => {
       selected.value = id;
+    }
+    const cancel = () => {
+      console.log('calling cancel');
+      if (menuModelButton.value) {
+        menuModelButton.value.clearSelection();
+      }
+      selected.value = null;
     }
     return {
       selected,
       select,
+      cancel,
+      menuModelButton,
     };
 
   },
@@ -49,10 +58,11 @@ export default defineComponent({
             <div class="card-title justify-content-center row g-20">
                 <div class="col">
                     <girder-slicer-task-menu-modal-button
+                        ref="menuModelButton"
                         :filter="filter"
                         @selected="select($event)"
                     />
-                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" />
+                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" @cancel="cancel()" />
                 </div>
             </div>
         </div>

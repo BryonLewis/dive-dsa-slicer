@@ -39,10 +39,18 @@ export default defineComponent({
         selectedName.value = data.name;
     }
     const selected = ref('');
+
+    const clearSelection = () => {
+      console.log('clearing selection');
+      selectedId.value = '';
+      selectedName.value = '';
+      selected.value = '';
+    }
     return {
         modalOpen,
         accept,
         processSelected,
+        clearSelection,
         selected,
         selectedId,
         selectedName,
@@ -56,7 +64,7 @@ export default defineComponent({
 <span>
     <button
         class="gsu-btn font-semibold py-2 px-4 rounded inline-flex items-center
-        rounded-sm flex items-center min-w-32"
+        rounded-sm flex items-center min-w-32 border-2 border-solid border-borderColor"
         @click="modalOpen = true"
       >
       <span v-if="!loggedIn" class="pr-1 font-semibold flex-1">
@@ -68,7 +76,7 @@ export default defineComponent({
     </button>
     <Modal 
     :isVisible="modalOpen"
-    :disabled-confrm="!selectedName"
+    :disabled-confirm="!selectedName"
     @cancel="modalOpen =false; $emit('cancel')"
     @confirm="accept()"
     >
