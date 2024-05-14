@@ -126,6 +126,7 @@ body {
   align-content: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #4a4949;
 }
 
 </style>

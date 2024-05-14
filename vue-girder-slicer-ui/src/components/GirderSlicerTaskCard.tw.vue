@@ -30,6 +30,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const girderRest = new RestClient({apiRoot: props.apiUrl});
+    girderRest
     const loggedIn = computed(() => girderRest?.token);
     const result: Ref<XMLSpecification | null> = ref(null);
     const jobData: Ref<null | JobResponse> = ref(null)
@@ -42,7 +43,6 @@ export default defineComponent({
         const updateParams: {panelIndex: number, groupIndex: number, parameterIndex: number, value: XMLParameters}[] = [];
         parseParams.panels.forEach((panel, panelIndex) => {
           panel.groups.forEach((group, groupIndex) => {
-            console.log(group.parameters);
             group.parameters.forEach((parameter, parameterIndex) => {
               const paramResult = props.defaults(parameter);
               if (paramResult && parseParams) {
@@ -57,7 +57,6 @@ export default defineComponent({
             });
           });
         });
-        console.log(updateParams);
         updateParams.forEach((item) => {
           if (parseParams) {
             parseParams.panels[item.panelIndex].groups[item.groupIndex].parameters[item.parameterIndex] = item.value;
@@ -82,8 +81,9 @@ export default defineComponent({
       if (result.value && props.taskId) {
         const resp = await slicerApi.runTask(result.value, props.taskId);
         if (resp) {
+          console.log(resp);
           jobData.value = resp;
-          emit('run-task', jobData.value._id);
+          emit('run-task', jobData.value);
         }
       }
     }

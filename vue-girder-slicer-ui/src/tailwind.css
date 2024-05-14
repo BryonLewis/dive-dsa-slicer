@@ -43,9 +43,8 @@
     --gsu-color-link: #2c7596; /* Link color */
     --gsu-color-text: #FFFFFF; /* Text color */
     --gsu-color-muted-text: #B0BEC5; /* Muted text color */
-    --gsu-color-background: rgb(39, 39, 39);
+    --gsu-color-background: rgb(39, 39, 39);/* Background color */
     --gsu-color-border: rgba(255,255,255,0.3);
-    ; /* Background color */
     --gsu-background-muted: #212121; /* Muted background color */
     --gsu-color-highlight: #717171bb; /* Highlighted color */
     --gsu-color-selected: #A5D6A7; /* Selected color */
@@ -89,7 +88,7 @@
     }
 
     .gsu-input {
-      @apply bg-backgroundColor border-bgMutedColor border-2 border-solid;
+      @apply bg-backgroundColor border-borderColor border-2 border-solid;
     }
     .gsu-btn {
       @apply bg-backgroundColor hover:bg-bgMutedColor border-solid border-2 border-borderColor text-textColor

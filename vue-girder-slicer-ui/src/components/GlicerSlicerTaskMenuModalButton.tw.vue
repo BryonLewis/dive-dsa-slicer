@@ -41,7 +41,6 @@ export default defineComponent({
     const selected = ref('');
 
     const clearSelection = () => {
-      console.log('clearing selection');
       selectedId.value = '';
       selectedName.value = '';
       selected.value = '';

@@ -53,6 +53,8 @@ export default class RestClient extends Axios {
   setLocalCookie: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: null | any;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  $on: Function | undefined;
 
   constructor({
     apiRoot = '/api/v1',

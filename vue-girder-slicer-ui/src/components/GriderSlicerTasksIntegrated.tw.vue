@@ -33,7 +33,6 @@ export default defineComponent({
       selected.value = id;
     }
     const cancel = () => {
-      console.log('calling cancel');
       if (menuModelButton.value) {
         menuModelButton.value.clearSelection();
       }
@@ -62,7 +61,7 @@ export default defineComponent({
                         :filter="filter"
                         @selected="select($event)"
                     />
-                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" @cancel="cancel()" />
+                    <girder-slicer-task-card :task-id="selected" :defaults="defaults" @cancel="cancel()" @run-task="$emit('run-task', $event)" />
                 </div>
             </div>
         </div>

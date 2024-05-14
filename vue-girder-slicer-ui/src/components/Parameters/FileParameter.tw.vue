@@ -85,7 +85,7 @@ export default defineComponent({
 });
 </script>
 <template>
-  <div>
+  <div class="pr-4">
     <label for="parameterInput">{{ data.title }} <span
       v-if="error"
       class="text-red"
@@ -99,7 +99,7 @@ export default defineComponent({
         :value="currentValue"
         :placeholder="placeHolder"
       >
-      <span class="input-group-append">
+      <span class="sm:flex">
         <button
           type="button"
           class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn"
@@ -115,14 +115,14 @@ export default defineComponent({
         <button
           v-if="!batchload"
           type="button"
-          class="inline-block align-middle text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn-multi"
+          class="flex align-middle items-center text-center select-none border font-normal whitespace-no-wrap py-2 mb-1 px-4 rounded text-base leading-normal no-underline select-btn-multi"
           @click="showBrowser = true"
         >
           <svg-icon
             type="mdi"
             :path="mdiFolderOpen"
             :size="15"
-            class="gsu-icon gsu-clickable"
+            class="gsu-icon gsu-clickable "
           />
           <svg-icon
             type="mdi"
@@ -139,6 +139,7 @@ export default defineComponent({
     >{{ data.description }}</small>
     <data-browser
       v-if="showBrowser"
+      :type="data.type"
       :output="data.channel === 'output' || data.type === 'new-file'"
       :girder-id="girderId"
       :parent-id="parentId"
