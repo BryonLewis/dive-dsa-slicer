@@ -30,6 +30,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const girderRest = new RestClient({apiRoot: props.apiUrl});
+    girderRest
     const loggedIn = computed(() => girderRest?.token);
     const result: Ref<XMLSpecification | null> = ref(null);
     const jobData: Ref<null | JobResponse> = ref(null)
@@ -56,7 +57,6 @@ export default defineComponent({
             });
           });
         });
-        console.log(updateParams);
         updateParams.forEach((item) => {
           if (parseParams) {
             parseParams.panels[item.panelIndex].groups[item.groupIndex].parameters[item.parameterIndex] = item.value;
@@ -81,8 +81,9 @@ export default defineComponent({
       if (result.value && props.taskId) {
         const resp = await slicerApi.runTask(result.value, props.taskId);
         if (resp) {
+          console.log(resp);
           jobData.value = resp;
-          emit('run-task', jobData.value._id);
+          emit('run-task', jobData.value);
         }
       }
     }
@@ -91,9 +92,15 @@ export default defineComponent({
         await slicerApi.processInput(result.value, name);
       }
     }
+
+    const cancel = () => {
+      result.value = null;
+      emit('cancel')
+    }
     return {
       result,
       runTask,
+      cancel,
       updateParameters,
       processInput,
       jobData,
@@ -110,19 +117,10 @@ export default defineComponent({
   >
     <div class="flex-auto p-6">
       <div class="grid grid-cols-12 gap-4 pb-2">
-        <span class="col-span-10">
+        <span class="col-span-12">
           <h5>
             {{ result.title }}
           </h5>
-        </span>
-        <span class="col-span-2">
-          <button
-            type="button"
-            class="gsu-btn-accept font-bold py-2 px-4 rounded border-2"
-            @click="runTask()"
-          >
-            Run
-          </button>
         </span>
       </div>
       <div
@@ -159,6 +157,26 @@ export default defineComponent({
         @change="updateParameters($event, index)"
         @input-selected="processInput($event)"
       />
+    </div>
+    <div class="flex-auto p-6">
+      <div class="grid gap-4 pb-2 justify-items-end">
+        <span>
+          <button
+            type="button"
+            class="bg-red-500 border-solid border-borderColor font-bold py-2 px-4 mx-2 rounded border-2"
+            @click="cancel()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="gsu-btn-accept font-bold py-2 px-4 mx-2 rounded border-2"
+            @click="runTask()"
+          >
+            Run
+          </button>
+        </span>
+      </div>
     </div>
   </div>
 </template>

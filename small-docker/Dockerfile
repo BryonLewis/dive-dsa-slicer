@@ -37,6 +37,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools && \
 
 
 RUN pip install girder-slicer-cli-web
+RUN pip install girder-client
 COPY . $PWD
 COPY --from=ffmpeg-builder /tmp/ffextracted/ffmpeg /tmp/ffextracted/ffprobe /usr/local/bin/
 

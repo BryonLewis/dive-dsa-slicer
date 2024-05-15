@@ -8,7 +8,7 @@
   <license>Apache 2.0</license>
   <contributor>Bryon Lewis</contributor>
   <acknowledgements>This work is part of the DIVE project.</acknowledgements>
-  <parameters>
+  <parameters advanced="true">
     <label>IO</label>
     <description>Input/output parameters</description>
     <file>
@@ -18,15 +18,15 @@
       <channel>input</channel>
       <index>0</index>
     </file>
-    <file fileExtensions=".json" reference="inputVideoFile">
-      <name>outputTrackJSON</name>
-      <label>Output DIVE Track Json File</label>
-      <description>Output Track JSON File (*.json)</description>
-      <channel>output</channel>
-      <index>1</index>
-    </file>
+    <directory>
+      <name>DIVEDirectory</name>
+      <longflag>DIVEDirectory</longflag>
+      <description><![CDATA[An input DIVE Directory. If no default is specified, the current directory is used,]]></description>
+      <label>Input DIVE directory</label>
+      <channel>input</channel>
+    </directory>
   </parameters>
-  <parameters advanced="true">
+  <parameters>
     <label>Girder API URL and Key</label>
     <description>A Girder API URL and token for Girder client</description>
     <string>

@@ -46,7 +46,7 @@ export default defineComponent({
 <template>
 <span>
     <Modal 
-    :disabled-confrm="!selectedName"
+    :disabled-confirm="!selectedName"
     @cancel="$emit('cancel')"
     @confirm="accept()"
     >

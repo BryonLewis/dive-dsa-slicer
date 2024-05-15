@@ -45,7 +45,7 @@ export default defineComponent({
       :key="`${parameter.title}_${index}`"
     >
       <div class="flex flex-wrap">
-        <div class=":flex-growauto">
+        <div class="flex-growauto">
           <base-parameter 
             v-if="baseParmaeters.includes(parameter.type)"
             :data="parameter"

@@ -18,6 +18,7 @@ export default {
         secondary: 'var(--gsu-color-secondary)',
         linkColor: 'var(--gsu-color-link)',
         textColor: 'var(--gsu-color-text)',
+        borderColor: 'var(--gsu-color-border)',
         textMutedColor: 'var(--gsu-color-muted-text)',
         backgroundColor: 'var(--gsu-color-background)',
         bgMutedColor: 'var(--gsu-background-muted)',

@@ -12,7 +12,7 @@ export default defineComponent({
             type: Boolean,
             default: false,
         },
-        disabledConfrm: {
+        disabledConfirm: {
           type: Boolean,
           default: true,
         }
@@ -68,11 +68,11 @@ export default defineComponent({
         </slot>
         
         <div class="p-6 flex justify-end items-center">
-          <button class="btn-outline font-bold py-2 px-4 rounded" @click="cancel">Cancel</button>
+          <button class="bg-red-500 border-solid border-2 border-borderColor font-bold py-2 px-4 rounded" @click="cancel">Cancel</button>
           <button 
-            class="gsu-btn-accept btn ml-2 font-bold py-2 px-4 rounded"
-            :class="{ 'gsu-disabled-button': disabledConfrm }"
-            @click="confirm"
+            class=" btn ml-2 font-bold py-2 px-4 rounded"
+            :class="{ 'gsu-disabled-button': disabledConfirm, 'gsu-btn-accept': !disabledConfirm }"
+            @click="!disabledConfirm && confirm()"
           >Confirm</button>
         </div>
       </div>

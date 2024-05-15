@@ -44,10 +44,13 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
                 group.parameters.forEach((parameter) => {
                     // Check for a value for each item;
                     // TODO More checks for other types for validation
+                    if (['girderApiUrl', 'girderToken'].includes(parameter.id)) {
+                        return;
+                    }
                     if (!fileTypes.includes(parameter.type) && parameter.required && (parameter.value === undefined || parameter.value === null)) {
                         parameter.error = 'Value is not set';
                         valid = false;
-                    }else if (!fileTypes.includes(parameter.type) && parameter.fileValue === undefined) {
+                    }else if (!fileTypes.includes(parameter.type) && parameter.fileValue === undefined && (parameter.value === undefined)) {
                         parameter.error = 'Value is not set';
                         valid = false;
                     }else if (parameter.error) {
@@ -56,6 +59,7 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
             });
             });
         });
+        console.log(`Valid: ${valid}`);
         return valid;
     }
     const convertToParams = (xml:XMLSpecification) => {
@@ -71,6 +75,9 @@ const useGirderSlicerApi = (girderRest: RestClient) => {
                             // Need an actual folder Id
                             if (parameter.fileValue.fileId) {
                                 params[parameter.id] = parameter.fileValue.fileId;
+                            }
+                            if (parameter.type === 'directory') {
+                                params[parameter.id] = parameter.fileValue.girderId;
                             }
                         }
                         if ((parameter.type === 'new-file' || parameter.type === 'multi' || parameter.multiple) || (parameter.channel === 'output' && fileImageItem.includes(parameter.type))) {

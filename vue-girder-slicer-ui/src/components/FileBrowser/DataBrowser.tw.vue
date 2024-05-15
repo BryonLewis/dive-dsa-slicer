@@ -64,15 +64,14 @@ export default defineComponent({
         errorMsg.value = '';
         const result = props.validation(selectedModel.value);
         if (result.valid) {
-          emit('submit', 
-            {
+          const data = {
               girderId: selected.value.girderId,
               name: selected.value.name,
               parentId: currentParentId.value,
               regExp: props.multi,
               fileId: selected.value.fileId,
             }
-          );
+          emit('submit', data);
         } else if (result.msg) {
           errorMsg.value = result.msg;
         }
@@ -257,8 +256,6 @@ export default defineComponent({
     watch(folderOffset, () => updateFolders(currentParentId.value, currentParentType.value));
     watch(itemOffset, () => updateItems(currentParentId.value));
     const updateOffset = (type: 'folder' | 'item', value: number) => {
-      console.log(type);
-      console.log(value);
       if (value < 0 || Number.isNaN(value)) {
         folderOffset.value = 0;
         return;

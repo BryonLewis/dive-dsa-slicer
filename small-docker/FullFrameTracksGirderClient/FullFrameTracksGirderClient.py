@@ -53,6 +53,7 @@ def create_full_frame(width, height, frames):
                 1.0,
             ]
         ],
+        "attributes": {},
         "features": [],
     }
     for frame in range(frames):
@@ -60,6 +61,7 @@ def create_full_frame(width, height, frames):
         feature = {
             "frame": frame,
             "bounds": [0, 0, width, height],
+            "attributes": {},
         }
         track_obj["begin"] = min(track_obj["begin"], frame)
         track_obj["end"] = max(track_obj["end"], frame)
@@ -87,8 +89,16 @@ def main(args):
 
     annotation = create_full_frame(results['width'], results['height'], results['frames'])
 
-    with open(args.outputTrackJSON, 'w') as annotation_file:
+    outputFileName = './output.json'
+
+    with open(outputFileName, 'w') as annotation_file:
         json.dump(annotation, annotation_file, separators=(',', ':'), sort_keys=False)
+    # of the format: /mnt/girder_worker/{id}/{folderName}
+    folderId = args.DIVEDirectory.split('/')[-2]
+    print(f'FolderId: {folderId}')
+    gc.uploadFileToFolder(folderId, outputFileName)
+    gc.post(f'dive_rpc/postprocess/{folderId}', data={"skipJobs": True})
+    os.remove(outputFileName)
 
     total_time_taken = time.time() - start_time
 

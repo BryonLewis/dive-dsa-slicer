@@ -44,7 +44,6 @@ export default defineComponent({
     const getData = async () => {
       try {
         const response = await slicerApi.getSlicerList();
-        console.log(response);
         // ground items by their image
         const taskHierarchy: TaskHierarchy = {};
         response.data.forEach((task) => {
