@@ -85,16 +85,18 @@ This is used to set default values.
 
 There are some global css variables that are used to set the colors used in the system:
 ```
-:root {
-  --gsu-color-primary: rgb(59, 130, 246);
-  --gsu-color-secondary: #000;
-  --gsu-color-link: rgb(56, 189, 248);
-  --gsu-color-text: #dcdcdc;
-  --gsu-color-muted-text: #d6d6d692;
-  --gsu-color-background: rgb(75, 85, 99);
-  --gsu-background-muted: rgb(107, 114, 128);
-  --gsu-color-highlight: rgb(250, 204, 21);
-  --gsu-color-selected: rgb(250, 204, 21):
-}
+  :root {
+    --gsu-color-primary: #90CAF9; /* Primary color */
+    --gsu-color-secondary: #9FA8DA; /* Secondary color */
+    --gsu-color-link: #2c7596; /* Link color */
+    --gsu-color-text: #FFFFFF; /* Text color */
+    --gsu-color-muted-text: #B0BEC5; /* Muted text color */
+    --gsu-color-background: rgb(39, 39, 39);/* Background color */
+    --gsu-color-border: rgba(255,255,255,0.3);
+    --gsu-background-muted: #212121; /* Muted background color */
+    --gsu-color-highlight: #717171bb; /* Highlighted color */
+    --gsu-color-selected: #A5D6A7; /* Selected color */
+  }
 ```
+This default view mimics a vuetify dark theme but not completely.
 These variables can be modified to change the visual styling of the system.
