@@ -12,13 +12,13 @@
     <label>IO</label>
     <description>Input/output parameters</description>
     <file>
-      <name>inputVideoFile</name>
+      <name>DIVEVideo</name>
       <label>Input Video</label>
       <description>Input video</description>
       <channel>input</channel>
       <index>0</index>
     </file>
-    <file fileExtensions=".json" reference="inputVideoFile">
+    <file fileExtensions=".json" reference="DIVEVideo">
       <name>outputTrackJSON</name>
       <label>Output DIVE Track Json File</label>
       <description>Output Track JSON File (*.json)</description>
