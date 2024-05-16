@@ -18,7 +18,7 @@ from slicer_cli_web import ctk_cli_adjustment  # noqa
 logging.basicConfig(level=logging.CRITICAL)
 
 def process_video(args):
-    cap = cv2.VideoCapture(args.inputVideoFile)
+    cap = cv2.VideoCapture(args.DIVEVideo)
 
     # Check if the video file was opened successfully
     if not cap.isOpened():

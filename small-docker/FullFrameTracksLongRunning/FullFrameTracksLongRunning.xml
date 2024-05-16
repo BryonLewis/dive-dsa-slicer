@@ -12,7 +12,7 @@
     <label>IO</label>
     <description>Input/output parameters</description>
     <file>
-      <name>inputVideoFile</name>
+      <name>DIVEVideo</name>
       <label>Input Video</label>
       <description>Input video</description>
       <channel>input</channel>
