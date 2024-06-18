@@ -7,6 +7,8 @@
   },
   "FullFrameTracksLongRunning": {
     "type": "python"
+  },
+  "DIVEUINotifications": {
+    "type": "python"
   }
-
 }
