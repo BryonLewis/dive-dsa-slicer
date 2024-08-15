@@ -7,6 +7,7 @@ on:
 jobs:
  build:
     runs-on: ubuntu-latest
+    name: Publish Vue Girder SlicerCLI UI Client Library
     defaults:
       run:
         working-directory: client
@@ -26,42 +27,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
-name: Publish Vue Girder SlicerCLI UI Client Library
-
-on:
-  push:
-    branches:
-      - main
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm install
-        working-directory: ./vue-girder-slicer-ui
-      - run: npm run build
-        working-directory: ./vue-girder-slicer-ui
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          registry-url: https://npm.pkg.github.com/
-      - run: npm install
-        working-directory: ./vue-girder-slicer-ui  
-      - run: npm run build
-        working-directory: ./vue-girder-slicer-ui
-      - run: npm publish
-        working-directory: ./vue-girder-slicer-ui
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 

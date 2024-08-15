@@ -4,14 +4,14 @@ import type { XMLParameters } from '../parser/parserTypes';
 import BaseParameter from './Parameters/BaseParameter.tw.vue';
 import BooleanParameter from './Parameters/BooleanParameter.tw.vue';
 import EnumerationParameters from './Parameters/EnumerationParameters.tw.vue';
-import FileParmaeter from './Parameters/FileParameter.tw.vue';
+import FileParameter from './Parameters/FileParameter.tw.vue';
 import ColorParameter from './Parameters/ColorParameter.tw.vue';
 export default defineComponent({
   components: {
     BaseParameter,
     BooleanParameter,
     EnumerationParameters,
-    FileParmaeter,
+    FileParameter,
     ColorParameter
   },
   props: {
@@ -21,7 +21,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const baseParmaeters = ['string', 'number', 'vector', 'string-vector', 'number-vector']
+    const baseParameters = ['string', 'number', 'vector', 'string-vector', 'number-vector']
     const paramCopy = ref(props.parameters);
     onMounted(() => {
       paramCopy.value = props.parameters;
@@ -31,7 +31,7 @@ export default defineComponent({
       emit('change', paramCopy.value);
     }
     return {
-      baseParmaeters,
+      baseParameters,
       paramCopy,
       updateParameter,
     }
@@ -47,7 +47,7 @@ export default defineComponent({
       <div class="flex flex-wrap">
         <div class="flex-growauto">
           <base-parameter 
-            v-if="baseParmaeters.includes(parameter.type)"
+            v-if="baseParameters.includes(parameter.type)"
             :data="parameter"
             @change="updateParameter($event, index)"
           />
@@ -61,7 +61,7 @@ export default defineComponent({
             :data="parameter"
             @change="updateParameter($event, index)"
           />
-          <file-parmaeter
+          <file-parameter
             v-else-if="['file', 'item', 'directory', 'image', 'multi'].includes(parameter.slicerType)"
             :data="parameter"
             @change="updateParameter($event, index)"

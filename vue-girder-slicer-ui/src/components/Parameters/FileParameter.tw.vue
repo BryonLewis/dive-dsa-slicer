@@ -33,7 +33,7 @@ export default defineComponent({
       if (props.data.slicerType === 'directory') {
         placeHolder.value = !props.data.multiple ?  'Choose a folder...' : 'Choose multiple folders...'
       }
-      if (['file', 'item', 'image', 'multi'].includes(props.data.slicerType) && ! props.data.multiple) {
+      if (['file', 'item', 'image', 'multi'].includes(props.data.slicerType) && !props.data.multiple) {
         batchload.value = true;
       }
       if (props.data.fileValue?.name) {

@@ -8,7 +8,7 @@
   <license>Apache 2.0</license>
   <contributor>Bryon Lewis</contributor>
   <acknowledgements>This work is part of the DIVE project.</acknowledgements>
-  <parameters advanced="true">
+  <parameters>
     <label>IO</label>
     <description>Input/output parameters</description>
     <file>
@@ -25,6 +25,17 @@
       <label>Input DIVE directory</label>
       <channel>input</channel>
     </directory>
+  </parameters>
+  <parameters advanced="true">
+    <label>Variables</label>
+    <description>Variables</description>
+    <string>
+      <name>trackType</name>
+      <longflag>trackType</longflag>
+      <label>Track Type</label>
+      <description><![CDATA[Track Type for full frame tracks]]></description>
+      <default>unknown</default>
+    </string>
     <integer>
       <name>sleepSeconds</name>
       <longflag>sleepSeconds</longflag>
@@ -32,6 +43,7 @@
       <label>Sleep Time</label>
       <default>10</default>
     </integer>
+
   </parameters>
   <parameters>
     <label>Girder API URL and Key</label>
