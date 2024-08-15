@@ -4,6 +4,7 @@ import os
 import pprint
 import time
 from pathlib import Path
+import tempfile
 
 import girder_client
 import numpy as np
@@ -17,8 +18,26 @@ from slicer_cli_web import ctk_cli_adjustment  # noqa
 
 logging.basicConfig(level=logging.CRITICAL)
 
-def process_video(args):
-    cap = cv2.VideoCapture(args.DIVEVideo)
+
+def process_input_args(args, gc):
+    folderId = args.DIVEDirectory.split('/')[-2]
+    recursive = args.recursive
+    print(f"folderId: {folderId} recursive: {recursive}")
+    if not recursive:  # only a single file to process
+        process_dive_dataset(folderId=folderId, gc=gc, trackType=args.trackType)
+    else:  # Get the list of datasets to process
+        datasets = gc.get(f"dive_dataset/{folderId}/recursive")
+        # iterate over the DIVE datasets
+        counter = 1
+        total = len(datasets)
+        for dataset in datasets:
+            print(f"Processing Dive Dataset: {dataset['lowerName']} - {counter} of {total} ")
+            process_dive_dataset(str(dataset["_id"]), gc, args.trackType)
+            counter += 1
+    
+    
+def process_video(path):
+    cap = cv2.VideoCapture(path)
 
     # Check if the video file was opened successfully
     if not cap.isOpened():
@@ -41,6 +60,7 @@ def process_video(args):
     print(f"Number of Frames: {num_frames}")
 
     return {"width": width, "height": height, "frames": num_frames}
+
 
 def create_full_frame(width, height, frames, trackType='unknown'):
     track_obj = {
@@ -73,6 +93,27 @@ def create_full_frame(width, height, frames, trackType='unknown'):
     }
 
 
+def process_dive_dataset(folderId,  gc: girder_client.GirderClient, trackType='unknown'):
+    task_defaults = gc.get(f'dive_dataset/{folderId}/task-defaults')
+    print(f"Task Defaults: {task_defaults}")
+    videoId = task_defaults.get('video', {}).get('fileId', False)
+    if videoId:
+        videoName = task_defaults.get('video', {}).get('filename', 'default.mp4')
+        with tempfile.TemporaryDirectory() as _working_directory:
+            _working_directory_path = Path(_working_directory)
+            file_name = str(_working_directory_path / videoName)
+            print(f"Processing Video: {videoName}")
+            gc.downloadFile(videoId, file_name)
+            data = process_video(file_name)
+            trackJSON = create_full_frame(data['width'], data['height'], data['frames'], trackType)
+            outputFileName = './output.json'
+            with open(outputFileName, 'w') as annotation_file:
+                json.dump(trackJSON, annotation_file, separators=(',', ':'), sort_keys=False)
+            gc.uploadFileToFolder(folderId, outputFileName)
+            gc.post(f'dive_rpc/postprocess/{folderId}', data={"skipJobs": True})
+            os.remove(outputFileName)
+
+
 def main(args):
 
     gc = girder_client.GirderClient(apiUrl=args.girderApiUrl)
@@ -82,30 +123,8 @@ def main(args):
 
     print('\n>> CLI Parameters ...\n')
     pprint.pprint(vars(args))
+    process_input_args(args, gc)
 
-    start_time = time.time()
-
-    results = process_video(args)
-
-    trackType = args.trackType
-    annotation = create_full_frame(results['width'], results['height'], results['frames'], trackType)
-
-    outputFileName = './output.json'
-
-    with open(outputFileName, 'w') as annotation_file:
-        json.dump(annotation, annotation_file, separators=(',', ':'), sort_keys=False)
-    # of the format: /mnt/girder_worker/{id}/{folderName}
-    folderId = args.DIVEDirectory.split('/')[-2]
-    print(f'FolderId: {folderId}')
-    time.sleep(args.sleepSeconds)
-    gc.uploadFileToFolder(folderId, outputFileName)
-    gc.post(f'dive_rpc/postprocess/{folderId}', data={"skipJobs": True})
-    os.remove(outputFileName)
-
-    total_time_taken = time.time() - start_time
-
-    print('Total analysis time = {}'.format(
-        str(timedelta(seconds=total_time_taken))))
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
   <license>Apache 2.0</license>
   <contributor>Bryon Lewis</contributor>
   <acknowledgements>This work is part of the DIVE project.</acknowledgements>
-  <parameters advanced="true">
+  <parameters >
     <label>IO</label>
     <description>Input/output parameters</description>
     <file>
@@ -26,7 +26,7 @@
       <channel>input</channel>
     </directory>
   </parameters>
-  <parameters>
+  <parameters advanced="true">
     <label>Girder API URL and Key</label>
     <description>A Girder API URL and token for Girder client</description>
     <string>

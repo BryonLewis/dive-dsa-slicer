@@ -20,7 +20,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-  const collapsed = ref(!props.panel.advanced)
+  const collapsed = ref(props.panel.advanced)
   const updateParams = (e: XMLParameters[]) =>{
     emit('change', e);
   };

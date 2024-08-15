@@ -10,5 +10,8 @@
   },
   "DIVEUINotifications": {
     "type": "python"
+  },
+  "MultipleFullFrameDatasets": {
+    "type": "python"
   }
 }
